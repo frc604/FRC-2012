@@ -1,4 +1,5 @@
 #include "WPILib.h"
+#include <cmath>
 
 /* Port configuration for sensors and actuators. */
 	#define LEFT_DRIVE_JOYSTICK_USB_PORT 3
@@ -11,6 +12,7 @@
 	#define REAR_RIGHT_MOTOR_PORT 1
 
 	#define GYRO_PORT 1
+	#define ACCELEROMETER_PORT 2
 
 	#define COMPRESSOR_PORT 3
 	#define PRESSURE_SWITCH_PORT 4
@@ -21,12 +23,27 @@
 
 		#define DRIVER_GYRO_RESET_BUTTON 5
 		#define DRIVER_GYRO_FORWARD_BUTTON 3
-		#define DRIVER_GYRO_REVERSE_BUTTON 2/* Actuator polarity and speed configuration. */	
+		#define DRIVER_GYRO_REVERSE_BUTTON 2
+
+		#define DRIVER_ACCEL_BALANCE_BUTTON 6
+			// TODO: Configure this.
 
 /* Actuator polarity and speed configuration. */
 	#define GYRO_DRIVE_POWER 0.9
+		// TODO: Configure this.
+	#define ACCELEROMETER_DRIVE_POWER 0.5
+		// TODO: Configure this.
 
-class Robot2011Crush : public SimpleRobot {
+/* Sensor configuration. */
+	#define GYRO_DRIFT 0.0238095238
+		// TODO: Configure this.
+
+	#define ACCELEROMETER_SENSITIVITY 1
+		// TODO: Configure this.
+	#define ACCELEROMETER_UPPER_RADIANS 0.7854
+		// TODO: Configure this.
+
+class Robot2012Orange : public SimpleRobot {
 	Joystick joystickManipulator;
 	Joystick joystickDriveLeft;
 	Joystick joystickDriveRight;
@@ -34,16 +51,18 @@ class Robot2011Crush : public SimpleRobot {
 	RobotDrive driveTrain;
 
 	Gyro gyroDriving;
+	Accelerometer accelBalance;
 
 	Compressor* compressorPump;
 
 	public:
-		Robot2011Crush(void):
+		Robot2012Orange(void):
 			joystickManipulator(MANIPULATOR_JOYSTICK_USB_PORT),
 			joystickDriveLeft(LEFT_DRIVE_JOYSTICK_USB_PORT),
 			joystickDriveRight(RIGHT_DRIVE_JOYSTICK_USB_PORT),
 			driveTrain(new Victor(FRONT_LEFT_MOTOR_PORT), new Victor(REAR_LEFT_MOTOR_PORT), new Victor(FRONT_RIGHT_MOTOR_PORT), new Victor(REAR_RIGHT_MOTOR_PORT)),
-			gyroDriving(GYRO_PORT)
+			gyroDriving(GYRO_PORT),
+			accelBalance(ACCELEROMETER_PORT)
 		{
 			GetWatchdog().SetEnabled(false); // If you're just beginning, and nothing's going on, there's no need for Watchdog to be doing anything.
 
@@ -52,7 +71,13 @@ class Robot2011Crush : public SimpleRobot {
 			driveTrain.SetInvertedMotor(RobotDrive::kRearLeftMotor, true);
 			driveTrain.SetInvertedMotor(RobotDrive::kRearRightMotor, true);
 
+			accelBalance.SetSensitivity(ACCELEROMETER_SENSITIVITY);
+
 			compressorPump = new Compressor(PRESSURE_SWITCH_PORT, COMPRESSOR_PORT);
+		}
+
+		float Deadband(float xValue, float upperBand = 0.1745, float lowerBand = -0.1745, float correctedValue = 0.0) { // The antithesis of the BindToRange function
+			return (IsInRange(xValue, upperBand, lowerBand)) ? (correctedValue) : (xValue);
 		}
 
 		void Autonomous(void) {
@@ -76,6 +101,8 @@ class Robot2011Crush : public SimpleRobot {
 
 				bool boolGyroForwardButton = false;
 				bool boolGyroReverseButton = false;
+
+				float floatAccelPower;
 
 			/* Debug Functionality */
 				DriverStationLCD *dsLCD = DriverStationLCD::GetInstance();
@@ -104,7 +131,7 @@ class Robot2011Crush : public SimpleRobot {
 							doubleGyroPosition += doubleCurrentPosition-doubleLastPosition;
 							doubleLastPosition = doubleCurrentPosition;
 							
-							doubleGyroPosition -= timerDriveTimer->Get()*0.0238095238; // Account for drift.
+							doubleGyroPosition -= timerDriveTimer->Get()*GYRO_DRIFT; // Account for drift.
 							timerDriveTimer->Reset();
 							
 							if(doubleGyroPosition >= 360) doubleGyroPosition -= 360;
@@ -131,8 +158,14 @@ class Robot2011Crush : public SimpleRobot {
 									}
 								}
 							} else {
-								/* Drive Train */
-									driveTrain.TankDrive(joystickDriveLeft, joystickDriveRight);
+								if(joystickDriveLeft.GetRawButton(DRIVER_ACCEL_BALANCE_BUTTON)) {
+									/* Accelerometer Balancing */
+										floatAccelPower = Deadband(asin(accelBalance.GetAcceleration())) / ACCELEROMETER_UPPER_RADIANS * ACCELEROMETER_DRIVE_POWER;
+										driveTrain.TankDrive(floatAccelPower, floatAccelPower);
+										dsLcd->Printf(DriverStationLCD::kUser_Line1, 1, "Accel Output: %f", floatAccelPower);
+								} else {
+									/* Drive Train */
+										driveTrain.TankDrive(joystickDriveLeft, joystickDriveRight);
 							}
 						}
 
@@ -146,4 +179,4 @@ class Robot2011Crush : public SimpleRobot {
 		}
 	};
 
-START_ROBOT_CLASS(Robot2011Crush);
+START_ROBOT_CLASS(Robot2012Orange);
