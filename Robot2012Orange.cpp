@@ -166,6 +166,7 @@ class Robot2012Orange : public SimpleRobot {
 								} else {
 									/* Drive Train */
 										driveTrain.TankDrive(joystickDriveLeft, joystickDriveRight);
+								}
 							}
 						}
 
