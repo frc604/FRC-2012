@@ -1,3 +1,11 @@
+/*	Physics.h
+ *
+ * Used for determining launch velocities of the ball
+ * 	It gives velocity as a function of displacement and final vertical velocity
+ *
+ */
+
+
 
 /*
  *	This function determines the firing velocities (and time) for a given
@@ -37,4 +45,25 @@ void getFiringVelocity(float *velX, float *velY, float *time, float distH, float
 		*velY = verticalVel0;
 	if(velX)
 		*velX = v_x;
+}
+
+/*
+ *	This function guesses a good vertical velocity to enter the hoop, then
+ *	determines the firing velocities (and time) for a given
+ *	distance (horizontally, and vertically).
+ *
+ *
+ *	float *velX			pointer to the returned horizontal velocity
+ *	float *velY			pointer to the returned vertical velocity
+ *	float *time			pointer to the returned amount of time the ball flies
+ *	float  distH		horizontal distance the ball must travel
+ *	float  distV		vertical distance the ball must travel
+ *
+ */
+void getFiringVelocity(float *velX, float *velY, float *time, float distH, float distV) {
+
+		//TODO: this approximation of a "good velocity" will need to be tuned once we have a working robot
+	float verticalVel = -120 - distV*.5;
+
+	getFiringVelocity(velX, velY, time, distH, distV, verticalVel);
 }
