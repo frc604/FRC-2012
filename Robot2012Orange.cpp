@@ -2,20 +2,20 @@
 #include <cmath>
 
 /* Port configuration for sensors and actuators. */
-	#define LEFT_DRIVE_JOYSTICK_USB_PORT 3
-	#define MANIPULATOR_JOYSTICK_USB_PORT 1
-	#define RIGHT_DRIVE_JOYSTICK_USB_PORT 2
+	#define LEFT_DRIVE_JOYSTICK_USB_PORT	3
+	#define MANIPULATOR_JOYSTICK_USB_PORT	1
+	#define RIGHT_DRIVE_JOYSTICK_USB_PORT	2
 
-	#define FRONT_LEFT_MOTOR_PORT 3
-	#define FRONT_RIGHT_MOTOR_PORT 2
-	#define REAR_LEFT_MOTOR_PORT 4
-	#define REAR_RIGHT_MOTOR_PORT 1
+	#define FRONT_LEFT_MOTOR_PORT	3
+	#define FRONT_RIGHT_MOTOR_PORT	2
+	#define REAR_LEFT_MOTOR_PORT	4
+	#define REAR_RIGHT_MOTOR_PORT	1
 
-	#define GYRO_PORT 1
-	#define ACCELEROMETER_PORT 2
+	#define GYRO_PORT				1
+	#define ACCELEROMETER_PORT		2
 
-	#define COMPRESSOR_PORT 3
-	#define PRESSURE_SWITCH_PORT 4
+	#define COMPRESSOR_PORT			3
+	#define PRESSURE_SWITCH_PORT	4
 
 /* Button configuration. */
 	/* Driver Button Configuration */
@@ -85,7 +85,9 @@ class Robot2012Orange : public SimpleRobot {
 
 			compressorPump->Start(); // Let's start up the compressor and charge up for Teleop.
 
-			while(IsAutonomous() && IsEnabled());
+			while(IsAutonomous() && IsEnabled()) {
+				// TODO: write autonomous mode code
+			}
 
 			compressorPump->Stop(); // Okay, fun's over
 		}
