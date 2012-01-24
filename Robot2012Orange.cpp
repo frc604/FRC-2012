@@ -19,28 +19,28 @@
 
 /* Button configuration. */
 	/* Driver Button Configuration */
-		#define DRIVER_SHIFT_BUTTON 1
+		#define DRIVER_SHIFT_BUTTON			1
 
-		#define DRIVER_GYRO_RESET_BUTTON 5
-		#define DRIVER_GYRO_FORWARD_BUTTON 3
-		#define DRIVER_GYRO_REVERSE_BUTTON 2
+		#define DRIVER_GYRO_RESET_BUTTON	5
+		#define DRIVER_GYRO_FORWARD_BUTTON	3
+		#define DRIVER_GYRO_REVERSE_BUTTON	2
 
-		#define DRIVER_ACCEL_BALANCE_BUTTON 6
+		#define DRIVER_ACCEL_BALANCE_BUTTON	6
 			// TODO: Configure this.
 
 /* Actuator polarity and speed configuration. */
-	#define GYRO_DRIVE_POWER 0.9
+	#define GYRO_DRIVE_POWER			0.9
 		// TODO: Configure this.
-	#define ACCELEROMETER_DRIVE_POWER 0.5
+	#define ACCELEROMETER_DRIVE_POWER	0.5
 		// TODO: Configure this.
 
 /* Sensor configuration. */
-	#define GYRO_DRIFT 0.0238095238
+	#define GYRO_DRIFT					0.0238095238
 		// TODO: Configure this.
 
-	#define ACCELEROMETER_SENSITIVITY 1
+	#define ACCELEROMETER_SENSITIVITY	1
 		// TODO: Configure this.
-	#define ACCELEROMETER_UPPER_RADIANS 0.7854
+	#define ACCELEROMETER_UPPER_RADIANS	0.7854
 		// TODO: Configure this.
 
 class Robot2012Orange : public SimpleRobot {
