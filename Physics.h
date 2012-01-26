@@ -5,7 +5,11 @@
  *
  */
 
+float getCrappyFiringVelocity(float x, float y, float slope) {
+	float g = -386;//inches per second squared
 
+	return (sqrt(2)*sqrt(g*slope*slope+g)*abs(x)*sqrt(y-slope*x))/(2*y-2*slope*x);
+}
 
 /*
  *	This function determines the firing velocities (and time) for a given
@@ -21,7 +25,7 @@
  *	float  verticalVel	velocity at which the ball should enter the hoop
  *
  */
-void getFiringVelocity(float *velX, float *velY, float *time, float distH, float distV, float verticalVel) {
+void BetterVersionOfgetFiringVelocity(float *velX, float *velY, float *time, float distH, float distV, float verticalVel) {
 
 	float g = -386;//inches per second squared
 
@@ -60,7 +64,7 @@ void getFiringVelocity(float *velX, float *velY, float *time, float distH, float
  *	float  distV		vertical distance the ball must travel
  *
  */
-void getFiringVelocity(float *velX, float *velY, float *time, float distH, float distV) {
+void BetterVersionOfgetFiringVelocity(float *velX, float *velY, float *time, float distH, float distV) {
 
 		//TODO: this approximation of a "good velocity" will need to be tuned once we have a working robot
 	float verticalVel = -120 - distV*.5;
