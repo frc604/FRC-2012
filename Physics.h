@@ -5,7 +5,19 @@
  *
  */
 
-float getCrappyFiringVelocity(float x, float y, float slope) {
+/*
+ *	This untested function might determine the firing velocity for a given
+ *	distance (horizontally, and vertically) and the angle of the shooter.
+ *
+ *
+ *	float  distH	horizontal distance the ball must travel
+ *	float  distV	vertical distance the ball must travel
+ *	float  slope	what slope the launcher is at
+ *
+ *	returns the firing velocity
+ *
+ */
+float getCrappyFiringVelocity(float distH, float distV, float slope) {
 	float g = -386;//inches per second squared
 
 	return (sqrt(2)*sqrt(g*slope*slope+g)*abs(x)*sqrt(y-slope*x))/(2*y-2*slope*x);
