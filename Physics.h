@@ -5,7 +5,19 @@
  *
  */
 
-float getCrappyFiringVelocity(float x, float y, float slope) {
+/*
+ *	This untested function might determine the firing velocity for a given
+ *	distance (horizontally, and vertically) and the angle of the shooter.
+ *
+ *
+ *	float  distH	horizontal distance the ball must travel
+ *	float  distV	vertical distance the ball must travel
+ *	float  slope	what slope the launcher is at
+ *
+ *	returns the firing velocity
+ *
+ */
+float getCrappyFiringVelocity(float distH, float distV, float slope) {
 	float g = -386;//inches per second squared
 
 	return (sqrt(2)*sqrt(g*slope*slope+g)*abs(x)*sqrt(y-slope*x))/(2*y-2*slope*x);
@@ -70,4 +82,32 @@ void BetterVersionOfgetFiringVelocity(float *velX, float *velY, float *time, flo
 	float verticalVel = -120 - distV*.5;
 
 	getFiringVelocity(velX, velY, time, distH, distV, verticalVel);
+}
+
+
+
+typedef bool ShooterAnglePick;
+#define ShooterAnglePickTop true;
+#define ShooterAnglePickBottom false;
+
+/*
+ * This function will determine how to fire the ball if the shooter only has 2 vertical angles.
+ *
+ * float*				ballVel		pointer to the returned ball velocity
+ * ShooterAnglePick*	anglePick	pointer to the selected angle (use ShooterAnglePickTop and ShooterAnglePickBottom)
+ * float*				horizAngle	pointer to the returned horizontal angle. (given in radians)
+ *
+ * float				xDist		left-right distance of the target
+ * float				yDist		vertical distance of the target
+ * float				zDist		depth distance of the target
+ * float				robotVelX	current velocity (x axis) of the robot
+ * float				robotVelZ	current velocity (z axis) of the robot
+ *
+ *
+ */
+void GetBallFiringInfo(float* ballVel, ShooterAnglePick* anglePick, float* horizAngle,
+						float xDist, float yDist, float zDist, float robotVelX, float robotVelZ) {
+
+	//TODO - needs moar math
+
 }
