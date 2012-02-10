@@ -19,8 +19,8 @@
 
 //===== Kevin's simple versions: =====
 
-#define kx 0
-#define ky 0
+#define kx 1 // TODO - calibrate
+#define ky 1 // TODO - calibrate
 #define heightOftarget 18 //inches
 #define widthOftarget 24 //inches
 
