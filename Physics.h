@@ -87,8 +87,8 @@ void BetterVersionOfgetFiringVelocity(float *velX, float *velY, float *time, flo
 
 
 typedef bool ShooterAnglePick;
-#define ShooterAnglePickTop true;
-#define ShooterAnglePickBottom false;
+#define ShooterAnglePickTop true
+#define ShooterAnglePickBottom false
 
 /*
  * This function will determine how to fire the ball if the shooter only has 2 vertical angles.
