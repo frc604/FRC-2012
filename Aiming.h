@@ -94,4 +94,6 @@ void getAngleAndRelXYZOfTarget(float* angle, float* x, float* y, float* z, float
 	(*angle) = getAngleOfTarget(x1, y1, x2, y2, x3, y3, x4, y4, (*z));
 }
 
-
+void transformPoint(float* x, float* y, float angleOfCamera) {
+	// TODO - actually transform the point
+}
