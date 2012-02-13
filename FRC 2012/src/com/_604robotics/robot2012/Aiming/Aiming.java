@@ -1,7 +1,5 @@
 package com._604robotics.robot2012.Aiming;
 
-import static java.lang.Math.*;
-
 
 /**
  * TODO: Test, and make stuff better.
@@ -20,7 +18,7 @@ public class Aiming {
 	
 	double FOV = 47;//degrees
 	double pixelsWide = 640;
-	double kx = tan(FOV*PI / 180) / pixelsWide * 2;
+	double kx = Math.tan(FOV*Math.PI / 180) / pixelsWide * 2;
 	double ky = kx;
 	double heightOftarget = 18; //inches
 	double widthOftarget = 24; //inches
@@ -91,7 +89,7 @@ public class Aiming {
 		if(wRatio > 1)
 			wRatio = 1;
 
-		return acos(wRatio);
+		return Math.acos(wRatio);
 	}
 
 	public PointAndAngle3d getAngleAndRelXYZOfTarget(double x1, double y1, double x2, double y2, double x3, double y3, double x4, double y4) {
