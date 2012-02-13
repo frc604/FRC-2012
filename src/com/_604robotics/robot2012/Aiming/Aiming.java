@@ -1,5 +1,7 @@
 package com._604robotics.robot2012.Aiming;
 
+import com.sun.squawk.util.MathUtils;
+
 
 /**
  * TODO: Test, and make stuff better.
@@ -89,7 +91,7 @@ public class Aiming {
 		if(wRatio > 1)
 			wRatio = 1;
 
-		return Math.acos(wRatio);
+		return MathUtils.acos(wRatio);
 	}
 
 	public PointAndAngle3d getAngleAndRelXYZOfTarget(double x1, double y1, double x2, double y2, double x3, double y3, double x4, double y4) {
