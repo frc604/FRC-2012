@@ -14,7 +14,8 @@ public class Ports {
 	public static final int COMPRESSOR_PORT			=3;
 	public static final int PRESSURE_SWITCH_PORT	=4;
 
-	public static final int SHIFTER_SOLENOID_PORT	=4;
+	public static final int SHIFTER_SOLENOID_FORWARD_PORT	=4;
+	public static final int SHIFTER_SOLENOID_REVERSE_PORT	=5;
 
 /* Button configuration. */
 	public static final int AIM_TURRET_BUTTON		=1;

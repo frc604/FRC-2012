@@ -37,7 +37,7 @@ public class Robot2012Orange extends SimpleRobot {
 
 	Compressor compressorPump;
 
-	Solenoid solenoidShifter;
+	DoubleSolenoid solenoidShifter;
 
 	public Robot2012Orange() {
 		controller = new Joystick(Ports.XBOX_CONTROLLER_PORT);
@@ -47,7 +47,7 @@ public class Robot2012Orange extends SimpleRobot {
 				new Victor(Ports.REAR_RIGHT_MOTOR_PORT));
 		gyroDriving = new Gyro(Ports.GYRO_PORT);
 		accelBalance = new Accelerometer(Ports.ACCELEROMETER_PORT);
-		solenoidShifter = new Solenoid(Ports.SHIFTER_SOLENOID_PORT);
+		solenoidShifter = new DoubleSolenoid(Ports.SHIFTER_SOLENOID_FORWARD_PORT, Ports.SHIFTER_SOLENOID_REVERSE_PORT);
 		getWatchdog().setEnabled(false);
 		driveTrain.setSafetyEnabled(false);
 
@@ -71,7 +71,7 @@ public class Robot2012Orange extends SimpleRobot {
 				: xValue;
 	}
 
-	public static double deadband(float xValue) { // The antithesis of the BindToRange function
+	public static double deadband(double xValue) { // The antithesis of the BindToRange function
 		return deadband(xValue, .1745, -.1745, 0.0);
 	}
 
@@ -93,7 +93,7 @@ public class Robot2012Orange extends SimpleRobot {
 
 		compressorPump.start();
 
-		float accelPower = 0;
+		double accelPower = 0;
 
 		// TODO: Move over gyro stuff from other project, once it's all hammered out.
 
