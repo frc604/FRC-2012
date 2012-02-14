@@ -108,7 +108,7 @@ public class Robot2012Orange extends SimpleRobot {
 				SmartDashboard.putString("Gear", "Low");
 			}
 
-			if (controller.getRawButton(Ports.ACCEL_BALANCE_BUTTON)) {
+			if (controller.getRawButton(Ports.ACCEL_BALANCE_BUTTON)) { 
 				// TODO: Make this better.
 				accelPower = deadband(MathUtils.asin(accelBalance.getAcceleration())) / ACCELEROMETER_UPPER_RADIANS * ACCELEROMETER_DRIVE_POWER;
 				driveTrain.tankDrive(accelPower, accelPower);
