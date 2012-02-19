@@ -1,143 +1,217 @@
 package com._604robotics.robot2012;
 
+import com._604robotics.robot2012.configuration.PortConfiguration;
+import com._604robotics.robot2012.configuration.ActuatorConfiguration;
+import com._604robotics.robot2012.configuration.ButtonConfiguration;
+import com._604robotics.robot2012.configuration.SensorConfiguration;
+import com._604robotics.utils.XboxController;
+import com._604robotics.utils.XboxController.Axis;
 import com.sun.squawk.util.MathUtils;
-
 import edu.wpi.first.wpilibj.*;
-import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-
 public class Robot2012Orange extends SimpleRobot {
+    XboxController driveController;
+    XboxController manipulatorController;
+    
+    RobotDrive driveTrain;
+    
+    Victor elevatorLeftMotor;
+    Victor elevatorRightMotor;
+    
+    Victor shooterMotor;
+    Victor hopperMotor;
+    Victor pickupMotor;
+    
+    Victor turretRotationMotor;
+    
+    Relay ringLight;
+    
+    Encoder encoderLeftFrontDrive;
+    Encoder encoderLeftRearDrive;
+    Encoder encoderRightFrontDrive;
+    Encoder encoderRightRearDrive;
+    
+    Encoder encoderElevator;
+    Encoder encoderTurretRotation;
+    
+    Gyro gyroHeading;
+    Gyro gyroBalance;
+    Accelerometer accelBalance;
+    
+    Compressor compressorPump;
+    
+    DoubleSolenoid solenoidShifter;
+    DoubleSolenoid solenoidShooter;
+    DoubleSolenoid solenoidPickup;
 
-	/* Actuator polarity and speed configuration. */
-	public static final double ACCELEROMETER_DRIVE_POWER	=0.5;
-	// TODO: Configure this.
+    public Robot2012Orange() {
+        this.getWatchdog().setEnabled(false);
+    }
 
-	public static final Value SOLENOID_SHIFTER_HIGH_POWER_DIRECTION =DoubleSolenoid.Value.kForward;
-	public static final Value SOLENOID_SHIFTER_LOW_POWER_DIRECTION  =DoubleSolenoid.Value.kReverse;
+    public void robotInit () {
+        driveController = new XboxController(PortConfiguration.Controllers.DRIVE);
+        manipulatorController = new XboxController(PortConfiguration.Controllers.MANIPULATOR);
+        
+        driveTrain = new RobotDrive(new Victor(PortConfiguration.Motors.LEFT_DRIVE), new Victor(PortConfiguration.Motors.RIGHT_DRIVE));
+        driveTrain.setSafetyEnabled(false);
 
-	/* Sensor configuration. */
-	public static final double GYRO_DRIFT					=0.0238095238;
-	// TODO: Configure this.
+        elevatorLeftMotor = new Victor(PortConfiguration.Motors.ELEVATOR_LEFT);
+        elevatorRightMotor = new Victor(PortConfiguration.Motors.ELEVATOR_RIGHT);
+        
+        shooterMotor = new Victor(PortConfiguration.Motors.SHOOTER);
+        hopperMotor = new Victor(PortConfiguration.Motors.HOPPER);
+        pickupMotor = new Victor(PortConfiguration.Motors.PICKUP);
+        
+        turretRotationMotor = new Victor(PortConfiguration.Motors.TURRET_ROTATION);
+        
+        ringLight = new Relay(PortConfiguration.Relays.RING_LIGHT_PORT, PortConfiguration.Relays.RING_LIGHT_DIRECTION);
+        
+        encoderLeftFrontDrive = new Encoder(PortConfiguration.Encoders.Drive.FRONT_LEFT_A, PortConfiguration.Encoders.Drive.FRONT_LEFT_B);
+        encoderRightFrontDrive = new Encoder(PortConfiguration.Encoders.Drive.FRONT_RIGHT_A, PortConfiguration.Encoders.Drive.FRONT_RIGHT_B);
+        encoderLeftRearDrive = new Encoder(PortConfiguration.Encoders.Drive.REAR_LEFT_A, PortConfiguration.Encoders.Drive.REAR_LEFT_B);
+        encoderRightRearDrive = new Encoder(PortConfiguration.Encoders.Drive.REAR_RIGHT_A, PortConfiguration.Encoders.Drive.REAR_RIGHT_B);
+        
+        encoderElevator = new Encoder(PortConfiguration.Encoders.ELEVATOR_A, PortConfiguration.Encoders.ELEVATOR_B);
+        encoderTurretRotation = new Encoder(PortConfiguration.Encoders.TURRET_ROTATION_A, PortConfiguration.Encoders.TURRET_ROTATION_B);
+        
+        gyroHeading = new Gyro(PortConfiguration.Sensors.GYRO_HEADING);
+        gyroBalance = new Gyro(PortConfiguration.Sensors.GYRO_BALANCE);
+        accelBalance = new Accelerometer(PortConfiguration.Sensors.ACCELEROMETER);
+        accelBalance.setSensitivity(SensorConfiguration.ACCELEROMETER_SENSITIVITY);
 
-	public static final double ACCELEROMETER_SENSITIVITY	=1;
-	// TODO: Configure this.
-	public static final double ACCELEROMETER_UPPER_RADIANS	=0.7854;
-	// TODO: Configure this.
+        compressorPump = new Compressor(PortConfiguration.Pneumatics.PRESSURE_SWITCH, PortConfiguration.Pneumatics.COMPRESSOR);
+        
+        solenoidShifter = new DoubleSolenoid(PortConfiguration.Pneumatics.SHIFTER_SOLENOID.FORWARD, PortConfiguration.Pneumatics.SHIFTER_SOLENOID.REVERSE);
+        solenoidShooter = new DoubleSolenoid(PortConfiguration.Pneumatics.SHOOTER_SOLENOID.FORWARD, PortConfiguration.Pneumatics.SHIFTER_SOLENOID.REVERSE);
+        solenoidPickup = new DoubleSolenoid(PortConfiguration.Pneumatics.PICKUP_SOLENOID.FORWARD, PortConfiguration.Pneumatics.PICKUP_SOLENOID.REVERSE);
+        
+        solenoidShifter.set(ActuatorConfiguration.SOLENOID_SHIFTER.LOW_POWER);
+        solenoidShooter.set(ActuatorConfiguration.SOLENOID_SHOOTER.LOWER_ANGLE);
+        solenoidPickup.set(ActuatorConfiguration.SOLENOID_PICKUP.IN);
+        
+        System.out.println("Hello, ninja h4X0r.");
+    }
+    
+    public static boolean isInRange(double xValue, double upperRange, double lowerRange) { // Self-explanatory.
+        return xValue <= upperRange && xValue >= lowerRange;
+    }
 
+    public static double deadband(double xValue, double upperBand, double lowerBand, double correctedValue) {
+        return (isInRange(xValue, upperBand, lowerBand))
+                ? correctedValue
+                : xValue;
+    }
 
+    public static double deadband(double xValue) {
+        return deadband(xValue, .1745, -.1745, 0.0);
+    }
 
+    public void autonomous() {
+        driveTrain.setSafetyEnabled(false);
+            // TODO: TEMPORARY, until actual autonomous code is written.
+        compressorPump.start();
 
-	Joystick controller;
+        while (isAutonomous() && isEnabled()) {
+            // TODO: Write autonomous mode code
+        }
 
-	RobotDrive driveTrain;
+        compressorPump.stop();
+    }
 
-	Gyro gyroDriving;
-	Accelerometer accelBalance;
+    public void operatorControl() {
+        this.driveTrain.setSafetyEnabled(true);
+        this.compressorPump.start();
 
-	Compressor compressorPump;
+        double accelPower = 0;
+        boolean lightOn = false;
 
-	DoubleSolenoid solenoidShifter;
+        // TODO: Move over gyro stuff from other project, once it's all hammered out.
 
-	public Robot2012Orange() {
-		controller = new Joystick(Ports.XBOX_CONTROLLER_PORT);
-		driveTrain = new RobotDrive(new Victor(Ports.FRONT_LEFT_MOTOR_PORT),
-				new Victor(Ports.REAR_LEFT_MOTOR_PORT),
-				new Victor(Ports.FRONT_RIGHT_MOTOR_PORT),
-				new Victor(Ports.REAR_RIGHT_MOTOR_PORT));
-		gyroDriving = new Gyro(Ports.GYRO_PORT);
-		accelBalance = new Accelerometer(Ports.ACCELEROMETER_PORT);
-		solenoidShifter = new DoubleSolenoid(Ports.SHIFTER_SOLENOID_FORWARD_PORT, Ports.SHIFTER_SOLENOID_REVERSE_PORT);
-		getWatchdog().setEnabled(false);
-		driveTrain.setSafetyEnabled(false);
+        while (isOperatorControl() && isEnabled()) {
+            if (driveController.getButton(ButtonConfiguration.Driver.SHIFT)) {
+                solenoidShifter.set(ActuatorConfiguration.SOLENOID_SHIFTER.HIGH_POWER);
+                SmartDashboard.putString("Gear", "High");
+            } else {
+                solenoidShifter.set(ActuatorConfiguration.SOLENOID_SHIFTER.LOW_POWER);
+                SmartDashboard.putString("Gear", "Low");
+            }
 
-		driveTrain.setInvertedMotor(RobotDrive.MotorType.kFrontLeft, true);
-		driveTrain.setInvertedMotor(RobotDrive.MotorType.kFrontRight, true);
-		driveTrain.setInvertedMotor(RobotDrive.MotorType.kRearLeft, true);
-		driveTrain.setInvertedMotor(RobotDrive.MotorType.kRearRight, true);
+            if (driveController.getButton(ButtonConfiguration.Driver.AUTO_BALANCE)) {
+                // TODO: Replace this with stuff from the balancing code, once it's hammered out.
+                
+                accelPower = deadband(MathUtils.asin(accelBalance.getAcceleration())) / SensorConfiguration.ACCELEROMETER_UPPER_RADIANS * ActuatorConfiguration.ACCELEROMETER_DRIVE_POWER;
+                driveTrain.tankDrive(accelPower, accelPower);
+                
+                SmartDashboard.putString("Drive Mode", "Balancing");
+                SmartDashboard.putDouble("Accel Output", accelPower);
+            } else {
+                driveTrain.tankDrive(driveController.getAxis(Axis.LEFT_STICK_Y), driveController.getAxis(Axis.RIGHT_STICK_Y)); // Tank drive with left and right sticks on Xbox controller.
+                SmartDashboard.putString("Drive Mode", "Manual");
+            }
+            
+            if (driveController.getButton(ButtonConfiguration.Driver.PICKUP)) {
+                solenoidShooter.set(ActuatorConfiguration.SOLENOID_PICKUP.OUT);
+                pickupMotor.set(ActuatorConfiguration.PICKUP_POWER);
+                hopperMotor.set(ActuatorConfiguration.HOPPER_POWER);
+            } else {
+                solenoidShooter.set(ActuatorConfiguration.SOLENOID_PICKUP.IN);
+                pickupMotor.set(0D);
+                
+                if (!manipulatorController.getButton(ButtonConfiguration.Manipulator.FIRE))
+                    hopperMotor.set(0D);
+            }
 
-		accelBalance.setSensitivity(ACCELEROMETER_SENSITIVITY);
+            if (manipulatorController.getButton(ButtonConfiguration.Manipulator.AIM_TURRET)) {
+                // TODO: Insert camera control, aiming components, when they're done, of course.
+            }
+            
+            if (manipulatorController.getButton(ButtonConfiguration.Manipulator.FIRE)) {
+                // TODO: Insert firing components, when they're done, of course.
+                
+                shooterMotor.set(ActuatorConfiguration.HOPPER_POWER);
+            }
+            
+            if (manipulatorController.getButton(ButtonConfiguration.Manipulator.TOGGLE_ANGLE)) {
+                if (solenoidShooter.get() == ActuatorConfiguration.SOLENOID_SHOOTER.LOWER_ANGLE)
+                    solenoidShooter.set(ActuatorConfiguration.SOLENOID_SHOOTER.UPPER_ANGLE);
+                else
+                    solenoidShooter.set(ActuatorConfiguration.SOLENOID_SHOOTER.LOWER_ANGLE);
+            }
+            
+            if (manipulatorController.getButton(ButtonConfiguration.Manipulator.TOGGLE_LIGHT)) {
+                lightOn = !lightOn;
+                
+                if (lightOn)
+                    ringLight.set(ActuatorConfiguration.RING_LIGHT.ON);
+                else
+                    ringLight.set(ActuatorConfiguration.RING_LIGHT.OFF);
+            }
+            
+            turretRotationMotor.set(manipulatorController.getAxis(Axis.LEFT_STICK_X));
+            
+            elevatorLeftMotor.set(manipulatorController.getAxis(Axis.RIGHT_STICK_Y));
+            elevatorRightMotor.set(manipulatorController.getAxis(Axis.RIGHT_STICK_Y));
+            
+            SmartDashboard.putDouble("gyroHeading", gyroHeading.getAngle());
+            SmartDashboard.putDouble("gyroHeading", gyroHeading.getAngle());
+            SmartDashboard.putDouble("accelBalance", accelBalance.getAcceleration());
+            
+            SmartDashboard.putDouble("encoderLeftFrontDrive", encoderLeftFrontDrive.get());
+            SmartDashboard.putDouble("encoderRightFrontDrive", encoderRightFrontDrive.get());
+            SmartDashboard.putDouble("encoderLeftRearDrive", encoderLeftRearDrive.get());
+            SmartDashboard.putDouble("encoderRightRearDrive", encoderRightRearDrive.get());
+            
+            SmartDashboard.putDouble("encoderElevator", encoderElevator.get());
+            SmartDashboard.putDouble("encoderTurretRotation", encoderTurretRotation.get());
+        }
 
-		compressorPump = new Compressor(Ports.PRESSURE_SWITCH_PORT, Ports.COMPRESSOR_PORT);
-	}
+        compressorPump.stop();
+        driveTrain.setSafetyEnabled(false);
+    }
 
-	public static boolean isInRange(double xValue, double upperRange, double lowerRange) { // Self-explanatory.
-		return xValue <= upperRange && xValue >= lowerRange;
-	}
-
-	public static double deadband(double xValue, double upperBand, double lowerBand, double correctedValue) { // The antithesis of the BindToRange function
-		return (isInRange(xValue, upperBand, lowerBand))
-		? correctedValue 
-				: xValue;
-	}
-
-	public static double deadband(double xValue) { // The antithesis of the BindToRange function
-		return deadband(xValue, .1745, -.1745, 0.0);
-	}
-
-	public void Autonomous() {
-		getWatchdog().setEnabled(false);
-
-		compressorPump.start();
-
-		while(isAutonomous() && isEnabled()) {
-			// TODO: Write autonomous mode code
-		}
-
-		compressorPump.stop();
-	}
-
-	public void OperatorControl() {
-		getWatchdog().setEnabled(true);
-		driveTrain.setSafetyEnabled(true);
-
-		compressorPump.start();
-
-		double accelPower = 0;
-
-		// TODO: Move over gyro stuff from other project, once it's all hammered out.
-
-		while (isOperatorControl() && isEnabled()) {
-			getWatchdog().feed();
-
-			if (controller.getRawAxis(3) > 0.2 || controller.getRawAxis(3) < -0.2) { // XBOX: Left XOR Right trigger
-				solenoidShifter.set(SOLENOID_SHIFTER_HIGH_POWER_DIRECTION);
-				SmartDashboard.putString("Gear", "High");
-			} else {
-				solenoidShifter.set(SOLENOID_SHIFTER_LOW_POWER_DIRECTION);
-				SmartDashboard.putString("Gear", "Low");
-			}
-
-			if (controller.getRawButton(Ports.ACCEL_BALANCE_BUTTON)) { 
-				// TODO: Make this better.
-				accelPower = deadband(MathUtils.asin(accelBalance.getAcceleration())) / ACCELEROMETER_UPPER_RADIANS * ACCELEROMETER_DRIVE_POWER;
-				driveTrain.tankDrive(accelPower, accelPower);
-				SmartDashboard.putString("Drive Mode", "Balancing");
-				SmartDashboard.putDouble("Accel Output", accelPower);
-			} else {
-				driveTrain.tankDrive(controller.getRawAxis(2), controller.getRawAxis(5)); // Tank drive with left and right sticks on Xbox controller.
-				SmartDashboard.putString("Drive Mode", "Manual");
-			}
-
-			if (controller.getRawButton(Ports.AIM_TURRET_BUTTON)) {
-				// TODO: Insert camera control, aiming components, when they're done, of course.
-			}
-
-			if (controller.getRawButton(Ports.FIRE_BUTTON)) {
-				// TODO: Insert firing components, when they're done, of course.
-			}
-		}
-
-		compressorPump.stop();
-
-		driveTrain.setSafetyEnabled(false);
-		getWatchdog().setEnabled(false);
-	}
-
-	public void Disabled() {
-		getWatchdog().setEnabled(false);
-		compressorPump.stop();
-	}
+    public void disabled() {
+        compressorPump.stop();
+        driveTrain.setSafetyEnabled(false);
+    }
 }
-
-//START_ROBOT_CLASS(Robot2012Orange);
