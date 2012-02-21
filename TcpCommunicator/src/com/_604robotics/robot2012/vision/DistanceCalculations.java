@@ -1,17 +1,21 @@
 package com._604robotics.robot2012.vision;
 
 public class DistanceCalculations {
-
-	double	pixelsWide		= 640;
-	double	FOV				= 47;														// degrees
-	double	heightOftarget	= 18;														// inches
-	double	kx				= 1 / (Math.tan(FOV / 2 * Math.PI / 180) / pixelsWide * 2);
-	double	ky				= kx;
-	double	widthOftarget	= 24;														// inches
-																						
-	public Target getAngleAndRelXYZOfTarget(Quad q) {
-		Point3d p = getRelXYZOfTarget(q);
-		double angle = getAngleOfTarget(q, p.z);
+	
+	double	cameraPixelWidth	= 640;
+	double	FOV					= 47;																// degrees
+	double	kx					= 1 / (Math.tan(FOV / 2 * Math.PI / 180) / cameraPixelWidth * 2);
+	double	ky					= kx;
+	double	targetHeight		= 24;																// inches
+	double	targetWidth			= 18;																// inches
+																									
+	/**
+	 * @param quad - a quadrilateral with corners
+	 * @return
+	 */
+	public Target getAngleAndRelXYZOfTarget(Quad quad) {
+		Point3d p = getRelXYZOfTarget(quad);
+		double angle = getAngleOfTarget(quad, p.z);
 		
 		return new Target(p, angle);
 	}
@@ -33,7 +37,7 @@ public class DistanceCalculations {
 		double dyRatio = dy1 / dy2;
 		
 
-		double expectedW = -kx * widthOftarget / z;
+		double expectedW = -kx * targetHeight / z;
 		double actualW = (q.topRight.x + q.bottomRight.x - q.topLeft.x - q.bottomLeft.x) / 2;
 		
 		double wRatio = actualW / expectedW;
@@ -65,7 +69,7 @@ public class DistanceCalculations {
 	 * 
 	 */
 	public Point3d getRelXYZOfTarget(Quad q) {
-		double z = ky * 2 * heightOftarget / (q.topLeft.y + q.topRight.y - q.bottomLeft.y - q.bottomRight.y);
+		double z = ky * 2 * targetWidth / (q.topLeft.y + q.topRight.y - q.bottomLeft.y - q.bottomRight.y);
 		// xs = kx * x / z
 		// x = xs * z / kx
 		double avgx = (q.topLeft.x + q.topRight.x + q.bottomLeft.x + q.bottomRight.x) / 4;
