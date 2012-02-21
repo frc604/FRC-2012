@@ -1,12 +1,28 @@
 package com._604robotics.robot2012.vision;
 
 /**
+ * <p>
+ * This class represents a physical vision Target with four main attributes (x, y, z, angle). As well, there are
+ * estimated uncertainties attached to all of these numbers.
+ * </p>
  * 
+ * <p>
+ * To get the position of the hoop use
+ * </p>
  * 
  * @author Kevin Parker <kevin.m.parker@gmail.com>
  */
 public class Target {
 	
+	/**
+	 * The distance from the center of the target to the Y (vertical) value of the hoop.
+	 */
+	public static final double	RelHoopY	= -11;	// inches
+	/**
+	 * The distance from the center of the target to the Z (depth) value of the hoop.
+	 */
+	public static final double	RelHoopZ	= +15;	// inches
+													
 	/**
 	 * This is the angle of the target, relative to the camera. </br>
 	 * 
@@ -26,8 +42,8 @@ public class Target {
 	 * 
 	 * this value is expressed in radians.
 	 */
-	public double	angle;
-
+	public double				angle;
+	
 
 	/**
 	 * 
@@ -39,8 +55,8 @@ public class Target {
 	 * 
 	 * 
 	 */
-	public double	angle_uncertainty;	
-
+	public double				angle_uncertainty;
+	
 
 	/**
 	 * x, y, and z represent the 3-d position of the target
@@ -54,7 +70,7 @@ public class Target {
 	 * 
 	 * The units of these measures are in inches.
 	 */
-	public double	x, y, z;
+	public double				x, y, z;
 	
 
 	/**
@@ -64,9 +80,17 @@ public class Target {
 	 * 
 	 * Again, these are in inches.
 	 */
-	public double	x_uncertainty, y_uncertainty, z_uncertainty;
+	public double				x_uncertainty, y_uncertainty, z_uncertainty;
 	
-
+	
+	/**
+	 * A blank constructer to easilly make a Target
+	 */
+	public Target() {
+		
+	}
+	
+	
 	/**
 	 * @param x
 	 * @param y
@@ -102,7 +126,6 @@ public class Target {
 		this.angle_uncertainty = angle_uncertainty;
 	}
 	
-	
 	/**
 	 * @param point
 	 * @param angle
@@ -110,14 +133,38 @@ public class Target {
 	public Target(Point3d point, double angle) {
 		this(point.x, point.y, point.z, angle);
 	}
-
-	public Target() {
-		
+	
+	/**
+	 * @return the position of the hoop accounting for the fact that the center of the hoop is not at the center of the
+	 *         target
+	 */
+	public Point3d getHoopPosition() {
+		return new Point3d(x + Math.sin(angle) * RelHoopZ, y + RelHoopY, z + Math.cos(angle) * RelHoopZ);
+	}
+	
+	/**
+	 * @return the reflected position of the hoop accounting for the fact that the center of the hoop is not at the
+	 *         center of the target. This is useful bounces
+	 */
+	public Point3d getReflectedHoopPosition() {
+		return getReflectedHoopPosition(1);
+	}
+	
+	/**
+	 * @param bounceFactor a number that scales the changes in the x and z distances due to correction for hoop
+	 *        position. In a idealized collision, this is equal to the inverse of its coefficient of restitution.
+	 *        However, with spin, this number should be less.
+	 * @return the reflected position of the hoop accounting for the fact that the center of the hoop is not at the
+	 *         center of the target. This is useful bounces
+	 */
+	public Point3d getReflectedHoopPosition(double bounceFactor) {
+		return new Point3d(x - Math.sin(angle) * RelHoopZ * bounceFactor, y + RelHoopY, z - Math.cos(angle) * RelHoopZ * bounceFactor);
 	}
 	
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
+	@Override
 	public String toString() {
 		return "Target [x=" + x + ", y=" + y + ", z=" + z + ", angle=" + angle + "]";
 	}
