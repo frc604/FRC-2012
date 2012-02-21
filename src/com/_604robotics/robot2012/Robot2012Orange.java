@@ -1,8 +1,9 @@
 package com._604robotics.robot2012;
 
+import com._604robotics.robot2012.configuration.AutonomousConfiguration;
 import com._604robotics.utils.XboxController;
 import com.sun.squawk.util.MathUtils;
-
+import java.lang.Math.*;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -117,7 +118,12 @@ public class Robot2012Orange extends SimpleRobot {
                         driveBackwards.enable();
                     }
                     driveBackwards.disable();
-                    //TODO: Turn 180, shoot
+                    while(Math.abs(encoderDrive1.get()-encoderDrive2.get()) < AutonomousConfiguration.turnEncoderValue){
+                        this.driveTrain.setLeftRightMotorOutputs(1, -1);
+                    }
+                    
+                    //TODO: Shoot
+                    
                 }
 		compressorPump.stop();
 	}
