@@ -68,7 +68,7 @@ public class Target {
 	 * 
 	 * The units of these measures are in inches.
 	 */
-	double x, y, z;
+	public double x, y, z;
 	
 	/**
 	 * These are the uncertainties of the x, y, and z positions of the target.
@@ -77,7 +77,7 @@ public class Target {
 	 * 
 	 * Again, these are in inches.
 	 */
-	double x_uncertainty, y_uncertainty, z_uncertainty;
+	public double x_uncertainty, y_uncertainty, z_uncertainty;
 
 	
 	/**
@@ -97,7 +97,7 @@ public class Target {
 	 * 
 	 * this value is expressed in radians.
 	 */
-	double angle;
+	public double angle;
 
 	/**
 	 * 
@@ -109,5 +109,5 @@ public class Target {
 	 * 
 	 * 
 	 */
-	double angle_uncertainty;
+	public double angle_uncertainty;
 }

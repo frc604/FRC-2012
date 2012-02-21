@@ -1,6 +1,6 @@
 package com._604robotics.tcpcommunicator;
 
-import com._604robotics.robot2012.Aiming.PointAndAngle3d;
+import com._604robotics.robot2012.vision.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -176,18 +176,27 @@ public class TcpCommunicator implements Runnable {
      * 
      * @param   points  An array of PointAndAngle3d to write.
      */
-    public void writePoints (PointAndAngle3d[] points) {
+    public void writePoints (Target[] points) {
         if (this.conn == null || this.out == null)
             return;
         
         try {
             for (int i = 0; i < points.length; i++) {
+            	if(points[i] == null)
+            		continue;
+            	
+            	
                 this.out.write((byte) 0);
 
                 this.writeDouble(points[i].x);
                 this.writeDouble(points[i].y);
                 this.writeDouble(points[i].z);
                 this.writeDouble(points[i].angle);
+                
+                this.writeDouble(points[i].x_uncertainty);
+                this.writeDouble(points[i].y_uncertainty);
+                this.writeDouble(points[i].z_uncertainty);
+                this.writeDouble(points[i].angle_uncertainty);
 
                 this.out.flush();
             }
@@ -298,7 +307,7 @@ public class TcpCommunicator implements Runnable {
         instance.up();
         
         while (true) {
-            instance.writePoints(new PointAndAngle3d[] { new PointAndAngle3d(123.456, 234.568, 0.38, 0.0), new PointAndAngle3d(0.123, 0.0, 489.1, 1.2), new PointAndAngle3d(99.999, 239.2, 39.01, 333.4492), new PointAndAngle3d(100.1, 215.33, 301.0, 9993.23193) });
+            instance.writePoints(new Target[] { new Target(123.456, 234.568, 0.38, 0.0), new Target(0.123, 0.0, 489.1, 1.2), new Target(99.999, 239.2, 39.01, 333.4492), new Target(100.1, 215.33, 301.0, 9993.23193) });
             
             try {
                 Thread.sleep(30);

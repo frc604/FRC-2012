@@ -14,6 +14,7 @@ import javax.imageio.ImageIO;
 import javax.vecmath.Point2d;
 
 import com._604robotics.robot2012.vision.LinearRegression.RegressionResult;
+import com._604robotics.tcpcommunicator.TcpCommunicator;
 import com.charliemouse.cambozola.shared.CamStream;
 
 
@@ -158,7 +159,6 @@ public class VisionProcessing {
 	 */
 	public static void main(String[] args) throws InterruptedException, IOException {
 		VisionProcessing vp = new VisionProcessing();
-		vp.ShowDisplay = true;
 		vp.loopAndProcessPics();
 		
 	}
@@ -176,20 +176,28 @@ public class VisionProcessing {
 		}
 	}
 	
+	private final boolean	communicateToRobot	= true;
+	
 	/**
 	 * The display for showing the image as well as some debug data.
 	 * 
 	 * It shows targets in green, and sides and corners in blue.
 	 */
-	Disp			display				= new Disp();
+	final Disp				display				= new Disp();
 	
-	int				imNum				= 0;
+	int						imNum				= 0;
 	
-	boolean			saveImagesToFiles	= false;
+	private final boolean	saveImagesToFiles	= false;
 	
-	public boolean	ShowDisplay			= false;
+	private final boolean	ShowDisplay			= false;
+	
+	private final TcpCommunicator comm;
 	
 	public VisionProcessing() {
+		if (communicateToRobot) {
+			comm = new TcpCommunicator();
+			comm.up();
+		}
 		if (saveImagesToFiles) {
 			new File("target/").mkdir();
 		}
@@ -331,6 +339,8 @@ public class VisionProcessing {
 		
 		Quad[] targetQuads = new Quad[colors];
 		
+		Target[] targets = new Target[colors];
+		
 		Point2d[] pts = new Point2d[colors * 4];
 		for (int i = 0; i < colors; i++) {
 			if (blobSize[i] >= MinBlobSize) {
@@ -358,8 +368,9 @@ public class VisionProcessing {
 				pts[i * 4 + 3] = bottomRight;
 				
 				Quad q = new com._604robotics.robot2012.vision.Quad(topLeft, topRight, bottomLeft, bottomRight);
-				
-				System.out.println(new DistanceCalculations().getAngleAndRelXYZOfTarget(q));
+
+				targets[i] = new DistanceCalculations().getAngleAndRelXYZOfTarget(q);
+				System.out.println(targets[i]);
 				
 				targetQuads[i] = q;
 				
@@ -370,6 +381,9 @@ public class VisionProcessing {
 			} else {
 			}
 		}
+		
+		comm.
+		
 		display.lines = linearRegressions;
 		
 		System.out.println("Time = " + (System.nanoTime() - time_i) / 1000000000);
