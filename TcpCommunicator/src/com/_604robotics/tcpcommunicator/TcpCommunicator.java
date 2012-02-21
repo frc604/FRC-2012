@@ -174,7 +174,7 @@ public class TcpCommunicator implements Runnable {
      * If there is no robot currently connected, it fails silently and discards
      * the points into the ether.
      * 
-     * @param   points  An array of PointAndAngle3d to write.
+     * @param   points  An array of Targets to write.
      */
     public void writePoints (Target[] points) {
         if (this.conn == null || this.out == null)
