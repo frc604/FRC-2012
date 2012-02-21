@@ -15,6 +15,12 @@ public interface ActuatorConfiguration {
     public static final double HOPPER_POWER = 0.8;
     public static final double PICKUP_POWER = 0.8;
     
+    public static final double ELEVATOR_POWER_MIN = -0.8D;
+    public static final double ELEVATOR_POWER_MAX = 0.8D;
+    
+    public static final double TURRET_ROTATION_POWER_MIN = -0.8D;
+    public static final double TURRET_ROTATION_POWER_MAX = 0.8D;
+    
     public interface RING_LIGHT {
         public static final Value ON = Value.kOn;
         public static final Value OFF = Value.kOff;

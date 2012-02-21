@@ -1,9 +1,9 @@
 package com._604robotics.robot2012;
 
-import com._604robotics.robot2012.configuration.ActuatorConfiguration;
-import com._604robotics.robot2012.configuration.ButtonConfiguration;
-import com._604robotics.robot2012.configuration.PortConfiguration;
-import com._604robotics.robot2012.configuration.SensorConfiguration;
+import com._604robotics.autonomous.PIDDriveEncoderDifference;
+import com._604robotics.autonomous.PIDDriveEncoderOutput;
+import com._604robotics.autonomous.PIDDriveGyro;
+import com._604robotics.robot2012.configuration.*;
 import com._604robotics.utils.DualVictor;
 import com._604robotics.utils.XboxController;
 import com._604robotics.utils.XboxController.Axis;
@@ -16,6 +16,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * Main class for the 2012 robot code.
  * 
  * @author  Michael Smith <mdsmtp@gmail.com>
+ * @author  Kevin Parker <kevin.m.parker@gmail.com>
+ * @author  Sebastian Merz <merzbasti95@gmail.com>
+ * @author  Aaron Wang <aaronw94@gmail.com>
  */
 public class Robot2012Orange extends SimpleRobot {
     XboxController driveController;
@@ -123,13 +126,17 @@ public class Robot2012Orange extends SimpleRobot {
         solenoidShooter.set(ActuatorConfiguration.SOLENOID_SHOOTER.LOWER_ANGLE);
         solenoidPickup.set(ActuatorConfiguration.SOLENOID_PICKUP.IN);
         
-        /* Sets up the PID controllers, and initializes inputs on the
+        /*
+         * Sets up the PID controllers, and initializes inputs on the
          * SmartDashboard.
          */
         
         pidElevator = new PIDController(0D, 0D, 0D, encoderElevator, elevatorMotors);
         pidTurretRotation = new PIDController(0D, 0D, 0D, encoderTurretRotation, turretRotationMotor);
 
+        pidElevator.setOutputRange(ActuatorConfiguration.ELEVATOR_POWER_MIN, ActuatorConfiguration.ELEVATOR_POWER_MAX);
+        pidTurretRotation.setOutputRange(ActuatorConfiguration.TURRET_ROTATION_POWER_MIN, ActuatorConfiguration.TURRET_ROTATION_POWER_MAX);
+        
         SmartDashboard.putDouble("Elevator Setpoint", 0D);
         SmartDashboard.putDouble("Turret Setpoint", 0D);
         
@@ -179,13 +186,106 @@ public class Robot2012Orange extends SimpleRobot {
      * It's not done yet.
      */
     public void autonomous() {
-        driveTrain.setSafetyEnabled(false);
-            // TODO: TEMPORARY, until actual autonomous code is written.
+        // TODO: Calibrate encoders.
+        
         compressorPump.start();
+        
+        int step = (SmartDashboard.getBoolean("In the Middle?", false))
+                ? 0
+                : 4;
 
+        // TODO: Move some more stuff over to the configuration file. I really don't feel like doing ot right now.
+        
+        PIDController pidDriveStraight = new PIDController(0D, 0D, 0D, new PIDDriveEncoderDifference(encoderLeftDrive, encoderRightDrive), new PIDDriveEncoderOutput(driveTrain));
+        PIDController pidDriveBackwards = new PIDController(0D, 0D, 0D, new PIDDriveEncoderDifference(encoderLeftDrive, encoderRightDrive), new PIDDriveEncoderOutput(driveTrain, true));
+        PIDController pidTurnAround = new PIDController(0D, 0D, 0D, gyroHeading, new PIDDriveGyro(driveTrain));
+        
+        pidDriveStraight.setOutputRange(-0.5D, 0.5D);
+        pidDriveStraight.setOutputRange(-0.5D, 0.5D);
+        pidDriveStraight.setOutputRange(-0.5D, 0.5D);
+        
+        pidDriveStraight.setSetpoint(0D);
+        pidDriveBackwards.setSetpoint(0D);
+        pidTurnAround.setSetpoint(180D);
+        
+        Timer controlTimer = new Timer();
+        controlTimer.start();
+        
         while (isAutonomous() && isEnabled()) {
-            // TODO: Write autonomous mode code
+            switch (step) {
+                case 0:
+                    solenoidPickup.set(ActuatorConfiguration.SOLENOID_PICKUP.OUT);
+                    pidDriveStraight.enable();
+                    
+                    step = 1;
+                    
+                    break;
+                case 1:
+                    if (controlTimer.get() >= 6 || (encoderLeftDrive.getDistance() >= AutonomousConfiguration.FORWARD_DISTANCE && encoderRightDrive.getDistance() >= AutonomousConfiguration.FORWARD_DISTANCE)) {
+                        pidDriveStraight.disable();
+                        driveTrain.tankDrive(0D, 0D);
+                        
+                        solenoidPickup.set(ActuatorConfiguration.SOLENOID_PICKUP.IN);
+                        
+                        controlTimer.reset();
+                        step = 2;
+                    }
+                    
+                    break;
+                case 2:
+                    driveTrain.tankDrive(0D, 0D);
+                    
+                    if (controlTimer.get() >= 1) {
+                        encoderLeftDrive.reset();
+                        encoderRightDrive.reset();
+                        
+                        pidDriveBackwards.enable();
+                        
+                        step = 3;
+                    }
+                    
+                    break;
+                case 3:
+                    if (controlTimer.get() >= 6 || (encoderLeftDrive.getDistance() <= AutonomousConfiguration.BACKWARD_DISTANCE && encoderRightDrive.getDistance() >= AutonomousConfiguration.BACKWARD_DISTANCE)) {
+                        pidDriveBackwards.disable();
+                        driveTrain.tankDrive(0D, 0D);
+                        
+                        controlTimer.reset();
+                        
+                        step = 4;
+                    }
+                    
+                    break;
+                case 4:
+                    pidTurnAround.enable();
+                    controlTimer.reset();
+                    
+                    step = 5;
+                    
+                    break;
+                case 5:
+                    if (controlTimer.get() >= 2 || pidTurnAround.onTarget()) {
+                        pidTurnAround.disable();
+                        controlTimer.stop();
+                        
+                        driveTrain.tankDrive(0D, 0D);
+                        
+                        step = 6;
+                        
+                        break;
+                    }
+                case 6:
+                    // TODO: Shoot. Maybe we could have a single "Shoot" function, that could be called in both Autonomous and Teleop modes? Same goes for aiming.
+                    
+                    driveTrain.tankDrive(0D, 0D);
+                    
+                    break;
+            }
         }
+        
+        pidDriveStraight.disable();
+        pidDriveBackwards.disable();
+        pidTurnAround.disable();
 
         compressorPump.stop();
     }
@@ -220,7 +320,8 @@ public class Robot2012Orange extends SimpleRobot {
                 SmartDashboard.putString("Gear", "Low");
             }
             
-            /* Automatically balances the robot on the bridge. Well, that's the
+            /* 
+             * Automatically balances the robot on the bridge. Well, that's the
              * plan, anyway.
              */
 
