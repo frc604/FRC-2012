@@ -1,7 +1,6 @@
 package com._604robotics.robot2012.camera;
 
-import com._604robotics.robot2012.Aiming.Aiming;
-import com._604robotics.robot2012.Aiming.PointAndAngle3d;
+import com._604robotics.robot2012.vision.Target;
 import edu.wpi.first.wpilibj.Timer;
 import java.io.IOException;
 import java.io.InputStream;
@@ -34,8 +33,8 @@ public class RemoteCameraTCP implements CameraInterface {
         this.server.enabled = false;
     }
 
-    public PointAndAngle3d[] getTargets () {
-        return this.server.points;
+    public Target[] getTargets () {
+        return this.server.targets;
     }
     
     /**
@@ -56,10 +55,8 @@ public class RemoteCameraTCP implements CameraInterface {
  * @author  Michael Smith <mdsmtp@gmail.com>
  */
 class RemoteCameraServer implements Runnable {
-    private Aiming aiming = new Aiming();
-    
     public boolean enabled = false;
-    public PointAndAngle3d[] points = new PointAndAngle3d[] {  };
+    public Target[] targets = new Target[] {  };
     public int ups = 0;
     
     /**
@@ -124,7 +121,7 @@ class RemoteCameraServer implements Runnable {
     public void run () {
         System.out.println("TCP task running.");
         
-        PointAndAngle3d p;
+        Target t;
         
         ServerSocketConnection server = null;
         SocketConnection conn;
@@ -132,8 +129,8 @@ class RemoteCameraServer implements Runnable {
         
         int packetId = 0;
         
-        Vector pts = new Vector();
-        PointAndAngle3d[] iter;
+        Vector tgts = new Vector();
+        Target[] iter;
         
         Timer second = new Timer();
         int u = 0;
@@ -166,7 +163,7 @@ class RemoteCameraServer implements Runnable {
                 
                 in = conn.openInputStream();
                 
-                pts.removeAllElements();
+                tgts.removeAllElements();
                 
                 u = 0;
                 
@@ -185,18 +182,27 @@ class RemoteCameraServer implements Runnable {
                             * adds to the point queue.
                             */
                             
-                            p = new PointAndAngle3d();
+                            t = new Target();
                             
-                            if ((p.x = readDouble(in)) == -1)
+                            if ((t.x = readDouble(in)) == -1)
                                 break;
-                            if ((p.y = readDouble(in)) == -1)
+                            if ((t.y = readDouble(in)) == -1)
                                 break;
-                            if ((p.z = readDouble(in)) == -1)
+                            if ((t.z = readDouble(in)) == -1)
                                 break;
-                            if ((p.angle = readDouble(in)) == -1)
+                            if ((t.angle = readDouble(in)) == -1)
                                 break;
                             
-                            pts.addElement(p);
+                            if ((t.x_uncertainty = readDouble(in)) == -1)
+                                break;
+                            if ((t.y_uncertainty = readDouble(in)) == -1)
+                                break;
+                            if ((t.z_uncertainty = readDouble(in)) == -1)
+                                break;
+                            if ((t.angle_uncertainty = readDouble(in)) == -1)
+                                break;
+                            
+                            tgts.addElement(t);
                             
                             break;
                         case 1:
@@ -207,13 +213,13 @@ class RemoteCameraServer implements Runnable {
                              * another batch of points.
                              */
                             
-                            iter = new PointAndAngle3d[pts.size()];
+                            iter = new Target[tgts.size()];
                             
-                            for (int i = 0; i < pts.size(); i++)
-                                iter[i] = (PointAndAngle3d) pts.elementAt(i);
+                            for (int i = 0; i < tgts.size(); i++)
+                                iter[i] = (Target) tgts.elementAt(i);
                             
-                            this.points = iter;
-                            pts.removeAllElements();
+                            this.targets = iter;
+                            tgts.removeAllElements();
                             
                             if (second.get() >= 1) {
                                 this.ups = u;

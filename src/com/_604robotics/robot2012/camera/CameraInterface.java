@@ -1,6 +1,6 @@
 package com._604robotics.robot2012.camera;
 
-import com._604robotics.robot2012.Aiming.PointAndAngle3d;
+import com._604robotics.robot2012.vision.Target;
 
 /**
  * Represents a method for obtaining processed vision data from the camera.
@@ -19,9 +19,10 @@ public interface CameraInterface {
     public abstract void end ();
     
     /**
-     * Returns the most recently-obtained array of PointAndAngle3d that
+     * Returns the most recently-obtained array of Target that
      * represents the visible targets.
-     * @return 
+     * 
+     * @return  An array of Target that represents the visible targets.
      */
-    public abstract PointAndAngle3d[] getTargets ();
+    public abstract Target[] getTargets ();
 }

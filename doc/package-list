@@ -1,7 +1,9 @@
-com._604robotics.autonomous
 com._604robotics.robot2012
 com._604robotics.robot2012.Aiming
 com._604robotics.robot2012.Physics
+com._604robotics.robot2012.autonomous
+com._604robotics.robot2012.camera
 com._604robotics.robot2012.configuration
+com._604robotics.robot2012.vision
 com._604robotics.utils
 frc.vision

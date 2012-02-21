@@ -1,12 +1,12 @@
 package com._604robotics.robot2012;
 
-import com._604robotics.robot2012.Aiming.PointAndAngle3d;
 import com._604robotics.robot2012.autonomous.PIDDriveEncoderDifference;
 import com._604robotics.robot2012.autonomous.PIDDriveEncoderOutput;
 import com._604robotics.robot2012.autonomous.PIDDriveGyro;
 import com._604robotics.robot2012.camera.CameraInterface;
 import com._604robotics.robot2012.camera.RemoteCameraTCP;
 import com._604robotics.robot2012.configuration.*;
+import com._604robotics.robot2012.vision.Target;
 import com._604robotics.utils.DualVictor;
 import com._604robotics.utils.Gyro360;
 import com._604robotics.utils.XboxController;
@@ -320,7 +320,7 @@ public class Robot2012Orange extends SimpleRobot {
         double accelPower;
         boolean lightOn = false;
         
-        PointAndAngle3d[] points;
+        Target[] targets;
         
         manipulatorController.resetToggles();
         cameraInterface.begin();
@@ -375,12 +375,14 @@ public class Robot2012Orange extends SimpleRobot {
             if (manipulatorController.getButton(ButtonConfiguration.Manipulator.AIM_TURRET)) {
                 // TODO: Test and do more stuff, and such.
                 
-                points = cameraInterface.getTargets();
+                targets = cameraInterface.getTargets();
                 
-                pidTurretRotation.setSetpoint(Math.toDegrees(MathUtils.asin(points[0].x / points[0].z)) - gyroHeading.getAngle());
+                pidTurretRotation.setSetpoint(Math.toDegrees(MathUtils.asin(targets[0].x / targets[0].z)) - gyroHeading.getAngle());
                 
-                for (int i = 0; i < points.length; i++)
-                    System.out.println("x: " + points[0].x + ", y: " + points[0].y + ", z: " + points[0].z + ", angle: " + points[0].angle);
+                for (int i = 0; i < targets.length; i++) {
+                    System.out.println("x: " + targets[0].x + ", y: " + targets[0].y + ", z: " + targets[0].z + ", angle: " + targets[0].angle);
+                    System.out.println("x_uncertainty: " + targets[0].x_uncertainty + ", y_uncertainty: " + targets[0].y_uncertainty + ", z_uncertainty: " + targets[0].z_uncertainty + ", angle_uncertainty: " + targets[0].angle_uncertainty);
+                }
                 
                 System.out.println("--------------------------------");
             }
