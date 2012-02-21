@@ -1,4 +1,4 @@
-package com._604robotics.autonomous;
+package com._604robotics.robot2012.autonomous;
 
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.PIDSource;

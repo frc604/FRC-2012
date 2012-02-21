@@ -1,4 +1,4 @@
-package com._604robotics.autonomous;
+package com._604robotics.robot2012.autonomous;
 
 import com._604robotics.robot2012.configuration.AutonomousConfiguration;
 import edu.wpi.first.wpilibj.PIDOutput;

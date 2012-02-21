@@ -1,8 +1,8 @@
 package com._604robotics.robot2012;
 
-import com._604robotics.autonomous.PIDDriveEncoderDifference;
-import com._604robotics.autonomous.PIDDriveEncoderOutput;
-import com._604robotics.autonomous.PIDDriveGyro;
+import com._604robotics.robot2012.autonomous.PIDDriveEncoderDifference;
+import com._604robotics.robot2012.autonomous.PIDDriveEncoderOutput;
+import com._604robotics.robot2012.autonomous.PIDDriveGyro;
 import com._604robotics.robot2012.configuration.*;
 import com._604robotics.utils.DualVictor;
 import com._604robotics.utils.XboxController;
@@ -299,8 +299,8 @@ public class Robot2012Orange extends SimpleRobot {
      * other things.
      */
     public void operatorControl() {
-        this.driveTrain.setSafetyEnabled(true);
-        //this.compressorPump.start(); /* DISABLED for testing. */
+        driveTrain.setSafetyEnabled(true);
+        compressorPump.start();
 
         double accelPower;
         boolean lightOn = false;
