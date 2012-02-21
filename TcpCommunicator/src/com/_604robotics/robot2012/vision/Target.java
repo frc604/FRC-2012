@@ -1,15 +1,21 @@
 package com._604robotics.robot2012.vision;
 
-import javax.vecmath.Point3d;
-
 public class Target {
 	
-	public Target(Point3d p, double angle) {
-		this(p.x, p.y, p.z, angle);
+	/**
+	 * @param point
+	 * @param angle
+	 */
+	public Target(Point3d point, double angle) {
+		// point p
+		this(point.x, point.y, point.z, angle);
 	}
 
 	
 	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
 	public String toString() {
 		return "Target [x=" + x + ", y=" + y + ", z=" + z + ", angle=" + angle + "]";
 	}
@@ -103,7 +109,7 @@ public class Target {
 	 * 
 	 * This is the uncertainty of the angle of the target.
 	 * 
-	 * This is interpreted as a ± to the angle.
+	 * This is interpreted as a Plus or Minus to the angle.
 	 * 
 	 * Again, this is expressed in radians
 	 * 
