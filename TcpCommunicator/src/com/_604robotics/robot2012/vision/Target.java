@@ -1,5 +1,10 @@
 package com._604robotics.robot2012.vision;
 
+/**
+ * 
+ * 
+ * @author Kevin Parker <kevin.m.parker@gmail.com>
+ */
 public class Target {
 	
 	/**
@@ -106,6 +111,9 @@ public class Target {
 		this(point.x, point.y, point.z, angle);
 	}
 
+	public Target() {
+		
+	}
 	
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
