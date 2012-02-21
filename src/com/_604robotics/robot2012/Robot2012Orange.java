@@ -51,6 +51,7 @@ public class Robot2012Orange extends SimpleRobot {
     DoubleSolenoid solenoidShifter;
     DoubleSolenoid solenoidShooter;
     DoubleSolenoid solenoidPickup;
+    DoubleSolenoid solenoidHopper;
     
     PIDController pidElevator;
     PIDController pidTurretRotation;
@@ -121,10 +122,12 @@ public class Robot2012Orange extends SimpleRobot {
         solenoidShifter = new DoubleSolenoid(PortConfiguration.Pneumatics.SHIFTER_SOLENOID.FORWARD, PortConfiguration.Pneumatics.SHIFTER_SOLENOID.REVERSE);
         solenoidShooter = new DoubleSolenoid(PortConfiguration.Pneumatics.SHOOTER_SOLENOID.FORWARD, PortConfiguration.Pneumatics.SHOOTER_SOLENOID.REVERSE);
         solenoidPickup = new DoubleSolenoid(PortConfiguration.Pneumatics.PICKUP_SOLENOID.FORWARD, PortConfiguration.Pneumatics.PICKUP_SOLENOID.REVERSE);
+        solenoidHopper = new DoubleSolenoid(PortConfiguration.Pneumatics.HOPPER_SOLENOID.FORWARD, PortConfiguration.Pneumatics.HOPPER_SOLENOID.REVERSE);
         
         solenoidShifter.set(ActuatorConfiguration.SOLENOID_SHIFTER.LOW_POWER);
         solenoidShooter.set(ActuatorConfiguration.SOLENOID_SHOOTER.LOWER_ANGLE);
         solenoidPickup.set(ActuatorConfiguration.SOLENOID_PICKUP.IN);
+        solenoidHopper.set(ActuatorConfiguration.SOLENOID_HOPPER.REGULAR);
         
         /*
          * Sets up the PID controllers, and initializes inputs on the
@@ -364,6 +367,9 @@ public class Robot2012Orange extends SimpleRobot {
                 // TODO: Insert firing components, when they're done, of course.
                 
                 hopperMotor.set(ActuatorConfiguration.HOPPER_POWER);
+                solenoidHopper.set(ActuatorConfiguration.SOLENOID_HOPPER.PUSH);
+            } else {
+                solenoidHopper.set(ActuatorConfiguration.SOLENOID_HOPPER.REGULAR);
             }
             
             /* Toggles the shooter angle. */

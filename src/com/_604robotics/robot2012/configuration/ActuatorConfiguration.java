@@ -27,17 +27,22 @@ public interface ActuatorConfiguration {
     }
     
     public interface SOLENOID_SHIFTER {
-        public static final DoubleSolenoid.Value HIGH_POWER = DoubleSolenoid.Value.kForward;
-        public static final DoubleSolenoid.Value LOW_POWER  = DoubleSolenoid.Value.kReverse;
+        public static final DoubleSolenoid.Value LOW_POWER  = DoubleSolenoid.Value.kForward;
+        public static final DoubleSolenoid.Value HIGH_POWER = DoubleSolenoid.Value.kReverse;
     }
     
     public interface SOLENOID_SHOOTER {
-        public static final DoubleSolenoid.Value UPPER_ANGLE = DoubleSolenoid.Value.kForward;
-        public static final DoubleSolenoid.Value LOWER_ANGLE  = DoubleSolenoid.Value.kReverse;
+        public static final DoubleSolenoid.Value LOWER_ANGLE = DoubleSolenoid.Value.kForward;
+        public static final DoubleSolenoid.Value UPPER_ANGLE  = DoubleSolenoid.Value.kReverse;
     }
     
     public interface SOLENOID_PICKUP {
-        public static final DoubleSolenoid.Value OUT = DoubleSolenoid.Value.kForward;
-        public static final DoubleSolenoid.Value IN  = DoubleSolenoid.Value.kReverse;
+        public static final DoubleSolenoid.Value IN = DoubleSolenoid.Value.kForward;
+        public static final DoubleSolenoid.Value OUT  = DoubleSolenoid.Value.kReverse;
+    }
+    
+    public interface SOLENOID_HOPPER {
+        public static final DoubleSolenoid.Value REGULAR = DoubleSolenoid.Value.kForward;
+        public static final DoubleSolenoid.Value PUSH  = DoubleSolenoid.Value.kReverse;
     }
 }

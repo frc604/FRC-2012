@@ -59,18 +59,23 @@ public interface PortConfiguration {
         public static final int PRESSURE_SWITCH = 5;
 
         public interface SHIFTER_SOLENOID {
-            public static final int FORWARD = 1;
-            public static final int REVERSE = 2;
+            public static final int FORWARD = 8; // LOW GEAR
+            public static final int REVERSE = 7; // HIGH GEAR
         }
         
         public interface SHOOTER_SOLENOID {
-            public static final int FORWARD = 3;
-            public static final int REVERSE = 4;
+            public static final int FORWARD = 5; // LOWER ANGLE
+            public static final int REVERSE = 6; // UPPER ANGLE
         }
         
         public interface PICKUP_SOLENOID {
-            public static final int FORWARD = 5;
-            public static final int REVERSE = 6;
+            public static final int FORWARD = 2; // IN
+            public static final int REVERSE = 1; // OUT
+        }
+        
+        public interface HOPPER_SOLENOID {
+            public static final int FORWARD = 3; // REGULAR
+            public static final int REVERSE = 4; // PUSH
         }
     }
 }
