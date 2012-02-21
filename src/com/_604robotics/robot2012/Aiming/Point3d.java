@@ -2,6 +2,10 @@ package com._604robotics.robot2012.Aiming;
 
 public class Point3d {
 	public double x, y, z;
+        
+        public Point3d() {
+            
+        }
 
 	/**
 	 * @param x

@@ -1,6 +1,7 @@
 package com._604robotics.robot2012.Aiming;
 
 import com.sun.squawk.util.MathUtils;
+import frc.vision.Target;
 
 
 /**
@@ -21,8 +22,8 @@ public class Aiming {
 	double FOV = 47;//degrees
 	double pixelsWide = 640;
         double pixelsHigh = 480;
-	double kx = Math.tan(FOV*Math.PI / 180) / pixelsWide * 2;
-	double ky = Math.tan(FOV*Math.PI / 180) / pixelsHigh * 2;
+	double kx = 1/(Math.tan(FOV*Math.PI / 180) / pixelsWide * 2);
+	double ky = kx;
 	double heightOftarget = 18; //inches
 	double widthOftarget = 24; //inches
 
@@ -33,7 +34,7 @@ public class Aiming {
 		
 		//return dist, angle, angleOfTarget
 	}
-
+        
 	/**
 	 * 
 	 *
@@ -52,18 +53,22 @@ public class Aiming {
 	 * @return a Point3d holding the X, Y, and Z of the target, relative to the camera.
 	 * 
 	 */
-	public Point3d getRelXYZOfTarget(double x1, double y1, double x2, double y2, double x3, double y3, double x4, double y4) {
-		double z = ky * 2 * heightOftarget / (y1 + y2 - y3 - y4);
+	public Point3d getRelXYZOfTarget(double x1, double y1, double w, double h) {
+		double z = ky * heightOftarget / h;
 		//xs = kx * x / z
 		//x = xs * z / kx
-		double avgx = (x1 + x2 + x3 + x4)/4;
-		double avgy = (y1 + y2 + y3 + y4)/4;
+		double avgx = x1 + w/2;
+		double avgy = y1 + h/2;
 
 		double x = avgx * z / kx;
 		double y = avgy * z / ky;
 		
 		return new Point3d(x, y, z);
 	}
+
+	public Point3d getRelXYZOfTarget(Target t) {
+            return this.getRelXYZOfTarget(t.x1, t.y1, t.w, t.h);
+        }
 
 	/**
 	 * This function gets the direction the target is facing, relative to the camera.
@@ -96,7 +101,7 @@ public class Aiming {
 	}
 
 	public PointAndAngle3d getAngleAndRelXYZOfTarget(double x1, double y1, double x2, double y2, double x3, double y3, double x4, double y4) {
-		Point3d p = getRelXYZOfTarget(x1, y1, x2, y2, x3, y3, x4, y4);
+		Point3d p = getRelXYZOfTarget(-1, -1, -1, -1);//TODO - fix
 		double angle = getAngleOfTarget(x1, y1, x2, y2, x3, y3, x4, y4, p.z);
 		
 		return new PointAndAngle3d(p, angle);

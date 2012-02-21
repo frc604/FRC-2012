@@ -2,9 +2,12 @@ package com._604robotics.robot2012.visiontesting;
 
 import com._604robotics.robot2012.Aiming.Aiming;
 import com._604robotics.robot2012.Aiming.Point3d;
+import com._604robotics.robot2012.visiontesting.camera.CameraInterface;
+import com._604robotics.robot2012.visiontesting.camera.RemoteCameraTCP;
 import com._604robotics.robot2012.visiontesting.configuration.ButtonConfiguration;
 import com._604robotics.robot2012.visiontesting.configuration.CameraConfiguration;
 import com._604robotics.robot2012.visiontesting.configuration.PortConfiguration;
+import com.sun.squawk.util.MathUtils;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.camera.AxisCamera;
 import edu.wpi.first.wpilibj.image.BinaryImage;
@@ -24,8 +27,7 @@ public class VisionTesting extends SimpleRobot {
     public final TurretOutput turretOutput = new TurretOutput(turret);
     public final PIDController turretController = new PIDController(0.009, 0, 0.0011, potentiometerMonitor, turretOutput);
     
-    public final CameraController cameraController = new CameraController(PortConfiguration.CAMERA_IP);
-    public Thread cameraThread;
+    public final CameraInterface cameraInterface = new RemoteCameraTCP();
     
     public final Aiming aiming = new Aiming();
     
@@ -105,17 +107,8 @@ public class VisionTesting extends SimpleRobot {
 	double gyroProcessedPosition = 0;
 	double gyroLastPosition = 0;
         
-        double top = 0D;
-        double left = 0D;
-        double right = 0D;
-        double bottom = 0D;
-        
-        Point3d point;
-        
-        cameraController.enabled = true;
-        
-        cameraThread = new Thread(cameraController);
-        cameraThread.start();
+        Point3d[] points;
+        cameraInterface.begin();
         
         while(this.isOperatorControl() && this.isEnabled()) {
             gyroCurrentPosition = gyro.getAngle();
@@ -138,9 +131,6 @@ public class VisionTesting extends SimpleRobot {
                 flickTimer.reset();
             }
 
-            if (controller.getRawButton(ButtonConfiguration.LOAD_SETPOINT_FROM_VISION))
-                turretController.setSetpoint(cameraController.offsetAngleX);
-
             if (controller.getRawButton(ButtonConfiguration.AUTOMATED_CONTROL)) {
                 wasAuto = true;
                 turretController.enable();
@@ -157,39 +147,22 @@ public class VisionTesting extends SimpleRobot {
                 else
                     turret.set(0D);
             }
-
-            if (controller.getRawButton(ButtonConfiguration.LOG_IMAGES) && logTimer.get() > 1) {
-                cameraController.log = true;
-                logTimer.reset();
-            }
             
             SmartDashboard.putDouble("gyro", gyroProcessedPosition);
             
             SmartDashboard.putDouble("potentiometer", potentiometerMonitor.pidGet());
             SmartDashboard.putDouble("setpoint", turretController.getSetpoint());
             
-            if (cameraController.inRange && cameraController.target != null) {
-                SmartDashboard.putDouble("centerX", cameraController.target.center_mass_x);
-                SmartDashboard.putDouble("centerY", cameraController.target.center_mass_y);
-                SmartDashboard.putDouble("offsetAngleX", cameraController.offsetAngleX);
-                SmartDashboard.putDouble("offsetAngleY", cameraController.offsetAngleY);
-                SmartDashboard.putDouble("frames", cameraController.frames);
-                SmartDashboard.putDouble("fps", cameraController.fps);
-
-                //System.out.println(Double.toString(runTimer.get()));
-                //System.out.println(Double.toString(cameraController.centerX));
-
-                top = 480 - cameraController.target.boundingRectTop;
-                left = cameraController.target.boundingRectLeft;
-                right = cameraController.target.boundingRectLeft + cameraController.target.boundingRectWidth;
-                bottom = 480 - cameraController.target.boundingRectTop + cameraController.target.boundingRectHeight;
-
-                point = aiming.getRelXYZOfTarget(left, top, right, top, left, bottom, right, bottom);
-                
-                System.out.println("center x: " + cameraController.target.center_mass_x + ", center y: " + cameraController.target.center_mass_y);
-                System.out.println("top: " + top + ", left: " + left + ", right: " + right + ", bottom: " + bottom);
-                System.out.println("real x: " + point.x + ", real y: " + point.y + ", real z: " + point.z);
-            }
+            points = cameraInterface.getTargets();
+            
+            for (int i = 0; i < points.length; i++)
+                System.out.println("x: " + points[i].x + ", y: " + points[i].y + ", z: " + points[i].z);
+            
+            System.out.println(" - UPS: " + ((RemoteCameraTCP) cameraInterface).getUPS() + " - ");
+            System.out.println("-------------------------------");
+            
+            if (controller.getRawButton(ButtonConfiguration.LOAD_SETPOINT_FROM_VISION))
+                turretController.setSetpoint(Math.toDegrees(MathUtils.asin(points[0].x / points[0].z)) - gyroProcessedPosition);
             
             runTimer.reset();
         }
@@ -198,7 +171,7 @@ public class VisionTesting extends SimpleRobot {
         flickTimer.stop();
         runTimer.stop();
         
-        cameraController.enabled = false;
+        cameraInterface.end();
     }
     
     public void disabled () {
