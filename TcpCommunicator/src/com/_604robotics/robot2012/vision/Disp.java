@@ -44,10 +44,6 @@ public class Disp extends JFrame {
 		
 		g.drawImage(b, 0, 0, null);
 		
-		// hasPainted = true;
-		// if(1==1)
-		// return;
-		
 		Color yes = new Color(0, 255, 0, 170);
 		Color no = new Color(255, 0, 0, 70);
 		

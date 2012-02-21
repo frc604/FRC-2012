@@ -57,7 +57,7 @@ public class VisionProcessing {
 	 * 
 	 * This includes time per frame, number of visible targets, and estimated position of visible targets.
 	 */
-	public static final boolean	ShowDebugInfo	= false;
+	public static final boolean	ShowDebugInfo	= true;
 	
 	/**
 	 * Constants indicating the Left, Top, Right, and Bottom sides of a target or bounding box.
@@ -111,6 +111,7 @@ public class VisionProcessing {
 				
 				if (ri.isTarget(x, y)) {
 					xVals[i] = x;
+					yVals[i] = y;
 					
 					break;
 				}
@@ -175,7 +176,7 @@ public class VisionProcessing {
 		}
 	}
 	
-	private final boolean	communicateToRobot	= true;
+	private final boolean	communicateToRobot	= false;
 	
 	/**
 	 * The display for showing the image as well as some debug data.
@@ -188,7 +189,7 @@ public class VisionProcessing {
 	
 	private final boolean	saveImagesToFiles	= false;
 	
-	private final boolean	ShowDisplay			= false;
+	private final boolean	ShowDisplay			= true;
 	
 	private final TcpCommunicator comm = new TcpCommunicator();
 	
