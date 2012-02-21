@@ -10,8 +10,8 @@ public class DistanceCalculations {
 	double	targetWidth			= 18;																// inches
 																									
 	/**
-	 * @param quad - a quadrilateral with corners
-	 * @return
+	 * @param quad - a quadrilateral with corners indicating the corners of the target
+	 * @return a Target as an estimation of 
 	 */
 	public Target getAngleAndRelXYZOfTarget(Quad quad) {
 		Point3d p = getRelXYZOfTarget(quad);

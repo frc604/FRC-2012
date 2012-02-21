@@ -3,15 +3,25 @@ package com._604robotics.robot2012.vision;
 public class Target {
 	
 	/**
-	 * This is the angle of the target, relative to the camera. </br> (angle) </br> .........(Target) </br> ......./
-	 * </br> ....../ </br> ...../ </br> ..../ - - - - - - - |> (Camera) </br> .../ </br> ../ </br> ./ </br>
+	 * This is the angle of the target, relative to the camera. </br>
 	 * 
+	 * </br>
+	 * 
+	 * (angle)							</br>
+	 * ......(Target)					</br>
+	 * ......./							</br>
+	 * ....../							</br>
+	 * ...../							</br>
+	 * ..../ - - - - - - - |> (Camera)	</br>
+	 * .../								</br>
+	 * ../								</br>
+	 * ./								</br>
+	 * /
 	 * </br>
 	 * 
 	 * this value is expressed in radians.
 	 */
 	public double	angle;
-	
 
 
 	/**
@@ -24,8 +34,7 @@ public class Target {
 	 * 
 	 * 
 	 */
-	public double	angle_uncertainty;
-	
+	public double	angle_uncertainty;	
 
 
 	/**
@@ -43,7 +52,6 @@ public class Target {
 	public double	x, y, z;
 	
 
-
 	/**
 	 * These are the uncertainties of the x, y, and z positions of the target.
 	 * 
@@ -53,7 +61,6 @@ public class Target {
 	 */
 	public double	x_uncertainty, y_uncertainty, z_uncertainty;
 	
-	
 
 	/**
 	 * @param x
@@ -62,12 +69,12 @@ public class Target {
 	 * @param angle
 	 */
 	public Target(double x, double y, double z, double angle) {
-		super();
 		this.x = x;
 		this.y = y;
 		this.z = z;
 		this.angle = angle;
 	}
+	
 	
 	/**
 	 * @param x
@@ -80,7 +87,6 @@ public class Target {
 	 * @param angle_uncertainty
 	 */
 	public Target(double x, double y, double z, double x_uncertainty, double y_uncertainty, double z_uncertainty, double angle, double angle_uncertainty) {
-		super();
 		this.x = x;
 		this.y = y;
 		this.z = z;
@@ -97,14 +103,13 @@ public class Target {
 	 * @param angle
 	 */
 	public Target(Point3d point, double angle) {
-		// point p
 		this(point.x, point.y, point.z, angle);
 	}
+
 	
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
-	@Override
 	public String toString() {
 		return "Target [x=" + x + ", y=" + y + ", z=" + z + ", angle=" + angle + "]";
 	}
