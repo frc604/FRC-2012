@@ -1,3 +1,8 @@
+/**
+ * Actuator polarity and power configuration.
+ * 
+ * @author  Michael Smith <mdsmtp@gmail.com>
+ */
 package com._604robotics.robot2012.configuration;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
