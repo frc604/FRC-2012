@@ -1,10 +1,14 @@
 package com._604robotics.robot2012;
 
+import com._604robotics.robot2012.Aiming.PointAndAngle3d;
 import com._604robotics.robot2012.autonomous.PIDDriveEncoderDifference;
 import com._604robotics.robot2012.autonomous.PIDDriveEncoderOutput;
 import com._604robotics.robot2012.autonomous.PIDDriveGyro;
+import com._604robotics.robot2012.camera.CameraInterface;
+import com._604robotics.robot2012.camera.RemoteCameraTCP;
 import com._604robotics.robot2012.configuration.*;
 import com._604robotics.utils.DualVictor;
+import com._604robotics.utils.Gyro360;
 import com._604robotics.utils.XboxController;
 import com._604robotics.utils.XboxController.Axis;
 import com.sun.squawk.util.MathUtils;
@@ -42,7 +46,7 @@ public class Robot2012Orange extends SimpleRobot {
     Encoder encoderElevator;
     Encoder encoderTurretRotation;
     
-    Gyro gyroHeading;
+    Gyro360 gyroHeading;
     Gyro gyroBalance;
     Accelerometer accelBalance;
     
@@ -56,6 +60,8 @@ public class Robot2012Orange extends SimpleRobot {
     PIDController pidElevator;
     PIDController pidTurretRotation;
 
+    CameraInterface cameraInterface;
+    
     /**
      * Constructor.
      * 
@@ -110,7 +116,7 @@ public class Robot2012Orange extends SimpleRobot {
         
         /* Sets up the gyros and the accelerometer. */
         
-        gyroHeading = new Gyro(PortConfiguration.Sensors.GYRO_HEADING);
+        gyroHeading = new Gyro360(PortConfiguration.Sensors.GYRO_HEADING);
         gyroBalance = new Gyro(PortConfiguration.Sensors.GYRO_BALANCE);
         accelBalance = new Accelerometer(PortConfiguration.Sensors.ACCELEROMETER);
         accelBalance.setSensitivity(SensorConfiguration.ACCELEROMETER_SENSITIVITY);
@@ -142,6 +148,12 @@ public class Robot2012Orange extends SimpleRobot {
         
         SmartDashboard.putDouble("Elevator Setpoint", 0D);
         SmartDashboard.putDouble("Turret Setpoint", 0D);
+        
+        SmartDashboard.putBoolean("In the Middle?", false);
+        
+        /* Sets up the camera inteface. */
+        
+        cameraInterface = new RemoteCameraTCP();
         
         /* Because we can. */
         
@@ -308,7 +320,10 @@ public class Robot2012Orange extends SimpleRobot {
         double accelPower;
         boolean lightOn = false;
         
+        PointAndAngle3d[] points;
+        
         manipulatorController.resetToggles();
+        cameraInterface.begin();
         
         // TODO: Move over gyro stuff from other project, once it's all hammered out.
 
@@ -355,11 +370,41 @@ public class Robot2012Orange extends SimpleRobot {
                     hopperMotor.set(0D);
             }
             
-            /* Aims the turret. */
+            /* Aims the turret based on the vision output. */
 
             if (manipulatorController.getButton(ButtonConfiguration.Manipulator.AIM_TURRET)) {
-                // TODO: Insert camera control, aiming components, when they're done, of course.
+                // TODO: Test and do more stuff, and such.
+                
+                points = cameraInterface.getTargets();
+                
+                pidTurretRotation.setSetpoint(Math.toDegrees(MathUtils.asin(points[0].x / points[0].z)) - gyroHeading.getAngle());
+                
+                for (int i = 0; i < points.length; i++)
+                    System.out.println("x: " + points[0].x + ", y: " + points[0].y + ", z: " + points[0].z + ", angle: " + points[0].angle);
+                
+                System.out.println("--------------------------------");
             }
+            
+            if (manipulatorController.getButton(ButtonConfiguration.Manipulator.AIM_TURRET)) {
+                pidTurretRotation.enable();
+                
+                SmartDashboard.putString("Turret Control", "Vision");
+            } else {
+                pidTurretRotation.setSetpoint(SmartDashboard.getDouble("Turret Setpoint", 0D));
+                
+                if (manipulatorController.getButton(ButtonConfiguration.Manipulator.AUTO_TURRET)) {
+                    pidTurretRotation.enable();
+
+                    SmartDashboard.putString("Turret Control", "Auto");
+                } else {
+                    pidElevator.disable();
+                    turretRotationMotor.set(manipulatorController.getAxis(Axis.LEFT_STICK_X));
+
+                    SmartDashboard.putString("Turret Control", "Manual");
+                }
+            }
+            
+            SmartDashboard.putDouble("Current Turret Setpoint", pidTurretRotation.get());
             
             /* Fires at the hoop. */
             
@@ -392,13 +437,9 @@ public class Robot2012Orange extends SimpleRobot {
                     ringLight.set(ActuatorConfiguration.RING_LIGHT.OFF);
             }
             
-            /* Automated control for the elevator and turret rotation. */
+            /* Automated control for the elevator. */
             
             pidElevator.setSetpoint(SmartDashboard.getDouble("Elevator Setpoint", 0D));
-            pidTurretRotation.setSetpoint(SmartDashboard.getDouble("Turret Setpoint", 0D));
-            
-            SmartDashboard.putDouble("Current Elevator Setpoint", pidElevator.get());
-            SmartDashboard.putDouble("Current Turret Setpoint", pidTurretRotation.get());
             
             if (manipulatorController.getButton(ButtonConfiguration.Manipulator.AUTO_ELEVATOR)) {
                 pidElevator.enable();
@@ -411,16 +452,7 @@ public class Robot2012Orange extends SimpleRobot {
                 SmartDashboard.putString("Elevator Control", "Manual");
             }
             
-            if (manipulatorController.getButton(ButtonConfiguration.Manipulator.AUTO_TURRET)) {
-                pidTurretRotation.enable();
-                
-                SmartDashboard.putString("Turret Control", "Auto");
-            } else {
-                pidElevator.disable();
-                turretRotationMotor.set(manipulatorController.getAxis(Axis.LEFT_STICK_X));
-                
-                SmartDashboard.putString("Turret Control", "Manual");
-            }
+            SmartDashboard.putDouble("Current Elevator Setpoint", pidElevator.get());
             
             /* Debug output. */
             
@@ -433,9 +465,14 @@ public class Robot2012Orange extends SimpleRobot {
             
             SmartDashboard.putDouble("encoderElevator", encoderElevator.get());
             SmartDashboard.putDouble("encoderTurretRotation", encoderTurretRotation.get());
+            
+            SmartDashboard.putInt("ups", ((RemoteCameraTCP) cameraInterface).getUPS());
         }
 
-        //compressorPump.stop(); /* DISABLED for testing. */
+        cameraInterface.end();
+        
+        compressorPump.stop();
+        
         driveTrain.setSafetyEnabled(false);
     }
 
