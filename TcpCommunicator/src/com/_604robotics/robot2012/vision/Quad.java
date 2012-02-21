@@ -1,7 +1,5 @@
 package com._604robotics.robot2012.vision;
 
-import javax.vecmath.Point2d;
-
 public class Quad {
 	/**
 	 * @param topLeft

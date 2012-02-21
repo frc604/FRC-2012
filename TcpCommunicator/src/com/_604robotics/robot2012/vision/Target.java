@@ -84,14 +84,14 @@ public class Target {
 	 * This is the angle of the target, relative to the camera.
 	 *												</br>
 	 * (angle)										</br>
-	 *ссссссссс(Target)								</br>
-	 *ссссссс/										</br>
-	 *сссссс/										</br>
-	 *ссссс/										</br>
-	 *сссс/ - - - - - - - |> (Camera)				</br>
-	 *ссс/											</br>
-	 *сс/											</br>
-	 *с/											</br>
+	 *.........(Target)								</br>
+	 *......./										</br>
+	 *....../										</br>
+	 *...../										</br>
+	 *..../ - - - - - - - |> (Camera)				</br>
+	 *.../											</br>
+	 *../											</br>
+	 *./											</br>
 	 * 
 	 * </br>
 	 * 

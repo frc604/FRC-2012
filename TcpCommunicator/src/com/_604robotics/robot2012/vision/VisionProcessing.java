@@ -11,7 +11,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import javax.imageio.ImageIO;
-import javax.vecmath.Point2d;
 
 import com._604robotics.robot2012.vision.LinearRegression.RegressionResult;
 import com._604robotics.tcpcommunicator.TcpCommunicator;
@@ -191,11 +190,10 @@ public class VisionProcessing {
 	
 	private final boolean	ShowDisplay			= false;
 	
-	private final TcpCommunicator comm;
+	private final TcpCommunicator comm = new TcpCommunicator();
 	
 	public VisionProcessing() {
 		if (communicateToRobot) {
-			comm = new TcpCommunicator();
 			comm.up();
 		}
 		if (saveImagesToFiles) {
@@ -382,7 +380,8 @@ public class VisionProcessing {
 			}
 		}
 		
-		comm.
+		if(communicateToRobot)
+			comm.writePoints(targets);
 		
 		display.lines = linearRegressions;
 		
