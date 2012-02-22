@@ -96,7 +96,7 @@ public class Robot2012Orange extends SimpleRobot {
         
         elevatorMotors = new DualVictor(PortConfiguration.Motors.ELEVATOR_LEFT, PortConfiguration.Motors.ELEVATOR_RIGHT);
         
-        shooterMotor = new Victor(PortConfiguration.Motors.SHOOTER_LEFT, PortConfiguration.Motors.SHOOTER_RIGHT);
+        shooterMotor = new DualVictor(PortConfiguration.Motors.SHOOTER_LEFT, PortConfiguration.Motors.SHOOTER_RIGHT);
         hopperMotor = new Victor(PortConfiguration.Motors.HOPPER);
         pickupMotor = new Victor(PortConfiguration.Motors.PICKUP);
         
