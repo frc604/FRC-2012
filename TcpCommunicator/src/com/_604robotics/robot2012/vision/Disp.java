@@ -23,7 +23,7 @@ public class Disp extends JFrame {
 	private static final long			serialVersionUID	= -2167719831931210343L;
 	
 	/**
-	 * The corners to display onscreen
+	 * The corners to display on-screen
 	 */
 	Point2d[]							corners;
 	
