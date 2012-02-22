@@ -154,7 +154,8 @@ public class Robot2012Orange extends SimpleRobot {
         /* Sets up the camera inteface. */
         
         cameraInterface = new RemoteCameraTCP();
-        
+        cameraInterface.begin();
+                
         /* Because we can. */
         
         System.out.println("Hello, ninja h4X0r.");
@@ -339,7 +340,6 @@ public class Robot2012Orange extends SimpleRobot {
         Target[] targets;
         
         manipulatorController.resetToggles();
-        cameraInterface.begin();
         
         // TODO: Move over gyro stuff from other project, once it's all hammered out.
 
@@ -403,6 +403,8 @@ public class Robot2012Orange extends SimpleRobot {
 
                     System.out.println("--------------------------------");
                 }
+                
+                System.out.println(" - UPS: " + ((RemoteCameraTCP) cameraInterface).getUPS() + " - ");
             }
             
             if (manipulatorController.getButton(ButtonConfiguration.Manipulator.AIM_TURRET)) {
@@ -489,8 +491,6 @@ public class Robot2012Orange extends SimpleRobot {
             SmartDashboard.putInt("ups", ((RemoteCameraTCP) cameraInterface).getUPS());
         }
 
-        cameraInterface.end();
-        
         compressorPump.stop();
         
         driveTrain.setSafetyEnabled(false);
