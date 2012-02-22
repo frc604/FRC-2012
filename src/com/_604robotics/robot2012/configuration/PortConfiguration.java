@@ -75,8 +75,8 @@ public interface PortConfiguration {
         }
         
         public interface HOPPER_SOLENOID {
-            public static final int FORWARD = 3; // REGULAR
-            public static final int REVERSE = 4; // PUSH
+            public static final int FORWARD = 4; // REGULAR
+            public static final int REVERSE = 3; // PUSH
         }
     }
 }

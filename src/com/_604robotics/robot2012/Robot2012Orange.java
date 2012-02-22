@@ -331,7 +331,12 @@ public class Robot2012Orange extends SimpleRobot {
      * other things.
      */
     public void operatorControl() {
-        driveTrain.setSafetyEnabled(true);
+        driveTrain.setSafetyEnabled(false);
+        elevatorMotors.setSafetyEnabled(false);
+        shooterMotor.setSafetyEnabled(false);
+        hopperMotor.setSafetyEnabled(false);
+        shooterMotor.setSafetyEnabled(false);
+        
         compressorPump.start();
 
         double accelPower;
@@ -479,7 +484,7 @@ public class Robot2012Orange extends SimpleRobot {
             /* Debug output. */
             
             SmartDashboard.putDouble("gyroHeading", gyroHeading.getAngle());
-            SmartDashboard.putDouble("gyroHeading", gyroHeading.getAngle());
+            SmartDashboard.putDouble("gyroBalance", gyroBalance.getAngle());
             SmartDashboard.putDouble("accelBalance", accelBalance.getAcceleration());
             
             SmartDashboard.putDouble("encoderLeftDrive", encoderLeftDrive.get());
