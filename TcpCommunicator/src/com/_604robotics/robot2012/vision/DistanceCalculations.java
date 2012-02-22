@@ -61,9 +61,6 @@ public class DistanceCalculations {
 	 * function will probably need to be created for use on the robot. That, or we'll need to manipulate the points
 	 * based on camera angle.
 	 * 
-	 * The points are in the following pattern:
-	 * 
-	 * +y ^ | 1 2 | | 3 4 +------> +x
 	 * 
 	 * @return a Point3d holding the X, Y, and Z of the target, relative to the camera.
 	 * 

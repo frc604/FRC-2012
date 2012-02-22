@@ -418,8 +418,8 @@ public class VisionProcessing {
 		
 		if (Debug_ShowDisplay) {
 			display.lines = linearRegressions;
-			display.bi = img;
-			display.res = ri;
+			display.image = img;
+			display.resultImage = ri;
 			display.repaint();
 			
 

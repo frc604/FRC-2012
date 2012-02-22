@@ -18,18 +18,44 @@ import com._604robotics.robot2012.vision.LinearRegression.RegressionResult;
 public class Disp extends JFrame {
 	
 	/**
-	 * 
+	 * Auto-generated serialVersionUID
 	 */
 	private static final long			serialVersionUID	= -2167719831931210343L;
 	
-	BufferedImage						bi;
-	
+	/**
+	 * The corners to display onscreen
+	 */
 	Point2d[]							corners;
+	
+	/**
+	 * This value is false until this window is done painting
+	 */
 	boolean								hasPainted			= false;
 	
-	LinearRegression.RegressionResult[]	lines;
-	ResultImage							res;
+
+	/**
+	 * The background image, as received from the camera
+	 */
+	BufferedImage						image;
 	
+	LinearRegression.RegressionResult[]	lines;
+	
+
+	/**
+	 * <p>
+	 * This is the tiled image indicating which pixels are in the target.
+	 * </p>
+	 * 
+	 * <p>
+	 * It is displayed as a large mask of red and green squares.
+	 * </p>
+	 */
+	ResultImage							resultImage;
+	
+	/**
+	 * A default constructor that sets up this Disp as a 640x480 display, and tells it to stop the program when the
+	 * window is closed.
+	 */
 	public Disp() {
 		super("Vision");
 		
@@ -39,8 +65,8 @@ public class Disp extends JFrame {
 	
 	@Override
 	public void paint(Graphics g) {
-		BufferedImage b = bi;
-		ResultImage r = res;
+		BufferedImage b = image;
+		ResultImage r = resultImage;
 		Point2d[] c = corners;
 		RegressionResult[] l = lines;
 		
