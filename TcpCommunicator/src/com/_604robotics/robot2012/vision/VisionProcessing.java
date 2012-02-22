@@ -217,7 +217,8 @@ public class VisionProcessing {
 		Authenticator.setDefault(new HTTPAuthenticator("FRC", "FRC"));
 		
 		// Start streaming images from the camera
-		CamStream stream = new CamStream(new URL("http://10.6.4.11/mjpg/video.mjpg"), "", null, 50, 1, null, false);
+		URL url = new URL("http://10.6.4.11/mjpg/video.mjpg");
+		CamStream stream = new CamStream(url, "", null, Integer.MAX_VALUE, 100, null, false);
 		stream.start();
 		
 		BufferedImage lastImg = null;
@@ -228,6 +229,10 @@ public class VisionProcessing {
 			
 			// while a new image has not been received, wait
 			while ((img = stream.getCurrent()) == lastImg) {
+				if(!stream.isAlive()) {
+					stream = new CamStream(url, "", null, Integer.MAX_VALUE, 100, null, false);
+					stream.start();
+				}
 				try {
 					Thread.sleep(1);
 				} catch (InterruptedException ex) {
