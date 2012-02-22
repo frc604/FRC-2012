@@ -14,9 +14,10 @@ package com._604robotics.robot2012.vision;
 public class LinearRegression {
 	
 	/**
-	 * 
+	 * A regression result that, instead of having y as a function of x has x as a function of y.
 	 * 
 	 * @author Kevin Parker <kevin.m.parker@gmail.com>
+	 * @see RegressionResult
 	 */
 	public static class BackwardsRegressionResult extends RegressionResult {
 		
@@ -26,14 +27,32 @@ public class LinearRegression {
 		
 	}
 	
+	/**
+	 *  A regression result that indicates the line that best matches a given set of data.
+	 * 
+	 * @author Kevin Parker <kevin.m.parker@gmail.com>
+	 */
 	public static class RegressionResult {
 		
-		double	m, b, R2;
+		/**
+		 * The slope of the regression line
+		 */
+		double m;
 		
 		/**
-		 * @param m
-		 * @param b
-		 * @param r2
+		 * The y-intercept of the regression line
+		 */
+		double b;
+		
+		/**
+		 * A number indicating how good of a fit this line is
+		 */
+		double R2;
+		
+		/**
+		 * @param m - The slope of the regression line
+		 * @param b - The y-intercept of the regression line
+		 * @param r2 - A number indicating how good of a fit this line is
 		 */
 		public RegressionResult(double m, double b, double r2) {
 			this.m = m;
@@ -41,7 +60,6 @@ public class LinearRegression {
 			R2 = r2;
 		}
 		
-		@Override
 		public String toString() {
 			return "RegressionResult [m=" + m + ", b=" + b + ", R2=" + R2 + "]";
 		}
@@ -49,8 +67,15 @@ public class LinearRegression {
 
 	}
 	
-	public static BackwardsRegressionResult getBackwardsRegression(double[] x, double[] y) {
-		RegressionResult backwards = getRegression(y, x);
+	/**
+	 * This returns a regression result that, instead of having y as a function of x has x as a function of y.
+	 * 
+	 * @param y - the list of y values
+	 * @param x - the list of x values
+	 * @return
+	 */
+	public static BackwardsRegressionResult getBackwardsRegression(double[] y, double[] x) {
+		RegressionResult backwards = getRegression(x, y);
 		return new BackwardsRegressionResult(backwards.m, backwards.b, backwards.R2);
 	}
 	
@@ -119,25 +144,26 @@ public class LinearRegression {
 		return new RegressionResult(beta1, beta0, R2);
 	}
 	
-	public static void main(String[] args) {
-		double[] x = new double[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
-		double[] y = new double[] {0, 0, 0, 0, 0, 0, 0, 0, 0, 1};
-		
-		System.out.println(getRegression(x, y));
-	}
-	
+	/**
+	 * Computes the intersection of two RegressionResults
+	 * 
+	 * @param a - a RegressionResult
+	 * @param b - a RegressionResult
+	 * @return the intersection
+	 */
 	public static Point2d solve(RegressionResult a, RegressionResult b) {
 		boolean bA = a instanceof BackwardsRegressionResult;
 		boolean bB = b instanceof BackwardsRegressionResult;
-		if (bA && bB) {
+		
+		if (bA && bB) {	// if both are backwards
 			double y = -(a.b - b.b) / (a.m - b.m);
 			return new Point2d(a.m * y + a.b, y);
-		} else if (!(bA || bB)) {
+		} else if (!(bA || bB)) {	// if both are normal regression results
 			double x = -(a.b - b.b) / (a.m - b.m);
 			return new Point2d(x, a.m * x + a.b);
-		} else if (bA)
+		} else if (bA)	// if A is backwards
 			return new Point2d(-(b.b * a.m + a.b) / (b.m * a.m - 1), -(a.b * b.m + b.b) / (b.m * a.m - 1));
-		else
+		else	// if B is backwards
 			return new Point2d(-(a.b * b.m + b.b) / (a.m * b.m - 1), -(b.b * a.m + a.b) / (a.m * b.m - 1));
 	}
 }

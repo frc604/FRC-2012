@@ -319,30 +319,34 @@ public class CamStream extends Thread {
 						}
 						ssplit.skipToBoundary(boundary);
 					} else {
-						//
-						// Something we want to keep...
-						//
-						if (m_debug) {
-							System.err.println("// Reading to boundary");
-						}
-						byte[] img = ssplit.readToBoundary(boundary);
-						if (img.length == 0) {
-							break;
-						}
+
 						//
 						// FPS counter.
 						//
 						if (m_imgidx > IMG_FLUFF_FACTOR && m_startTime == 0) {
 							m_startTime = System.currentTimeMillis();
 						}
+						
+						
 						//
-						// Update the image [fores events off]
+						// Something we want to keep...
+						//
+						if (m_debug) {
+							System.err.println("// Reading to boundary");
+						}
+						
+						byte[] img = ssplit.readToBoundary(boundary);
+						if (img.length == 0) {
+							break;
+						}
+						//
+						// Update the image [forces events off]
 						//
 						updateImage(ctype, img);
 					}
 				}
 				try {
-					Thread.sleep(20);
+					Thread.sleep(1);
 				} catch (InterruptedException ignored) {
 				}
 			} while (!m_isDefunct);
@@ -358,7 +362,7 @@ public class CamStream extends Thread {
 		}
 		//
 		// At this point, the m_stream m_inputStream done
-		// [could dispplay a that's all folks - leaving it as it m_inputStream
+		// [could display a that's all folks - leaving it as it m_inputStream
 		//  will leave the last frame up]
 		//
 	}
@@ -371,7 +375,9 @@ public class CamStream extends Thread {
 		m_imageType = ctype;
 		//m_imain = m_tk.createImage(img);
 		try {
+//			long l1 = System.nanoTime();
 			m_imain = ImageIO.read(new ByteArrayInputStream(img));
+//			System.out.println((System.nanoTime() - l1)/1000000.0);
 		} catch (IOException ex) { }
 		m_rawImage = img;
 		m_imgidx++;

@@ -10,6 +10,7 @@ import java.net.Socket;
  * Server class for the vision data transfer protocol.
  * 
  * @author  Michael Smith <mdsmtp@gmail.com>
+ * @author Kevin Parker <kevin.m.parker@gmail.com>
  */
 public class TcpCommunicator implements Runnable {
     private final String ip;
@@ -129,13 +130,13 @@ public class TcpCommunicator implements Runnable {
     /**
      * Writes a double to the stream.
      * 
-     * @param   incr    The double to write.
+     * @param   val    The double to write.
      * 
      * @throws  IOException
      * @throws  NullPointerException 
      */
-    private void writeDouble (double incr) throws IOException, NullPointerException {
-        long process = Double.doubleToLongBits(incr);
+    private void writeDouble (double val) throws IOException, NullPointerException {
+        long process = Double.doubleToLongBits(val);
         
         this.out.write(new byte[] {
             (byte)((process >> 56) & 0xff),
@@ -152,13 +153,13 @@ public class TcpCommunicator implements Runnable {
     /**
      * Writes a float to the stream.
      * 
-     * @param   incr    The float to write.
+     * @param   val    The float to write.
      * 
      * @throws  IOException
      * @throws  NullPointerException 
      */
-    private void writeFloat (float incr) throws IOException, NullPointerException {
-        int process = Float.floatToIntBits(incr);
+    private void writeFloat (float val) throws IOException, NullPointerException {
+        int process = Float.floatToIntBits(val);
         
         this.out.write(new byte[] {
             (byte)((process >> 24) & 0xff),
@@ -182,9 +183,8 @@ public class TcpCommunicator implements Runnable {
         
         try {
             for (int i = 0; i < points.length; i++) {
-            	if(points[i] == null)
+            	if (points[i] == null)
             		continue;
-            	
             	
                 this.out.write((byte) 0);
 

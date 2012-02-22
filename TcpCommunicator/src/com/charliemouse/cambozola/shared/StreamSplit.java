@@ -127,7 +127,7 @@ public class StreamSplit {
 			if (ch == '\n' || ch == '\r') {
 				//
 				// End of line... Note, this will now look for the boundary
-                // within the line - more flexible as it can habdle
+                // within the line - more flexible as it can handle
                 // arfle--boundary\n  as well as
                 // arfle\n--boundary\n
 				//

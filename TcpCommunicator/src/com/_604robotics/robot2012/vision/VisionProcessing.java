@@ -29,18 +29,28 @@ public class VisionProcessing {
 	 * Should the tiling algorithm check the center of the tile, as well as the corners to determine if it should be
 	 * considered for being in the target?
 	 */
-	public static final boolean	CheckCenter		= true;
+	public static final boolean		CheckCenter				= true;
 	
+	/**
+	 * Should this program attempt to communicate to the robot?
+	 */
+	private static final boolean	communicateToRobot		= false;
+	
+	private static final boolean	Debug_saveImagesToFiles	= false;
+	
+	private static final boolean	Debug_ShowDisplay		= true;
+	
+
 	/**
 	 * Should all pixels be scanned in every tile be scanned, or just the corners (and possibly center)
 	 */
-	public static final boolean	MegaScan		= false;
+	public static final boolean		MegaScan				= false;
 	
 	/**
 	 * A calibration constant indicating the minimum size for a potential target to be considered. This number is given
 	 * in square "tiles", with {@link #Step} pixels side lengths
 	 */
-	public static final int		MinBlobSize		= 16;
+	public static final int			MinBlobSize				= 16;
 	
 	/**
 	 * A constant between -128 to +127 indicating how sensitive the color acceptance of the target should be. Lower
@@ -49,26 +59,25 @@ public class VisionProcessing {
 	 * </br> This number needs to be chosen high enough to reduce or eliminate false positives, but it needs to be low
 	 * enough to not generate false negatives.
 	 */
-	public static final int		Sensitivity		= 100;		// higher numbers means more rejected pixels
-	
-	
+	public static final int			Sensitivity				= 100;		// higher numbers means more rejected pixels
+																		
 	/**
 	 * Should debug info be shown?
 	 * 
 	 * This includes time per frame, number of visible targets, and estimated position of visible targets.
 	 */
-	public static final boolean	ShowDebugInfo	= true;
+	public static final boolean		ShowDebugInfo			= true;
 	
 	/**
 	 * Constants indicating the Left, Top, Right, and Bottom sides of a target or bounding box.
 	 */
-	public static final int		Side_Left		= 0, Side_Top = 1, Side_Right = 2, Side_Bottom = 3;
+	public static final int			Side_Left				= 0, Side_Top = 1, Side_Right = 2, Side_Bottom = 3;
 	
 	/**
 	 * The size of each tile in the vision processing. This is represented in pixels. It should be a number chosen large
 	 * enough to have a good speed, but small enough to not miss a target in the image.
 	 */
-	public static final int		Step			= 5;
+	public static final int			Step					= 5;
 	
 	/**
 	 * This function determines the distances from a side to the points on the target, in a direction perpendicular to
@@ -86,19 +95,26 @@ public class VisionProcessing {
 	 * @param yVals - the returned array of Y values on the target nearest the given side.
 	 */
 	private static void getDistsForSide(ResultImage ri, int x1, int y1, int x2, int y2, int side, int lenMajor, int lenMinor, double[] xVals, double[] yVals) {
+		
+		//Iterate through the Major length
 		for (int i = 0; i < lenMajor; i++) {
+			
+			//declare the x and y arrays
 			xVals[i] = Double.NaN;
 			yVals[i] = Double.NaN;
 			
+			//find the current x or y
 			int x = 0, y = 0;
-			
 			if (side == Side_Left || side == Side_Right) {
 				y = i + y1;
 			} else { // top or bottom
 				x = i + x1;
 			}
 			
+			//Iterate through the Minor length
 			for (int j = 0; j < lenMinor; j++) {
+				
+				//find the other one of x or y
 				if (side == Side_Left) {
 					x = x1 + j;
 				} else if (side == Side_Top) {
@@ -109,6 +125,7 @@ public class VisionProcessing {
 					y = y2 - j;
 				}
 				
+				//If it's a target, then add it to the list and break
 				if (ri.isTarget(x, y)) {
 					xVals[i] = x;
 					yVals[i] = y;
@@ -176,31 +193,31 @@ public class VisionProcessing {
 		}
 	}
 	
-	private final boolean	communicateToRobot	= true;
+	/**
+	 * The communications with the robot
+	 */
+	private final TcpCommunicator	comm			= new TcpCommunicator();
+	
+	/**
+	 * A number indicating the current frame number
+	 */
+	int								currentFrame	= 0;
 	
 	/**
 	 * The display for showing the image as well as some debug data.
 	 * 
 	 * It shows targets in green, and sides and corners in blue.
 	 */
-	final Disp				display				= new Disp();
-	
-	int						imNum				= 0;
-	
-	private final boolean	saveImagesToFiles	= false;
-	
-	private final boolean	ShowDisplay			= false;
-	
-	private final TcpCommunicator comm = new TcpCommunicator();
+	final Disp						display			= new Disp();
 	
 	public VisionProcessing() {
 		if (communicateToRobot) {
 			comm.up();
 		}
-		if (saveImagesToFiles) {
+		if (Debug_saveImagesToFiles) {
 			new File("target/").mkdir();
 		}
-		if (ShowDisplay) {
+		if (Debug_ShowDisplay) {
 			display.setVisible(true);
 		}
 	}
@@ -229,7 +246,7 @@ public class VisionProcessing {
 			
 			// while a new image has not been received, wait
 			while ((img = stream.getCurrent()) == lastImg) {
-				if(!stream.isAlive()) {
+				if (!stream.isAlive()) {
 					stream = new CamStream(url, "", null, Integer.MAX_VALUE, 100, null, false);
 					stream.start();
 				}
@@ -241,16 +258,20 @@ public class VisionProcessing {
 			
 			lastImg = img;
 			
-			if (saveImagesToFiles) {
+			// process the newly received image. If this is too slow, frames will just be dropped.
+			processImage(img);
+			
+			System.out.println(stream.getFPS());
+			
+			currentFrame++;
+			
+			if (Debug_saveImagesToFiles) {
 				try {
-					ImageIO.write(img, "jpeg", new File("target/" + imNum++ + ".jpeg"));
+					ImageIO.write(img, "jpeg", new File("target/" + currentFrame + ".jpeg"));
 				} catch (IOException ex) {
 					ex.printStackTrace();
 				}
 			}
-			
-			// process the newly received image. If this is too slow, frames will just be dropped.
-			processImage(img);
 		}
 	}
 	
@@ -275,7 +296,7 @@ public class VisionProcessing {
 		/*		//Just in case you want to save the JPEGs
 
 		 */
-		
+
 		double time_i = System.nanoTime();
 		
 		int w = img.getWidth();
@@ -355,7 +376,7 @@ public class VisionProcessing {
 				Point2d bottomLeft	= getCorner(ri, -1, 1, rough[i]);
 				Point2d bottomRight	= getCorner(ri, 1, 1, rough[i]);
 				 */
-				
+
 				LinearRegression.RegressionResult top = getRegressionForSide(ri, Side_Top, rough[i]);
 				LinearRegression.RegressionResult bottom = getRegressionForSide(ri, Side_Bottom, rough[i]);
 				LinearRegression.RegressionResult left = getRegressionForSide(ri, Side_Left, rough[i]);
@@ -386,21 +407,22 @@ public class VisionProcessing {
 			}
 		}
 		
-		if(communicateToRobot)
+		if (communicateToRobot) {
 			comm.writePoints(targets);
+		}
 		
-		
+
 		System.out.println("Time = " + (System.nanoTime() - time_i) / 1000000000);
 		
 		System.out.println("--");
 		
-		if(ShowDisplay) {
+		if (Debug_ShowDisplay) {
 			display.lines = linearRegressions;
 			display.bi = img;
 			display.res = ri;
 			display.repaint();
 			
-			
+
 			while (!display.hasPainted) {
 				try {
 					Thread.sleep(10);
