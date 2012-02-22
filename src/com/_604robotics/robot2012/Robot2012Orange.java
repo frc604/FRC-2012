@@ -6,9 +6,15 @@ import com._604robotics.robot2012.autonomous.PIDDriveGyro;
 import com._604robotics.robot2012.camera.CameraInterface;
 import com._604robotics.robot2012.camera.RemoteCameraTCP;
 import com._604robotics.robot2012.configuration.*;
+import com._604robotics.robot2012.machine.ElevatorMachine;
+import com._604robotics.robot2012.machine.ElevatorMachine.ElevatorState;
+import com._604robotics.robot2012.machine.PickupMachine;
+import com._604robotics.robot2012.machine.PickupMachine.PickupState;
+import com._604robotics.robot2012.machine.StrangeMachine;
 import com._604robotics.robot2012.vision.Target;
 import com._604robotics.utils.DualVictor;
 import com._604robotics.utils.Gyro360;
+import com._604robotics.utils.SpringableVictor;
 import com._604robotics.utils.XboxController;
 import com._604robotics.utils.XboxController.Axis;
 import com.sun.squawk.util.MathUtils;
@@ -32,11 +38,11 @@ public class Robot2012Orange extends SimpleRobot {
     
     DualVictor elevatorMotors;
     
-    DualVictor shooterMotor;
-    Victor hopperMotor;
-    Victor pickupMotor;
+    DualVictor shooterMotors;
+    SpringableVictor hopperMotor;
+    SpringableVictor pickupMotor;
     
-    Victor turretRotationMotor;
+    SpringableVictor turretRotationMotor;
     
     Relay ringLight;
     
@@ -60,6 +66,9 @@ public class Robot2012Orange extends SimpleRobot {
     PIDController pidElevator;
     PIDController pidTurretRotation;
 
+    StrangeMachine pickupMachine;
+    StrangeMachine elevatorMachine;
+    
     CameraInterface cameraInterface;
     
     /**
@@ -96,11 +105,11 @@ public class Robot2012Orange extends SimpleRobot {
         
         elevatorMotors = new DualVictor(PortConfiguration.Motors.ELEVATOR_LEFT, PortConfiguration.Motors.ELEVATOR_RIGHT);
         
-        shooterMotor = new DualVictor(PortConfiguration.Motors.SHOOTER_LEFT, PortConfiguration.Motors.SHOOTER_RIGHT);
-        hopperMotor = new Victor(PortConfiguration.Motors.HOPPER);
-        pickupMotor = new Victor(PortConfiguration.Motors.PICKUP);
+        shooterMotors = new DualVictor(PortConfiguration.Motors.SHOOTER_LEFT, PortConfiguration.Motors.SHOOTER_RIGHT);
+        hopperMotor = new SpringableVictor(PortConfiguration.Motors.HOPPER);
+        pickupMotor = new SpringableVictor(PortConfiguration.Motors.PICKUP);
         
-        turretRotationMotor = new Victor(PortConfiguration.Motors.TURRET_ROTATION);
+        turretRotationMotor = new SpringableVictor(PortConfiguration.Motors.TURRET_ROTATION);
         
         /* Sets up the ring light relay. */
         
@@ -150,6 +159,11 @@ public class Robot2012Orange extends SimpleRobot {
         SmartDashboard.putDouble("Turret Setpoint", 0D);
         
         SmartDashboard.putBoolean("In the Middle?", false);
+        
+        /* Sets up the Machines. */
+        
+        pickupMachine = new PickupMachine(solenoidPickup);
+        elevatorMachine = new ElevatorMachine(pidElevator);
         
         /* Sets up the camera inteface. */
         
@@ -331,16 +345,13 @@ public class Robot2012Orange extends SimpleRobot {
      * other things.
      */
     public void operatorControl() {
-        driveTrain.setSafetyEnabled(false);
-        elevatorMotors.setSafetyEnabled(false);
-        shooterMotor.setSafetyEnabled(false);
-        hopperMotor.setSafetyEnabled(false);
-        shooterMotor.setSafetyEnabled(false);
-        
+        driveTrain.setSafetyEnabled(true);
         compressorPump.start();
 
         double accelPower;
         boolean lightOn = false;
+        
+        boolean upHigh = false;
         
         Target[] targets;
         
@@ -377,71 +388,104 @@ public class Robot2012Orange extends SimpleRobot {
                 SmartDashboard.putString("Drive Mode", "Manual");
             }
             
-            /* Controls the pickup mechanism. */
+            /* Toggle the "default" height between "up high" and "down low". */
             
-            if (driveController.getButton(ButtonConfiguration.Driver.PICKUP)) {
-                solenoidShooter.set(ActuatorConfiguration.SOLENOID_PICKUP.OUT);
-                pickupMotor.set(0D);//ActuatorConfiguration.PICKUP_POWER);
-                hopperMotor.set(ActuatorConfiguration.HOPPER_POWER);
+            if (manipulatorController.getToggle(ButtonConfiguration.Manipulator.TOGGLE_HEIGHT))
+                upHigh = !upHigh;
+            
+            /*
+             * If the LIFT button is pressed, make sure the elevator is up high
+             * enough, then lift up the pickup.
+             * 
+             * Else, check the "default" position. If it is up high, then lower
+             * the pickup and raise the elevator simultaneously. If it is down
+             * low, then make sure the pickup is down first, and then lower the
+             * elevator.
+             */
+            
+            if (manipulatorController.getButton(ButtonConfiguration.Driver.LIFT)) {
+                if ((upHigh && elevatorMachine.crank(ElevatorState.ASCENSION)) || elevatorMachine.crank(ElevatorState.MEDIOCRITY))
+                    pickupMachine.crank(PickupState.DISCORD);
             } else {
-                solenoidShooter.set(ActuatorConfiguration.SOLENOID_PICKUP.IN);
-                pickupMotor.set(0D);
-                
-                if (!manipulatorController.getButton(ButtonConfiguration.Manipulator.FIRE))
-                    hopperMotor.set(0D);
-            }
-            
-            /* Aims the turret based on the vision output. */
+                if (upHigh) {
+                    pickupMachine.crank(PickupState.HARMONY);
+                    elevatorMachine.crank(ElevatorState.ASCENSION);
+                } else if (pickupMachine.crank(PickupState.HARMONY)) {
+                    /*
+                     * If the pickup is down and the elevator is at rest, then
+                     * allow the user to trigger the pickup mechanism.
+                     */
+                    
+                    if (elevatorMachine.crank(ElevatorState.ACQUIESCENCE)) {
+                        /* Controls the pickup mechanism. */
 
-            if (manipulatorController.getButton(ButtonConfiguration.Manipulator.AIM_TURRET)) {
-                // TODO: Test and do more stuff, and such.
-                
-                targets = cameraInterface.getTargets();
-                
-                if (targets.length != 0) {
-                    pidTurretRotation.setSetpoint(Math.toDegrees(MathUtils.asin(targets[0].x / targets[0].z)) - gyroHeading.getAngle());
-
-                    for (int i = 0; i < targets.length; i++) {
-                        System.out.println("x: " + targets[0].x + ", y: " + targets[0].y + ", z: " + targets[0].z + ", angle: " + targets[0].angle);
-                        System.out.println("x_uncertainty: " + targets[0].x_uncertainty + ", y_uncertainty: " + targets[0].y_uncertainty + ", z_uncertainty: " + targets[0].z_uncertainty + ", angle_uncertainty: " + targets[0].angle_uncertainty);
+                        if (driveController.getButton(ButtonConfiguration.Manipulator.PICKUP)) {
+                            pickupMotor.set(ActuatorConfiguration.PICKUP_POWER);
+                            hopperMotor.set(ActuatorConfiguration.HOPPER_POWER);
+                        }
                     }
-
-                    System.out.println("--------------------------------");
+                }
+            }
+        
+            /*
+             * If the default position is set up high, and the elevator is at
+             * that position now, allow the user to aim the turret and shoot.
+             */
+            
+            if (upHigh && elevatorMachine.test(ElevatorState.ASCENSION)) {
+                /* Aims the turret based on the vision output. */
+                
+                if (manipulatorController.getButton(ButtonConfiguration.Manipulator.AIM_TURRET)) {
+                    // TODO: Test and do more stuff, and such.
+                    
+                    targets = cameraInterface.getTargets();
+                    
+                    if (targets.length != 0) {
+                        pidTurretRotation.setSetpoint(Math.toDegrees(MathUtils.asin(targets[0].x / targets[0].z)) - gyroHeading.getAngle());
+                        
+                        for (int i = 0; i < targets.length; i++) {
+                            System.out.println("x: " + targets[0].x + ", y: " + targets[0].y + ", z: " + targets[0].z + ", angle: " + targets[0].angle);
+                            System.out.println("x_uncertainty: " + targets[0].x_uncertainty + ", y_uncertainty: " + targets[0].y_uncertainty + ", z_uncertainty: " + targets[0].z_uncertainty + ", angle_uncertainty: " + targets[0].angle_uncertainty);
+                        }
+                        
+                        System.out.println("--------------------------------");
+                    }
+                    
+                    System.out.println(" - UPS: " + ((RemoteCameraTCP) cameraInterface).getUPS() + " - ");
                 }
                 
-                System.out.println(" - UPS: " + ((RemoteCameraTCP) cameraInterface).getUPS() + " - ");
-            }
-            
-            if (manipulatorController.getButton(ButtonConfiguration.Manipulator.AIM_TURRET)) {
-                pidTurretRotation.enable();
-                
-                SmartDashboard.putString("Turret Control", "Vision");
-            } else {
-                pidTurretRotation.setSetpoint(SmartDashboard.getDouble("Turret Setpoint", 0D));
-                
-                if (manipulatorController.getButton(ButtonConfiguration.Manipulator.AUTO_TURRET)) {
+                if (manipulatorController.getButton(ButtonConfiguration.Manipulator.AIM_TURRET)) {
                     pidTurretRotation.enable();
-
-                    SmartDashboard.putString("Turret Control", "Auto");
+                    
+                    SmartDashboard.putString("Turret Control", "Vision");
                 } else {
-                    pidElevator.disable();
-                    turretRotationMotor.set(manipulatorController.getAxis(Axis.LEFT_STICK_X));
-
-                    SmartDashboard.putString("Turret Control", "Manual");
+                    pidTurretRotation.setSetpoint(SmartDashboard.getDouble("Turret Setpoint", 0D));
+                    
+                    if (manipulatorController.getButton(ButtonConfiguration.Manipulator.AUTO_TURRET)) {
+                        pidTurretRotation.enable();
+                        
+                        SmartDashboard.putString("Turret Control", "Auto");
+                    } else {
+                        pidElevator.disable();
+                        turretRotationMotor.set(manipulatorController.getAxis(Axis.LEFT_STICK_X));
+                        
+                        SmartDashboard.putString("Turret Control", "Manual");
+                    }
                 }
-            }
-            
-            SmartDashboard.putDouble("Current Turret Setpoint", pidTurretRotation.get());
-            
-            /* Fires at the hoop. */
-            
-            if (manipulatorController.getButton(ButtonConfiguration.Manipulator.FIRE)) {
-                // TODO: Insert firing components, when they're done, of course.
                 
-                hopperMotor.set(ActuatorConfiguration.HOPPER_POWER);
-                solenoidHopper.set(ActuatorConfiguration.SOLENOID_HOPPER.PUSH);
-            } else {
-                solenoidHopper.set(ActuatorConfiguration.SOLENOID_HOPPER.REGULAR);
+                SmartDashboard.putDouble("Current Turret Setpoint", pidTurretRotation.get());
+
+                /* Fires at the hoop. */
+                
+                if (manipulatorController.getButton(ButtonConfiguration.Manipulator.FIRE)) {
+                    // TODO: Insert firing components, when they're done, of course.
+                    
+                    shooterMotors.set(ActuatorConfiguration.SHOOTER_POWER);
+                    hopperMotor.set(ActuatorConfiguration.HOPPER_POWER);
+                    solenoidHopper.set(ActuatorConfiguration.SOLENOID_HOPPER.PUSH);
+                } else {
+                    solenoidHopper.set(ActuatorConfiguration.SOLENOID_HOPPER.REGULAR);
+                }
             }
             
             /* Toggles the shooter angle. */
@@ -464,22 +508,15 @@ public class Robot2012Orange extends SimpleRobot {
                     ringLight.set(ActuatorConfiguration.RING_LIGHT.OFF);
             }
             
-            /* Automated control for the elevator. */
+            /* Reload the springs of the Victors. */
             
-            pidElevator.setSetpoint(SmartDashboard.getDouble("Elevator Setpoint", 0D));
+            elevatorMotors.reload();
             
-            if (manipulatorController.getButton(ButtonConfiguration.Manipulator.AUTO_ELEVATOR)) {
-                pidElevator.enable();
-                
-                SmartDashboard.putString("Elevator Control", "Auto");
-            } else {
-                pidElevator.disable();
-                elevatorMotors.set(manipulatorController.getAxis(Axis.RIGHT_STICK_Y));
-                
-                SmartDashboard.putString("Elevator Control", "Manual");
-            }
+            shooterMotors.reload();
+            hopperMotor.reload();
+            pickupMotor.reload();
             
-            SmartDashboard.putDouble("Current Elevator Setpoint", pidElevator.get());
+            turretRotationMotor.reload();
             
             /* Debug output. */
             

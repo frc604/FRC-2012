@@ -9,6 +9,8 @@ import edu.wpi.first.wpilibj.Victor;
  * Useful for PID controllers.
  */
 public class DualVictor implements PIDOutput {
+    private boolean sprung = false;
+    
     private final Victor leftVictor;
     private final Victor rightVictor;
     
@@ -50,6 +52,14 @@ public class DualVictor implements PIDOutput {
         this.rightVictor = rightVictor;
     }
     
+    public boolean getSprung () {
+        return this.sprung;
+    }
+    
+    public void spring () {
+        this.sprung = true;
+    }
+    
     /**
      * Sets the inversion for the "left" Victor.
      * 
@@ -85,6 +95,8 @@ public class DualVictor implements PIDOutput {
     public void set (double speed) {
         this.leftVictor.set((this.leftInversion) ? speed * -1 : speed);
         this.rightVictor.set((this.rightInversion) ? speed * -1 : speed);
+        
+        this.spring();
     }
     
     /* 
@@ -101,5 +113,14 @@ public class DualVictor implements PIDOutput {
     public void setSafetyEnabled (boolean enabled) {
         this.leftVictor.setSafetyEnabled(enabled);
         this.rightVictor.setSafetyEnabled(enabled);
+    }
+    
+    public void reload () {
+        if (!this.sprung) {
+            this.leftVictor.set(0D);
+            this.rightVictor.set(0D);
+        }
+        
+        this.sprung = false;
     }
 }

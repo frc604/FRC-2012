@@ -10,28 +10,20 @@ package com._604robotics.robot2012.machine;
  */
 public interface StrangeMachine {
     /**
-     * Gets the current state of the Machine.
+     * Tests if the Machine has yet attained the target state.
      * 
-     * @return  The current state of the Machine.
-     */
-    public abstract int getState ();
-    
-    /**
-     * Gets the state the Machine is currently striving for.
+     * @param   state   The target state.
      * 
-     * @return  The state the Machine is currently striving for.
+     * @return  Whether or not the Machine has attained the target state.
      */
-    public abstract int getTargetState ();
+    public abstract boolean test (int state);
     
     /**
      * Causes the Machine to strive for the target state.
-     */
-    public abstract void crank ();
-    
-    /**
-     * Sets the state that the Machine should strive for.
      * 
-     * @param   state   The state that the Machine should strive for.
+     * @param   state   The state to strive for.
+     * 
+     * @return  Whether or not the target state has been reached.
      */
-    public abstract void strive (int state);
+    public abstract boolean crank (int state);
 }
