@@ -10,6 +10,11 @@ import com._604robotics.robot2012.vision.LinearRegression.BackwardsRegressionRes
 import com._604robotics.robot2012.vision.LinearRegression.RegressionResult;
 
 
+/**
+ * 
+ * 
+ * @author Kevin Parker <kevin.m.parker@gmail.com>
+ */
 public class Disp extends JFrame {
 	
 	/**

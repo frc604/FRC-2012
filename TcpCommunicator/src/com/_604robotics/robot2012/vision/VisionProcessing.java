@@ -50,8 +50,8 @@ public class VisionProcessing {
 	 * enough to not generate false negatives.
 	 */
 	public static final int		Sensitivity		= 100;		// higher numbers means more rejected pixels
-															
-
+	
+	
 	/**
 	 * Should debug info be shown?
 	 * 
@@ -270,7 +270,7 @@ public class VisionProcessing {
 		/*		//Just in case you want to save the JPEGs
 
 		 */
-
+		
 		double time_i = System.nanoTime();
 		
 		int w = img.getWidth();
@@ -350,7 +350,7 @@ public class VisionProcessing {
 				Point2d bottomLeft	= getCorner(ri, -1, 1, rough[i]);
 				Point2d bottomRight	= getCorner(ri, 1, 1, rough[i]);
 				 */
-
+				
 				LinearRegression.RegressionResult top = getRegressionForSide(ri, Side_Top, rough[i]);
 				LinearRegression.RegressionResult bottom = getRegressionForSide(ri, Side_Bottom, rough[i]);
 				LinearRegression.RegressionResult left = getRegressionForSide(ri, Side_Left, rough[i]);
@@ -367,7 +367,7 @@ public class VisionProcessing {
 				pts[i * 4 + 3] = bottomRight;
 				
 				Quad q = new com._604robotics.robot2012.vision.Quad(topLeft, topRight, bottomLeft, bottomRight);
-
+				
 				targets[i] = new DistanceCalculations().getAngleAndRelXYZOfTarget(q);
 				System.out.println(targets[i]);
 				
@@ -384,24 +384,27 @@ public class VisionProcessing {
 		if(communicateToRobot)
 			comm.writePoints(targets);
 		
-		display.lines = linearRegressions;
 		
 		System.out.println("Time = " + (System.nanoTime() - time_i) / 1000000000);
 		
 		System.out.println("--");
 		
-		display.bi = img;
-		display.res = ri;
-		display.repaint();
-		
-		while (!display.hasPainted) {
-			try {
-				Thread.sleep(10);
-			} catch (InterruptedException ex) {
+		if(ShowDisplay) {
+			display.lines = linearRegressions;
+			display.bi = img;
+			display.res = ri;
+			display.repaint();
+			
+			
+			while (!display.hasPainted) {
+				try {
+					Thread.sleep(10);
+				} catch (InterruptedException ex) {
+				}
 			}
+			
+			display.hasPainted = false;
 		}
-		
-		display.hasPainted = false;
 		
 	}
 }
