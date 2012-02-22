@@ -32,7 +32,7 @@ public class Robot2012Orange extends SimpleRobot {
     
     DualVictor elevatorMotors;
     
-    Victor shooterMotor;
+    DualVictor shooterMotor;
     Victor hopperMotor;
     Victor pickupMotor;
     
@@ -96,7 +96,7 @@ public class Robot2012Orange extends SimpleRobot {
         
         elevatorMotors = new DualVictor(PortConfiguration.Motors.ELEVATOR_LEFT, PortConfiguration.Motors.ELEVATOR_RIGHT);
         
-        shooterMotor = new Victor(PortConfiguration.Motors.SHOOTER);
+        shooterMotor = new Victor(PortConfiguration.Motors.SHOOTER_LEFT, PortConfiguration.Motors.SHOOTER_RIGHT);
         hopperMotor = new Victor(PortConfiguration.Motors.HOPPER);
         pickupMotor = new Victor(PortConfiguration.Motors.PICKUP);
         
@@ -376,7 +376,7 @@ public class Robot2012Orange extends SimpleRobot {
             
             if (driveController.getButton(ButtonConfiguration.Driver.PICKUP)) {
                 solenoidShooter.set(ActuatorConfiguration.SOLENOID_PICKUP.OUT);
-                pickupMotor.set(ActuatorConfiguration.PICKUP_POWER);
+                pickupMotor.set(0D);//ActuatorConfiguration.PICKUP_POWER);
                 hopperMotor.set(ActuatorConfiguration.HOPPER_POWER);
             } else {
                 solenoidShooter.set(ActuatorConfiguration.SOLENOID_PICKUP.IN);

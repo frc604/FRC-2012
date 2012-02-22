@@ -20,11 +20,12 @@ public interface PortConfiguration {
         public static final int ELEVATOR_LEFT = 7;
         public static final int ELEVATOR_RIGHT = 8;
         
-        public static final int SHOOTER = 4;
-        public static final int HOPPER = 5;
-        public static final int PICKUP = 6;
+        public static final int SHOOTER_LEFT = 2;
+        public static final int SHOOTER_RIGHT = 3;
+        public static final int HOPPER = 4;
+        public static final int PICKUP = 5;
         
-        public static final int TURRET_ROTATION = 2;
+        public static final int TURRET_ROTATION = 6;
     }
     
     public interface Relays {
