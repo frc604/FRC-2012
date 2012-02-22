@@ -205,11 +205,15 @@ public class Robot2012Orange extends SimpleRobot {
         
         compressorPump.start();
         
+        /* If we're not in the middle, skip over the bridge stuff. */
+        
         int step = (SmartDashboard.getBoolean("In the Middle?", false))
                 ? 0
                 : 4;
 
         // TODO: Move some more stuff over to the configuration file. I really don't feel like doing ot right now.
+        
+        /* Set up the PID controllers. */
         
         PIDController pidDriveStraight = new PIDController(0D, 0D, 0D, new PIDDriveEncoderDifference(encoderLeftDrive, encoderRightDrive), new PIDDriveEncoderOutput(driveTrain));
         PIDController pidDriveBackwards = new PIDController(0D, 0D, 0D, new PIDDriveEncoderDifference(encoderLeftDrive, encoderRightDrive), new PIDDriveEncoderOutput(driveTrain, true));
@@ -229,6 +233,8 @@ public class Robot2012Orange extends SimpleRobot {
         while (isAutonomous() && isEnabled()) {
             switch (step) {
                 case 0:
+                    /* Raise the pickup and drive straight. */
+                    
                     solenoidPickup.set(ActuatorConfiguration.SOLENOID_PICKUP.OUT);
                     pidDriveStraight.enable();
                     
@@ -236,6 +242,8 @@ public class Robot2012Orange extends SimpleRobot {
                     
                     break;
                 case 1:
+                    /* One we're there, stop and smash down the bridge. */
+                    
                     if (controlTimer.get() >= 6 || (encoderLeftDrive.getDistance() >= AutonomousConfiguration.FORWARD_DISTANCE && encoderRightDrive.getDistance() >= AutonomousConfiguration.FORWARD_DISTANCE)) {
                         pidDriveStraight.disable();
                         driveTrain.tankDrive(0D, 0D);
@@ -248,6 +256,8 @@ public class Robot2012Orange extends SimpleRobot {
                     
                     break;
                 case 2:
+                    /* After a second, drive backward. */
+                    
                     driveTrain.tankDrive(0D, 0D);
                     
                     if (controlTimer.get() >= 1) {
@@ -261,6 +271,8 @@ public class Robot2012Orange extends SimpleRobot {
                     
                     break;
                 case 3:
+                    /* Once we're there, stop. */
+                    
                     if (controlTimer.get() >= 6 || (encoderLeftDrive.getDistance() <= AutonomousConfiguration.BACKWARD_DISTANCE && encoderRightDrive.getDistance() >= AutonomousConfiguration.BACKWARD_DISTANCE)) {
                         pidDriveBackwards.disable();
                         driveTrain.tankDrive(0D, 0D);
@@ -272,6 +284,8 @@ public class Robot2012Orange extends SimpleRobot {
                     
                     break;
                 case 4:
+                    /* Turn around, bright eyes! */
+                    
                     pidTurnAround.enable();
                     controlTimer.reset();
                     
@@ -279,6 +293,8 @@ public class Robot2012Orange extends SimpleRobot {
                     
                     break;
                 case 5:
+                    /* Stop turning around once we've done a 180. */
+                    
                     if (controlTimer.get() >= 2 || pidTurnAround.onTarget()) {
                         pidTurnAround.disable();
                         controlTimer.stop();
