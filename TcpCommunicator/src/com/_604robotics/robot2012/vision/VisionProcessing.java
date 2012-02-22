@@ -176,7 +176,7 @@ public class VisionProcessing {
 		}
 	}
 	
-	private final boolean	communicateToRobot	= false;
+	private final boolean	communicateToRobot	= true;
 	
 	/**
 	 * The display for showing the image as well as some debug data.
@@ -189,7 +189,7 @@ public class VisionProcessing {
 	
 	private final boolean	saveImagesToFiles	= false;
 	
-	private final boolean	ShowDisplay			= true;
+	private final boolean	ShowDisplay			= false;
 	
 	private final TcpCommunicator comm = new TcpCommunicator();
 	
