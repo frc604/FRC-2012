@@ -393,14 +393,16 @@ public class Robot2012Orange extends SimpleRobot {
                 
                 targets = cameraInterface.getTargets();
                 
-                pidTurretRotation.setSetpoint(Math.toDegrees(MathUtils.asin(targets[0].x / targets[0].z)) - gyroHeading.getAngle());
-                
-                for (int i = 0; i < targets.length; i++) {
-                    System.out.println("x: " + targets[0].x + ", y: " + targets[0].y + ", z: " + targets[0].z + ", angle: " + targets[0].angle);
-                    System.out.println("x_uncertainty: " + targets[0].x_uncertainty + ", y_uncertainty: " + targets[0].y_uncertainty + ", z_uncertainty: " + targets[0].z_uncertainty + ", angle_uncertainty: " + targets[0].angle_uncertainty);
+                if (targets.length != 0) {
+                    pidTurretRotation.setSetpoint(Math.toDegrees(MathUtils.asin(targets[0].x / targets[0].z)) - gyroHeading.getAngle());
+
+                    for (int i = 0; i < targets.length; i++) {
+                        System.out.println("x: " + targets[0].x + ", y: " + targets[0].y + ", z: " + targets[0].z + ", angle: " + targets[0].angle);
+                        System.out.println("x_uncertainty: " + targets[0].x_uncertainty + ", y_uncertainty: " + targets[0].y_uncertainty + ", z_uncertainty: " + targets[0].z_uncertainty + ", angle_uncertainty: " + targets[0].angle_uncertainty);
+                    }
+
+                    System.out.println("--------------------------------");
                 }
-                
-                System.out.println("--------------------------------");
             }
             
             if (manipulatorController.getButton(ButtonConfiguration.Manipulator.AIM_TURRET)) {

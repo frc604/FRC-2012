@@ -250,7 +250,14 @@ class RemoteCameraServer implements Runnable {
             }
         }
         
+        
         /* The task has been disabled. Stop. */
+        
+        try {
+            server.close();
+        } catch(IOException ex) {
+            
+        }
         
         System.out.println("TCP task stopped.");
     }
