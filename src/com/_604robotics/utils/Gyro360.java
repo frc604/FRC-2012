@@ -51,7 +51,7 @@ public class Gyro360 extends Gyro implements PIDSource {
      * @return  The angle of the gyro, constrained to 360 degrees.
      */
     public double getAngle () {
-        return this.getAngle() % 360D;
+        return super.getAngle() % 360D;
     }
     
     /**
@@ -61,6 +61,6 @@ public class Gyro360 extends Gyro implements PIDSource {
      * @return  The angle of the gyro, constrained to 360 degrees.
      */
     public double pidGet () {
-        return this.pidGet() % 360D;
+        return super.pidGet() % 360D;
     }
 }

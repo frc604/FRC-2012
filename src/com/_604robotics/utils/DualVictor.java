@@ -97,4 +97,9 @@ public class DualVictor implements PIDOutput {
     public void pidWrite (double output) {
         this.set(output);
     }
+    
+    public void setSafetyEnabled (boolean enabled) {
+        this.leftVictor.setSafetyEnabled(enabled);
+        this.rightVictor.setSafetyEnabled(enabled);
+    }
 }
