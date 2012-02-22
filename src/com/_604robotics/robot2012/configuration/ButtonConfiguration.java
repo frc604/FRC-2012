@@ -26,6 +26,6 @@ public interface ButtonConfiguration {
         public static final int PICKUP = Button.X;
         
         public static final int TOGGLE_HEIGHT = Button.EitherTrigger;
-        public static finai int AUTO_TURRET = Button.LB;
+        public static final int AUTO_TURRET = Button.LB;
     }
 }
