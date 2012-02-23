@@ -10,6 +10,12 @@ import edu.wpi.first.wpilibj.PIDController;
 public class DummyRotationProvider implements RotationProvider {
     private final PIDController controller;
     
+    /**
+     * Initializes a new DummyRotationProvider, giving it control over the
+     * specified PIDController.
+     * 
+     * @param   controller  The PIDController to control.
+     */
     public DummyRotationProvider (PIDController controller) {
         this.controller = controller;
     }
