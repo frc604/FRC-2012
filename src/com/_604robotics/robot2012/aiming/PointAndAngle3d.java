@@ -1,4 +1,4 @@
-package com._604robotics.robot2012.Aiming;
+package com._604robotics.robot2012.aiming;
 
 public class PointAndAngle3d {
 	double x, y, z, angle;

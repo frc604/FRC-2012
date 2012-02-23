@@ -1,4 +1,4 @@
-package com._604robotics.robot2012.Aiming;
+package com._604robotics.robot2012.aiming;
 
 public class Point2d {
 	double x, y;

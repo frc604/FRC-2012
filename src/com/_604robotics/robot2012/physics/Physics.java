@@ -1,6 +1,6 @@
-package com._604robotics.robot2012.Physics;
+package com._604robotics.robot2012.physics;
 
-import com._604robotics.robot2012.Aiming.*;
+import com._604robotics.robot2012.aiming.Point2d;
 
 /**
  * Physics.java

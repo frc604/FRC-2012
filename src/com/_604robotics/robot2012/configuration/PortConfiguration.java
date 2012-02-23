@@ -34,25 +34,28 @@ public interface PortConfiguration {
     }
     
     public interface Sensors {
+        public static final int TURRET_LIMIT_SWITCH = 10;
+        
         public static final int GYRO_HEADING = 1;
         public static final int GYRO_BALANCE = 2;
+        
         public static final int ACCELEROMETER = 3;
     }
     
     public interface Encoders {
         public interface Drive {
-            public static final int LEFT_A = 10;
-            public static final int LEFT_B = 11;
+            public static final int LEFT_A = 1;
+            public static final int LEFT_B = 2;
             
             public static final int RIGHT_A = 3;
             public static final int RIGHT_B = 4;
         }
         
-        public static final int ELEVATOR_A = 1;
-        public static final int ELEVATOR_B = 2;
+        public static final int ELEVATOR_A = 6;
+        public static final int ELEVATOR_B = 7;
         
-        public static final int TURRET_ROTATION_A = 12;
-        public static final int TURRET_ROTATION_B = 13;
+        public static final int TURRET_ROTATION_A = 8;
+        public static final int TURRET_ROTATION_B = 9;
     }
     
     public interface Pneumatics {

@@ -1,4 +1,4 @@
-package com._604robotics.robot2012.Aiming;
+package com._604robotics.robot2012.aiming;
 
 import com.sun.squawk.util.MathUtils;
 import frc.vision.Target;

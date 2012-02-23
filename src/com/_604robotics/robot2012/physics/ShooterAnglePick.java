@@ -1,4 +1,4 @@
-package com._604robotics.robot2012.Physics;
+package com._604robotics.robot2012.physics;
 
 public class ShooterAnglePick {
     // TODO - fix number values

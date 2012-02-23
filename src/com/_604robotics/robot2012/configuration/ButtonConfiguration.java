@@ -17,8 +17,7 @@ public interface ButtonConfiguration {
     }
     
     public interface Manipulator {
-        public static final int FIRE = Button.A;
-        public static final int AIM_TURRET = Button.B;
+        public static final int AIM_AND_FIRE = Button.A;
         
         public static final int TOGGLE_ANGLE = Button.Y;
         public static final int TOGGLE_LIGHT = Button.Back;

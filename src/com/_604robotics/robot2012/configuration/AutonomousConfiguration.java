@@ -11,6 +11,8 @@ public interface AutonomousConfiguration {
         // TODO: Calibrate this.
     public static final double BACKWARD_DISTANCE = -1000D;
         // TODO: Calibrate this.
+    public static final double BACKWARD_DISTANCE_SIDES = -500D;
+        // TODO: Calibrate this.
     
     public static final double FORWARD_DRIVE_POWER = 0.5;
     public static final double BACKWARD_DRIVE_POWER = -0.5;
