@@ -23,8 +23,8 @@ Currently, the control structure works as follows:
 
 There are two currently-implemented RotationProviders, mostly for testing purposes:
 
- - DummyRotationProvider: Sets the controller to a setpoint of 0.
- - NaiveRotationProvider: A naive implementation that takes a CameraInterface and a Gyro360 as inputs.
+ - **DummyRotationProvider:** Sets the controller to a setpoint of 0.
+ - **NaiveRotationProvider:** A naive implementation that takes a CameraInterface and a Gyro360 as inputs.
 
 ### You mentioned a "CameraInterface". What's that again?
 
@@ -36,8 +36,8 @@ Really? How odd...
 
 A SpringableVictor works, in most ways, like a Victor. The only difference is the addition of a `reload` method. If the SpringableVictor receives input, either through a PIDController or manually, it will put itself in the "sprung" state. When the `reload` method is called -- which it is for each SpringableVictor at the end of the main control loop -- one of the following will happen:
 
- - **if the SpringableVictor is sprung**: un-spring it.
- - **if the SpringableVictor is not sprung**: set the output to 0.
+ - **if the SpringableVictor is sprung:** un-spring it.
+ - **if the SpringableVictor is not sprung:** set the output to 0.
 
  This way, if nothing writes to the SpringableVictor over the course of a loop iteration, it will automatically switch itself off. This removes this burden from the main control logic, making things much, much simpler in implemenation.
 
