@@ -22,6 +22,8 @@ public interface ActuatorConfiguration {
     public static final double TURRET_ROTATION_POWER_MIN = -0.8D;
     public static final double TURRET_ROTATION_POWER_MAX = 0.8D;
     
+    public static final double TURRET_SIDEWAYS_POSITION = -90D;
+    
     public interface RING_LIGHT {
         public static final Value ON = Value.kOn;
         public static final Value OFF = Value.kOff;

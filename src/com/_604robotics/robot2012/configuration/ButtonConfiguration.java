@@ -10,7 +10,7 @@ import com._604robotics.utils.XboxController.Button;
 public interface ButtonConfiguration {
     public interface Driver {
         public static final int SHIFT = Button.EitherTrigger;
-        public static final int LIFT = Button.B;
+        public static final int TOGGLE_PICKUP = Button.B;
         
         public static final int AUTO_BALANCE = Button.X;
         public static final int GYRO_RESET = Button.Back;

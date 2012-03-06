@@ -11,6 +11,7 @@ import com._604robotics.robot2012.machine.ElevatorMachine.ElevatorState;
 import com._604robotics.robot2012.machine.PickupMachine;
 import com._604robotics.robot2012.machine.PickupMachine.PickupState;
 import com._604robotics.robot2012.machine.StrangeMachine;
+import com._604robotics.robot2012.machine.TurretMachine.TurretState;
 import com._604robotics.robot2012.rotation.DummyRotationProvider;
 import com._604robotics.robot2012.rotation.RotationProvider;
 import com._604robotics.robot2012.vision.Target;
@@ -73,6 +74,7 @@ public class Robot2012Orange extends SimpleRobot {
 
     StrangeMachine pickupMachine;
     StrangeMachine elevatorMachine;
+    StrangeMachine turretMachine;
     
     RotationProvider rotationProvider;
     
@@ -172,6 +174,7 @@ public class Robot2012Orange extends SimpleRobot {
         
         pickupMachine = new PickupMachine(solenoidPickup);
         elevatorMachine = new ElevatorMachine(pidElevator);
+        turretMachine = new ElevatorMachine(pidTurretRotation);
         
         /* Sets up the rotation provider. */
         
@@ -423,13 +426,15 @@ public class Robot2012Orange extends SimpleRobot {
         compressorPump.start();
 
         double accelPower;
-        boolean lightOn = false;
         
+        boolean lightOn = false;
         boolean upHigh = false;
+        boolean pickupUp = false;
         
         Target[] targets;
         
         manipulatorController.resetToggles();
+        driveController.resetToggles();
         
         // TODO: Move over gyro stuff from other project, once it's all hammered out.
 
@@ -472,9 +477,14 @@ public class Robot2012Orange extends SimpleRobot {
             if (manipulatorController.getToggle(ButtonConfiguration.Manipulator.TOGGLE_HEIGHT))
                 upHigh = !upHigh;
             
+            /* Toggle the pickup state between "up" and "down". */
+            
+            if (manipulatorController.getToggle(ButtonConfiguration.Driver.TOGGLE_PICKUP))
+                pickupUp = !pickupUp;
+            
             /*
-             * If the LIFT button is pressed, make sure the elevator is up high
-             * enough, then lift up the pickup.
+             * If pickUp is true, make sure the elevator is up high enough,
+             * then lift up the pickup.
              * 
              * Else, check the "default" position. If it is up high, then lower
              * the pickup and raise the elevator simultaneously. If it is down
@@ -482,25 +492,33 @@ public class Robot2012Orange extends SimpleRobot {
              * elevator.
              */
             
-            if (manipulatorController.getButton(ButtonConfiguration.Driver.LIFT)) {
+            if (pickupUp) {
                 if ((upHigh && elevatorMachine.crank(ElevatorState.HIGH)) || elevatorMachine.crank(ElevatorState.MEDIUM))
                     pickupMachine.crank(PickupState.IN);
             } else {
                 if (upHigh) {
                     pickupMachine.crank(PickupState.OUT);
                     elevatorMachine.crank(ElevatorState.HIGH);
-                } else if (pickupMachine.crank(PickupState.OUT)) {
+                } else if (turretMachine.crank(TurretState.SIDEWAYS)) {
                     /*
-                     * If the pickup is down and the elevator is at rest, then
-                     * allow the user to trigger the pickup mechanism.
+                     * To prevent us from unintentionally violating <G21>, the
+                     * pickup cannot go out until the turret is in the sideways
+                     * position.
                      */
                     
-                    if (elevatorMachine.crank(ElevatorState.LOW)) {
-                        /* Controls the pickup mechanism. */
+                    if (pickupMachine.crank(PickupState.OUT)) {
+                        /*
+                         * If the pickup is down and the elevator is at rest,
+                         * then allow the user to trigger the pickup mechanism.
+                         */
 
-                        if (driveController.getButton(ButtonConfiguration.Manipulator.PICKUP)) {
-                            pickupMotor.set(ActuatorConfiguration.PICKUP_POWER);
-                            hopperMotor.set(ActuatorConfiguration.HOPPER_POWER);
+                        if (elevatorMachine.crank(ElevatorState.LOW)) {
+                            /* Controls the pickup mechanism. */
+
+                            if (driveController.getButton(ButtonConfiguration.Manipulator.PICKUP)) {
+                                pickupMotor.set(ActuatorConfiguration.PICKUP_POWER);
+                                hopperMotor.set(ActuatorConfiguration.HOPPER_POWER);
+                            }
                         }
                     }
                 }
