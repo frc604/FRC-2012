@@ -331,12 +331,6 @@ public class Robot2012Orange extends SimpleRobot {
      * other things.
      */
     public void operatorControl() {
-        driveTrain.setSafetyEnabled(false);
-        elevatorMotors.setSafetyEnabled(false);
-        shooterMotor.setSafetyEnabled(false);
-        hopperMotor.setSafetyEnabled(false);
-        shooterMotor.setSafetyEnabled(false);
-        
         compressorPump.start();
 
         double accelPower;
@@ -379,7 +373,7 @@ public class Robot2012Orange extends SimpleRobot {
             
             /* Controls the pickup mechanism. */
             
-            if (driveController.getButton(ButtonConfiguration.Driver.PICKUP)) {
+            if (driveController.getButton(ButtonConfiguration.Manipulator.PICKUP)) {
                 solenoidShooter.set(ActuatorConfiguration.SOLENOID_PICKUP.OUT);
                 pickupMotor.set(0D);//ActuatorConfiguration.PICKUP_POWER);
                 hopperMotor.set(ActuatorConfiguration.HOPPER_POWER);
@@ -424,9 +418,9 @@ public class Robot2012Orange extends SimpleRobot {
 
                     SmartDashboard.putString("Turret Control", "Auto");
                 } else {
-                    pidElevator.disable();
+                    pidTurretRotation.disable();
                     turretRotationMotor.set(manipulatorController.getAxis(Axis.LEFT_STICK_X));
-
+                    
                     SmartDashboard.putString("Turret Control", "Manual");
                 }
             }

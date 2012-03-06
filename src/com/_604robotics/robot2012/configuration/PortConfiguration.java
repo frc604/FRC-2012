@@ -23,9 +23,9 @@ public interface PortConfiguration {
         public static final int SHOOTER_LEFT = 2;
         public static final int SHOOTER_RIGHT = 3;
         public static final int HOPPER = 4;
-        public static final int PICKUP = 5;
+        public static final int PICKUP = 6;
         
-        public static final int TURRET_ROTATION = 6;
+        public static final int TURRET_ROTATION = 5;
     }
     
     public interface Relays {
@@ -41,18 +41,18 @@ public interface PortConfiguration {
     
     public interface Encoders {
         public interface Drive {
-            public static final int LEFT_A = 10;
-            public static final int LEFT_B = 11;
+            public static final int LEFT_A = 14;
+            public static final int LEFT_B = 13;
             
-            public static final int RIGHT_A = 3;
-            public static final int RIGHT_B = 4;
+            public static final int RIGHT_A = 12;
+            public static final int RIGHT_B = 11;
         }
         
-        public static final int ELEVATOR_A = 1;
-        public static final int ELEVATOR_B = 2;
+        public static final int ELEVATOR_A = 8;
+        public static final int ELEVATOR_B = 9;
         
-        public static final int TURRET_ROTATION_A = 12;
-        public static final int TURRET_ROTATION_B = 13;
+        public static final int TURRET_ROTATION_A = 3;
+        public static final int TURRET_ROTATION_B = 2;
     }
     
     public interface Pneumatics {
@@ -60,8 +60,8 @@ public interface PortConfiguration {
         public static final int PRESSURE_SWITCH = 5;
 
         public interface SHIFTER_SOLENOID {
-            public static final int FORWARD = 8; // LOW GEAR
-            public static final int REVERSE = 7; // HIGH GEAR
+            public static final int FORWARD = 7; // LOW GEAR
+            public static final int REVERSE = 8; // HIGH GEAR
         }
         
         public interface SHOOTER_SOLENOID {
