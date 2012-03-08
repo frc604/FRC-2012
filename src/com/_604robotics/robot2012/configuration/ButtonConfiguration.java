@@ -26,6 +26,6 @@ public interface ButtonConfiguration {
         public static final int TOGGLE_LIGHT = Button.X;
         
         public static final int AUTO_ELEVATOR = Button.LB;
-        public static final int AUTO_TURRET = Button.RB;
+        public static final int AUTO_TURRET = Button.LeftStick;
     }
 }

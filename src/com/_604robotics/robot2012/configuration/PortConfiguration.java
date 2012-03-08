@@ -48,8 +48,8 @@ public interface PortConfiguration {
             public static final int RIGHT_B = 11;
         }
         
-        public static final int ELEVATOR_A = 8;
-        public static final int ELEVATOR_B = 9;
+        public static final int ELEVATOR_A = 9;
+        public static final int ELEVATOR_B = 8;
         
         public static final int TURRET_ROTATION_A = 3;
         public static final int TURRET_ROTATION_B = 2;
@@ -70,8 +70,8 @@ public interface PortConfiguration {
         }
         
         public interface PICKUP_SOLENOID {
-            public static final int FORWARD = 2; // IN
-            public static final int REVERSE = 1; // OUT
+            public static final int FORWARD = 1; // IN
+            public static final int REVERSE = 2; // OUT
         }
         
         public interface HOPPER_SOLENOID {

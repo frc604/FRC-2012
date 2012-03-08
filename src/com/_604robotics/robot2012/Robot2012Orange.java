@@ -8,12 +8,15 @@ import com._604robotics.robot2012.camera.RemoteCameraTCP;
 import com._604robotics.robot2012.configuration.*;
 import com._604robotics.robot2012.vision.Target;
 import com._604robotics.utils.DualVictor;
+import com._604robotics.utils.EncoderPIDSource;
 import com._604robotics.utils.Gyro360;
 import com._604robotics.utils.XboxController;
 import com._604robotics.utils.XboxController.Axis;
+import com._604robotics.utils.XboxController.Button;
 import com.sun.squawk.util.MathUtils;
 import edu.wpi.first.wpilibj.RobotDrive.MotorType;
 import edu.wpi.first.wpilibj.*;
+import edu.wpi.first.wpilibj.Encoder.PIDSourceParameter;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
@@ -40,8 +43,8 @@ public class Robot2012Orange extends SimpleRobot {
     
     Relay ringLight;
     
-    Encoder encoderLeftDrive;
-    Encoder encoderRightDrive;
+    EncoderPIDSource encoderLeftDrive;
+    EncoderPIDSource encoderRightDrive;
     
     Encoder encoderElevator;
     Encoder encoderTurretRotation;
@@ -108,11 +111,20 @@ public class Robot2012Orange extends SimpleRobot {
         
         /* Sets up the encoders for the drive, elevator, and turret. */
         
-        encoderLeftDrive = new Encoder(PortConfiguration.Encoders.Drive.LEFT_A, PortConfiguration.Encoders.Drive.LEFT_B);
-        encoderRightDrive = new Encoder(PortConfiguration.Encoders.Drive.RIGHT_A, PortConfiguration.Encoders.Drive.RIGHT_B);
+        encoderLeftDrive = new EncoderPIDSource(PortConfiguration.Encoders.Drive.LEFT_A, PortConfiguration.Encoders.Drive.LEFT_B);
+        encoderRightDrive = new EncoderPIDSource(PortConfiguration.Encoders.Drive.RIGHT_A, PortConfiguration.Encoders.Drive.RIGHT_B);
         
-        encoderElevator = new Encoder(PortConfiguration.Encoders.ELEVATOR_A, PortConfiguration.Encoders.ELEVATOR_B);
-        encoderTurretRotation = new Encoder(PortConfiguration.Encoders.TURRET_ROTATION_A, PortConfiguration.Encoders.TURRET_ROTATION_B);
+        encoderElevator = new EncoderPIDSource(PortConfiguration.Encoders.ELEVATOR_A, PortConfiguration.Encoders.ELEVATOR_B, true);
+        encoderTurretRotation = new EncoderPIDSource(PortConfiguration.Encoders.TURRET_ROTATION_A, PortConfiguration.Encoders.TURRET_ROTATION_B);
+        
+        encoderLeftDrive.setPIDSourceParameter(PIDSourceParameter.kDistance);
+        encoderRightDrive.setPIDSourceParameter(PIDSourceParameter.kDistance);
+        
+        encoderLeftDrive.start();
+        encoderRightDrive.start();
+        
+        encoderElevator.start();
+        encoderTurretRotation.start();
         
         /* Sets up the gyros and the accelerometer. */
         
@@ -140,14 +152,20 @@ public class Robot2012Orange extends SimpleRobot {
          * SmartDashboard.
          */
         
-        pidElevator = new PIDController(0D, 0D, 0D, encoderElevator, elevatorMotors);
+        pidElevator = new PIDController(1D, 0D, 0D, encoderElevator, elevatorMotors);
         pidTurretRotation = new PIDController(0D, 0D, 0D, encoderTurretRotation, turretRotationMotor);
 
+        pidElevator.setInputRange(0, 1550);
         pidElevator.setOutputRange(ActuatorConfiguration.ELEVATOR_POWER_MIN, ActuatorConfiguration.ELEVATOR_POWER_MAX);
+        pidElevator.setSetpoint(822);
         pidTurretRotation.setOutputRange(ActuatorConfiguration.TURRET_ROTATION_POWER_MIN, ActuatorConfiguration.TURRET_ROTATION_POWER_MAX);
         
         SmartDashboard.putDouble("Elevator Setpoint", 0D);
         SmartDashboard.putDouble("Turret Setpoint", 0D);
+        
+        SmartDashboard.putDouble("P", 0D);
+        SmartDashboard.putDouble("I", 0D);
+        SmartDashboard.putDouble("D", 0D);
         
         SmartDashboard.putBoolean("In the Middle?", false);
         
@@ -155,7 +173,7 @@ public class Robot2012Orange extends SimpleRobot {
         
         cameraInterface = new RemoteCameraTCP();
         cameraInterface.begin();
-                
+             
         /* Because we can. */
         
         System.out.println("Hello, ninja h4X0r.");
@@ -236,7 +254,7 @@ public class Robot2012Orange extends SimpleRobot {
                 case 0:
                     /* Raise the pickup and drive straight. */
                     
-                    solenoidPickup.set(ActuatorConfiguration.SOLENOID_PICKUP.OUT);
+                    solenoidPickup.set(ActuatorConfiguration.SOLENOID_PICKUP.IN);
                     pidDriveStraight.enable();
                     
                     step = 1;
@@ -249,7 +267,7 @@ public class Robot2012Orange extends SimpleRobot {
                         pidDriveStraight.disable();
                         driveTrain.tankDrive(0D, 0D);
                         
-                        solenoidPickup.set(ActuatorConfiguration.SOLENOID_PICKUP.IN);
+                        solenoidPickup.set(ActuatorConfiguration.SOLENOID_PICKUP.OUT);
                         
                         controlTimer.reset();
                         step = 2;
@@ -342,7 +360,7 @@ public class Robot2012Orange extends SimpleRobot {
         
         // TODO: Move over gyro stuff from other project, once it's all hammered out.
 
-        while (isOperatorControl() && isEnabled()) {
+        while (isOperatorControl() && isEnabled()) {            
             /* Controls the gear shift. */
             
             if (driveController.getButton(ButtonConfiguration.Driver.SHIFT)) {
@@ -374,11 +392,11 @@ public class Robot2012Orange extends SimpleRobot {
             /* Controls the pickup mechanism. */
             
             if (driveController.getButton(ButtonConfiguration.Manipulator.PICKUP)) {
-                solenoidShooter.set(ActuatorConfiguration.SOLENOID_PICKUP.OUT);
-                pickupMotor.set(0D);//ActuatorConfiguration.PICKUP_POWER);
+                solenoidShooter.set(ActuatorConfiguration.SOLENOID_PICKUP.IN);
+                pickupMotor.set(ActuatorConfiguration.PICKUP_POWER);
                 hopperMotor.set(ActuatorConfiguration.HOPPER_POWER);
             } else {
-                solenoidShooter.set(ActuatorConfiguration.SOLENOID_PICKUP.IN);
+                solenoidShooter.set(ActuatorConfiguration.SOLENOID_PICKUP.OUT);
                 pickupMotor.set(0D);
                 
                 if (!manipulatorController.getButton(ButtonConfiguration.Manipulator.FIRE))
@@ -458,22 +476,31 @@ public class Robot2012Orange extends SimpleRobot {
                     ringLight.set(ActuatorConfiguration.RING_LIGHT.OFF);
             }
             
+            if (manipulatorController.getButton(Button.RB))
+                encoderElevator.reset();
+            
             /* Automated control for the elevator. */
             
-            pidElevator.setSetpoint(SmartDashboard.getDouble("Elevator Setpoint", 0D));
+            //pidElevator.setSetpoint(SmartDashboard.getDouble("Elevator Setpoint", 0D));
+            //pidElevator.setPID(SmartDashboard.getDouble("P", 1SD), SmartDashboard.getDouble("I", 0D), SmartDashboard.getDouble("D", 0D));
             
             if (manipulatorController.getButton(ButtonConfiguration.Manipulator.AUTO_ELEVATOR)) {
-                pidElevator.enable();
+                if (!pidElevator.isEnable())
+                    pidElevator.enable();
                 
+                SmartDashboard.putBoolean("PID Enabled", pidElevator.isEnable());
                 SmartDashboard.putString("Elevator Control", "Auto");
             } else {
-                pidElevator.disable();
+                if (pidElevator.isEnable())
+                    pidElevator.disable();
+                
                 elevatorMotors.set(manipulatorController.getAxis(Axis.RIGHT_STICK_Y));
                 
                 SmartDashboard.putString("Elevator Control", "Manual");
             }
             
-            SmartDashboard.putDouble("Current Elevator Setpoint", pidElevator.get());
+            SmartDashboard.putDouble("Current Elevator Setpoint", pidElevator.getSetpoint());
+            SmartDashboard.putDouble("Current Elevator Output", pidElevator.get());
             
             /* Debug output. */
             
@@ -481,11 +508,11 @@ public class Robot2012Orange extends SimpleRobot {
             SmartDashboard.putDouble("gyroBalance", gyroBalance.getAngle());
             SmartDashboard.putDouble("accelBalance", accelBalance.getAcceleration());
             
-            SmartDashboard.putDouble("encoderLeftDrive", encoderLeftDrive.get());
-            SmartDashboard.putDouble("encoderRightDrive", encoderRightDrive.get());
+            SmartDashboard.putInt("encoderLeftDrive", encoderLeftDrive.get());
+            SmartDashboard.putInt("encoderRightDrive", encoderRightDrive.get());
             
-            SmartDashboard.putDouble("encoderElevator", encoderElevator.get());
-            SmartDashboard.putDouble("encoderTurretRotation", encoderTurretRotation.get());
+            SmartDashboard.putInt("encoderElevator", encoderElevator.get());
+            SmartDashboard.putInt("encoderTurretRotation", encoderTurretRotation.get());
             
             SmartDashboard.putInt("ups", ((RemoteCameraTCP) cameraInterface).getUPS());
         }

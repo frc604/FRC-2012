@@ -87,7 +87,7 @@ public class DualVictor implements PIDOutput {
         this.rightVictor.set((this.rightInversion) ? speed * -1D : speed);
     }
     
-    /* 
+    /**
      * Function to hook into the PIDController.
      * 
      * Sets the power of the Victors.
@@ -95,6 +95,7 @@ public class DualVictor implements PIDOutput {
      * @param   output  The speed to set.
      */
     public void pidWrite (double output) {
+        System.out.println("OUT: " + output);
         this.set(output);
     }
     
