@@ -15,10 +15,7 @@ import com._604robotics.robot2012.machine.TurretMachine.TurretState;
 import com._604robotics.robot2012.rotation.DummyRotationProvider;
 import com._604robotics.robot2012.rotation.RotationProvider;
 import com._604robotics.robot2012.vision.Target;
-import com._604robotics.utils.DualVictor;
-import com._604robotics.utils.Gyro360;
-import com._604robotics.utils.SpringableVictor;
-import com._604robotics.utils.XboxController;
+import com._604robotics.utils.*;
 import com._604robotics.utils.XboxController.Axis;
 import com.sun.squawk.util.MathUtils;
 import edu.wpi.first.wpilibj.RobotDrive.MotorType;
@@ -53,8 +50,8 @@ public class Robot2012Orange extends SimpleRobot {
     Encoder encoderLeftDrive;
     Encoder encoderRightDrive;
     
-    Encoder encoderElevator;
-    Encoder encoderTurretRotation;
+    EncoderPIDSource encoderElevator;
+    EncoderPIDSource encoderTurretRotation;
     
     DigitalInput turretLimitSwitch;
     
@@ -131,8 +128,17 @@ public class Robot2012Orange extends SimpleRobot {
         encoderLeftDrive = new Encoder(PortConfiguration.Encoders.Drive.LEFT_A, PortConfiguration.Encoders.Drive.LEFT_B);
         encoderRightDrive = new Encoder(PortConfiguration.Encoders.Drive.RIGHT_A, PortConfiguration.Encoders.Drive.RIGHT_B);
         
-        encoderElevator = new Encoder(PortConfiguration.Encoders.ELEVATOR_A, PortConfiguration.Encoders.ELEVATOR_B);
-        encoderTurretRotation = new Encoder(PortConfiguration.Encoders.TURRET_ROTATION_A, PortConfiguration.Encoders.TURRET_ROTATION_B);
+        encoderElevator = new EncoderPIDSource(PortConfiguration.Encoders.ELEVATOR_A, PortConfiguration.Encoders.ELEVATOR_B);
+        encoderTurretRotation = new EncoderPIDSource(PortConfiguration.Encoders.TURRET_ROTATION_A, PortConfiguration.Encoders.TURRET_ROTATION_B);
+        
+        encoderLeftDrive.setPIDSourceParameter(Encoder.PIDSourceParameter.kDistance);
+        encoderRightDrive.setPIDSourceParameter(Encoder.PIDSourceParameter.kDistance);
+        
+        encoderLeftDrive.start();
+        encoderRightDrive.start();
+        
+        encoderElevator.start();
+        encoderTurretRotation.start();
         
         /* Sets up the limit switch for the turret. */
         
@@ -313,9 +319,8 @@ public class Robot2012Orange extends SimpleRobot {
             
             switch (step) {
                 case 0:
-                    /* Raise the pickup and drive straight. */
+                    /* Drive straight. */
                     
-                    solenoidPickup.set(ActuatorConfiguration.SOLENOID_PICKUP.OUT);
                     pidDriveStraight.enable();
                     
                     step++;
@@ -328,7 +333,7 @@ public class Robot2012Orange extends SimpleRobot {
                         pidDriveStraight.disable();
                         driveTrain.tankDrive(0D, 0D);
                         
-                        solenoidPickup.set(ActuatorConfiguration.SOLENOID_PICKUP.IN);
+                        solenoidPickup.set(ActuatorConfiguration.SOLENOID_PICKUP.OUT);
                         
                         controlTimer.reset();
                         step++;
@@ -345,7 +350,9 @@ public class Robot2012Orange extends SimpleRobot {
                     
                     break;
                 case 3:
-                    /* Drive backward. */
+                    /* Make sure the pickup is down, and drive backward. */
+                        
+                    solenoidPickup.set(ActuatorConfiguration.SOLENOID_PICKUP.OUT);
                     
                     encoderLeftDrive.reset();
                     encoderRightDrive.reset();
