@@ -17,6 +17,9 @@ public class DualVictor implements PIDOutput {
     private boolean leftInversion = false;
     private boolean rightInversion = false;
     
+    private double lowerDeadband = 0D;
+    private double upperDeadband = 0D;
+    
     /**
      * Initialize a DualVictor with a left and a right PWM port.
      * 
@@ -93,6 +96,9 @@ public class DualVictor implements PIDOutput {
      * @param   speed   The speed to set.
      */
     public void set (double speed) {
+        if (speed > this.lowerDeadband && speed < this.upperDeadband)
+            speed = 0D;
+        
         this.leftVictor.set((this.leftInversion) ? speed * -1 : speed);
         this.rightVictor.set((this.rightInversion) ? speed * -1 : speed);
         
@@ -109,6 +115,17 @@ public class DualVictor implements PIDOutput {
     public void pidWrite (double output) {
         this.set(output);
     }
+    
+    public void setDeadband(double lowerDeadband, double upperDeadband) {
+        this.lowerDeadband = lowerDeadband;
+        this.upperDeadband = upperDeadband;
+    }
+    
+    /**
+     * Sets whether or not safety is enabled.
+     * 
+     * @param   enabled     Whether or not safety is enabled.
+     */
     
     public void setSafetyEnabled (boolean enabled) {
         this.leftVictor.setSafetyEnabled(enabled);
