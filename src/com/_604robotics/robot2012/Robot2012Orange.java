@@ -14,9 +14,9 @@ import com._604robotics.utils.XboxController;
 import com._604robotics.utils.XboxController.Axis;
 import com._604robotics.utils.XboxController.Button;
 import com.sun.squawk.util.MathUtils;
+import edu.wpi.first.wpilibj.Encoder.PIDSourceParameter;
 import edu.wpi.first.wpilibj.RobotDrive.MotorType;
 import edu.wpi.first.wpilibj.*;
-import edu.wpi.first.wpilibj.Encoder.PIDSourceParameter;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
@@ -98,6 +98,7 @@ public class Robot2012Orange extends SimpleRobot {
         /* Set up the elevator, shooter, hopper, pickup, and rotation motors. */
         
         elevatorMotors = new DualVictor(PortConfiguration.Motors.ELEVATOR_LEFT, PortConfiguration.Motors.ELEVATOR_RIGHT);
+        elevatorMotors.setDeadband(-0.2, 0.2);
         
         shooterMotor = new DualVictor(PortConfiguration.Motors.SHOOTER_LEFT, PortConfiguration.Motors.SHOOTER_RIGHT);
         hopperMotor = new Victor(PortConfiguration.Motors.HOPPER);
@@ -152,7 +153,7 @@ public class Robot2012Orange extends SimpleRobot {
          * SmartDashboard.
          */
         
-        pidElevator = new PIDController(1D, 0D, 0D, encoderElevator, elevatorMotors);
+        pidElevator = new PIDController(0D, 0D, 0D, encoderElevator, elevatorMotors);
         pidTurretRotation = new PIDController(0D, 0D, 0D, encoderTurretRotation, turretRotationMotor);
 
         pidElevator.setInputRange(0, 1550);
@@ -163,9 +164,9 @@ public class Robot2012Orange extends SimpleRobot {
         SmartDashboard.putDouble("Elevator Setpoint", 0D);
         SmartDashboard.putDouble("Turret Setpoint", 0D);
         
-        SmartDashboard.putDouble("P", 0D);
+        SmartDashboard.putDouble("P", 0.005);
         SmartDashboard.putDouble("I", 0D);
-        SmartDashboard.putDouble("D", 0D);
+        SmartDashboard.putDouble("D", 0.01);
         
         SmartDashboard.putBoolean("In the Middle?", false);
         
@@ -392,11 +393,11 @@ public class Robot2012Orange extends SimpleRobot {
             /* Controls the pickup mechanism. */
             
             if (driveController.getButton(ButtonConfiguration.Manipulator.PICKUP)) {
-                solenoidShooter.set(ActuatorConfiguration.SOLENOID_PICKUP.IN);
+                solenoidShooter.set(ActuatorConfiguration.SOLENOID_PICKUP.OUT);
                 pickupMotor.set(ActuatorConfiguration.PICKUP_POWER);
                 hopperMotor.set(ActuatorConfiguration.HOPPER_POWER);
             } else {
-                solenoidShooter.set(ActuatorConfiguration.SOLENOID_PICKUP.OUT);
+                solenoidShooter.set(ActuatorConfiguration.SOLENOID_PICKUP.IN);
                 pickupMotor.set(0D);
                 
                 if (!manipulatorController.getButton(ButtonConfiguration.Manipulator.FIRE))
@@ -450,9 +451,11 @@ public class Robot2012Orange extends SimpleRobot {
             if (manipulatorController.getButton(ButtonConfiguration.Manipulator.FIRE)) {
                 // TODO: Insert firing components, when they're done, of course.
                 
+                shooterMotor.set(ActuatorConfiguration.SHOOTER_POWER);
                 hopperMotor.set(ActuatorConfiguration.HOPPER_POWER);
                 solenoidHopper.set(ActuatorConfiguration.SOLENOID_HOPPER.PUSH);
             } else {
+                shooterMotor.set(0D);
                 solenoidHopper.set(ActuatorConfiguration.SOLENOID_HOPPER.REGULAR);
             }
             
@@ -481,8 +484,8 @@ public class Robot2012Orange extends SimpleRobot {
             
             /* Automated control for the elevator. */
             
-            //pidElevator.setSetpoint(SmartDashboard.getDouble("Elevator Setpoint", 0D));
-            //pidElevator.setPID(SmartDashboard.getDouble("P", 1SD), SmartDashboard.getDouble("I", 0D), SmartDashboard.getDouble("D", 0D));
+            pidElevator.setSetpoint(SmartDashboard.getDouble("Elevator Setpoint", 0D));
+            pidElevator.setPID(SmartDashboard.getDouble("P", 0D), SmartDashboard.getDouble("I", 0D), SmartDashboard.getDouble("D", 0D));
             
             if (manipulatorController.getButton(ButtonConfiguration.Manipulator.AUTO_ELEVATOR)) {
                 if (!pidElevator.isEnable())

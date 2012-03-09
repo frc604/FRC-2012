@@ -9,11 +9,16 @@ import edu.wpi.first.wpilibj.Victor;
  * Useful for PID controllers.
  */
 public class DualVictor implements PIDOutput {
+    private boolean sprung = false;
+    
     private final Victor leftVictor;
     private final Victor rightVictor;
     
     private boolean leftInversion = false;
     private boolean rightInversion = false;
+    
+    private double lowerDeadband = 0D;
+    private double upperDeadband = 0D;
     
     /**
      * Initialize a DualVictor with a left and a right PWM port.
@@ -50,6 +55,14 @@ public class DualVictor implements PIDOutput {
         this.rightVictor = rightVictor;
     }
     
+    public boolean getSprung () {
+        return this.sprung;
+    }
+    
+    public void spring () {
+        this.sprung = true;
+    }
+    
     /**
      * Sets the inversion for the "left" Victor.
      * 
@@ -83,11 +96,16 @@ public class DualVictor implements PIDOutput {
      * @param   speed   The speed to set.
      */
     public void set (double speed) {
-        this.leftVictor.set((this.leftInversion) ? speed * -1D : speed);
-        this.rightVictor.set((this.rightInversion) ? speed * -1D : speed);
+        if (speed > this.lowerDeadband && speed < this.upperDeadband)
+            speed = 0D;
+        
+        this.leftVictor.set((this.leftInversion) ? speed * -1 : speed);
+        this.rightVictor.set((this.rightInversion) ? speed * -1 : speed);
+        
+        this.spring();
     }
     
-    /**
+    /* 
      * Function to hook into the PIDController.
      * 
      * Sets the power of the Victors.
@@ -95,12 +113,31 @@ public class DualVictor implements PIDOutput {
      * @param   output  The speed to set.
      */
     public void pidWrite (double output) {
-        System.out.println("OUT: " + output);
         this.set(output);
     }
+    
+    public void setDeadband(double lowerDeadband, double upperDeadband) {
+        this.lowerDeadband = lowerDeadband;
+        this.upperDeadband = upperDeadband;
+    }
+    
+    /**
+     * Sets whether or not safety is enabled.
+     * 
+     * @param   enabled     Whether or not safety is enabled.
+     */
     
     public void setSafetyEnabled (boolean enabled) {
         this.leftVictor.setSafetyEnabled(enabled);
         this.rightVictor.setSafetyEnabled(enabled);
+    }
+    
+    public void reload () {
+        if (!this.sprung) {
+            this.leftVictor.set(0D);
+            this.rightVictor.set(0D);
+        }
+        
+        this.sprung = false;
     }
 }

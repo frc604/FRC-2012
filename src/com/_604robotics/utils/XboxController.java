@@ -11,6 +11,8 @@ import java.util.Hashtable;
 public class XboxController {
     private final Joystick joystick;
     private Hashtable toggles = new Hashtable();
+    private Hashtable deadbandsUpper = new Hashtable();
+    private Hashtable deadbandsLower = new Hashtable();
     
     /**
      * Internal, kludgey function for turning a boolean into something that a
@@ -20,9 +22,23 @@ public class XboxController {
      * 
      * @return  A string representation of the boolean.
      */
-    
     private static String storeBoolean (boolean store) {
         return (store) ? "1" : "0";
+    }
+    
+    /**
+     * Internal, kinda-kludgey function for deadbanding a value for an axis.
+     * 
+     * @param   axis    The axis whose deadband should be applied.
+     * @param   value   The value to deadband.
+     * 
+     * @return  The deadbanded value.
+     */
+    private double deadband (int axis, double value) {
+        final String ax = Integer.toString(axis);
+        if (this.deadbandsLower.containsKey(ax) && value > Double.parseDouble((String) this.deadbandsLower.get(ax)) && value < Double.parseDouble((String) this.deadbandsUpper.get(ax)))
+            return 0D;
+        return value;
     }
     
     /**
@@ -86,7 +102,7 @@ public class XboxController {
      * @param   axis    One of the axis values specified in XboxController.Axis.
      */
     public double getAxis (int axis) {
-        return this.joystick.getRawAxis(axis);
+        return this.deadband(axis, this.joystick.getRawAxis(axis));
     }
     
     /**
@@ -147,5 +163,17 @@ public class XboxController {
      */
     public Joystick getJoystick () {
         return this.joystick;
+    }
+    
+    /**
+     * Sets the deadband for a particular axis.
+     * 
+     * @param   axis    The axis to set the deadband for.
+     * @param   lower   The lower bound of the deadband.
+     * @param   upper   The upper bound of the deadband.
+     */
+    public void setDeadband(int axis, double lower, double upper) {
+        this.deadbandsLower.put(Integer.toString(axis), Double.toString(lower));
+        this.deadbandsUpper.put(Integer.toString(axis), Double.toString(upper));
     }
 }
