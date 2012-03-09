@@ -12,7 +12,7 @@ package com._604robotics.robot2012.vision;
  * 
  * @author Kevin Parker <kevin.m.parker@gmail.com>
  */
-public class Target {
+public class Target implements Comparable<Target> {
 	
 	/**
 	 * The distance from the center of the target to the Y (vertical) value of the hoop.
@@ -167,5 +167,14 @@ public class Target {
 	@Override
 	public String toString() {
 		return "Target [x=" + x + ", y=" + y + ", z=" + z + ", angle=" + angle + "]";
+	}
+
+
+	public int compareTo(Target that) {
+		if(this.y > that.y)
+			return -1;
+		else if(this.y < that.y)
+			return 1;
+		return 0;
 	}
 }

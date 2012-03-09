@@ -24,7 +24,7 @@ public abstract class Result {
 			return true;
 		}
 		public boolean plusAt(int x, int y) {
-			return dat[x + w*y] > VisionProcessing.Sensitivity;
+			return dat[x + w*y] > VisionProcessing.defaultProcessing.conf.sensitivity;
 		}
 	
 	}

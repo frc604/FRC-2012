@@ -9,10 +9,13 @@ import java.io.IOException;
 import java.net.Authenticator;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Arrays;
 
 import javax.imageio.ImageIO;
+import javax.swing.JFrame;
 
 import com._604robotics.robot2012.vision.LinearRegression.RegressionResult;
+import com._604robotics.robot2012.vision.config.Config;
 import com._604robotics.tcpcommunicator.TcpCommunicator;
 import com.charliemouse.cambozola.shared.CamStream;
 
@@ -25,59 +28,14 @@ import com.charliemouse.cambozola.shared.CamStream;
  */
 public class VisionProcessing {
 	
-	/**
-	 * Should the tiling algorithm check the center of the tile, as well as the corners to determine if it should be
-	 * considered for being in the target?
-	 */
-	public static final boolean		CheckCenter				= true;
-	
-	/**
-	 * Should this program attempt to communicate to the robot?
-	 */
-	private static final boolean	communicateToRobot		= false;
-	
-	private static final boolean	Debug_saveImagesToFiles	= false;
-	
-	private static final boolean	Debug_ShowDisplay		= true;
-	
-
-	/**
-	 * Should all pixels be scanned in every tile be scanned, or just the corners (and possibly center)
-	 */
-	public static final boolean		MegaScan				= false;
-	
-	/**
-	 * A calibration constant indicating the minimum size for a potential target to be considered. This number is given
-	 * in square "tiles", with {@link #Step} pixels side lengths
-	 */
-	public static final int			MinBlobSize				= 16;
-	
-	/**
-	 * A constant between -128 to +127 indicating how sensitive the color acceptance of the target should be. Lower
-	 * numbers will allow more pixels, while higher numbers will eliminate more.
-	 * 
-	 * </br> This number needs to be chosen high enough to reduce or eliminate false positives, but it needs to be low
-	 * enough to not generate false negatives.
-	 */
-	public static final int			Sensitivity				= 100;		// higher numbers means more rejected pixels
-																		
-	/**
-	 * Should debug info be shown?
-	 * 
-	 * This includes time per frame, number of visible targets, and estimated position of visible targets.
-	 */
-	public static final boolean		ShowDebugInfo			= true;
+	public static final VisionProcessing defaultProcessing = new VisionProcessing();
 	
 	/**
 	 * Constants indicating the Left, Top, Right, and Bottom sides of a target or bounding box.
 	 */
 	public static final int			Side_Left				= 0, Side_Top = 1, Side_Right = 2, Side_Bottom = 3;
 	
-	/**
-	 * The size of each tile in the vision processing. This is represented in pixels. It should be a number chosen large
-	 * enough to have a good speed, but small enough to not miss a target in the image.
-	 */
-	public static final int			Step					= 5;
+	public Config conf = Config.readConfig(Config.defaultConfigFile);
 	
 	/**
 	 * This function determines the distances from a side to the points on the target, in a direction perpendicular to
@@ -94,16 +52,17 @@ public class VisionProcessing {
 	 * @param xVals - the returned array of X values on the target nearest the given side.
 	 * @param yVals - the returned array of Y values on the target nearest the given side.
 	 */
-	private static void getDistsForSide(ResultImage ri, int x1, int y1, int x2, int y2, int side, int lenMajor, int lenMinor, double[] xVals, double[] yVals) {
+	private static void getDistsForSide(ResultImage ri, int x1, int y1, int x2, int y2, int side, int lenMajor,
+			int lenMinor, double[] xVals, double[] yVals) {
 		
-		//Iterate through the Major length
+		// Iterate through the Major length
 		for (int i = 0; i < lenMajor; i++) {
 			
-			//declare the x and y arrays
+			// declare the x and y arrays
 			xVals[i] = Double.NaN;
 			yVals[i] = Double.NaN;
 			
-			//find the current x or y
+			// find the current x or y
 			int x = 0, y = 0;
 			if (side == Side_Left || side == Side_Right) {
 				y = i + y1;
@@ -111,10 +70,10 @@ public class VisionProcessing {
 				x = i + x1;
 			}
 			
-			//Iterate through the Minor length
+			// Iterate through the Minor length
 			for (int j = 0; j < lenMinor; j++) {
 				
-				//find the other one of x or y
+				// find the other one of x or y
 				if (side == Side_Left) {
 					x = x1 + j;
 				} else if (side == Side_Top) {
@@ -125,7 +84,7 @@ public class VisionProcessing {
 					y = y2 - j;
 				}
 				
-				//If it's a target, then add it to the list and break
+				// If it's a target, then add it to the list and break
 				if (ri.isTarget(x, y)) {
 					xVals[i] = x;
 					yVals[i] = y;
@@ -136,8 +95,9 @@ public class VisionProcessing {
 		}
 	}
 	
-	public static RegressionResult getRegressionForSide(ResultImage ri, int side, AABB guess) {
-		int x1 = guess.x1 * Step - 1, x2 = guess.x2 * Step + Step, y1 = guess.y1 * Step - 1, y2 = guess.y2 * Step + Step;
+	public RegressionResult getRegressionForSide(ResultImage ri, int side, AABB guess) {
+		int x1 = guess.x1 * conf.tileSize - 1, x2 = guess.x2 * conf.tileSize + conf.tileSize, y1 = guess.y1 * conf.tileSize - 1, y2 = guess.y2 * conf.tileSize
+		+ conf.tileSize;
 		
 		int lenMajor = 0;
 		int lenMinor = 0;
@@ -175,11 +135,17 @@ public class VisionProcessing {
 	 * Just a simple main() function for testing the target tracking
 	 */
 	public static void main(String[] args) throws InterruptedException, IOException {
-		VisionProcessing vp = new VisionProcessing();
+		VisionProcessing vp = defaultProcessing;
 		vp.loopAndProcessPics();
 		
 	}
 	
+	/**
+	 * @param results - the Img to store returned data in
+	 * @param i - the X coordinate
+	 * @param j - the Y coordinate
+	 * @param color - the blob's color
+	 */
 	public static void recursiveTraceBlobs(Img results, int i, int j, int color) {
 		results.set(i, j, color);
 		
@@ -208,17 +174,23 @@ public class VisionProcessing {
 	 * 
 	 * It shows targets in green, and sides and corners in blue.
 	 */
-	final Disp						display			= new Disp();
+	public final VisionDisp						display			= new VisionDisp();
 	
 	public VisionProcessing() {
-		if (communicateToRobot) {
+		if (conf.communicateToRobot) {
 			comm.up();
 		}
-		if (Debug_saveImagesToFiles) {
+		if (conf.debug_SaveImagesToFiles) {
 			new File("target/").mkdir();
 		}
-		if (Debug_ShowDisplay) {
-			display.setVisible(true);
+		if (conf.debug_ShowDisplay) {
+			JFrame displayWindow = new JFrame("604 - FRC 2012 Vision");
+			displayWindow.add(display);
+			
+			displayWindow.pack();
+			displayWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+			displayWindow.setVisible(true);
+			
 		}
 	}
 	
@@ -259,13 +231,17 @@ public class VisionProcessing {
 			lastImg = img;
 			
 			// process the newly received image. If this is too slow, frames will just be dropped.
-			processImage(img);
+			try {
+				processImage(img);
+			} catch(Exception ex) {
+				ex.printStackTrace();
+			}
 			
-			System.out.println(stream.getFPS());
+			//System.out.println(stream.getFPS());
 			
 			currentFrame++;
 			
-			if (Debug_saveImagesToFiles) {
+			if (conf.debug_SaveImagesToFiles) {
 				try {
 					ImageIO.write(img, "jpeg", new File("target/" + currentFrame + ".jpeg"));
 				} catch (IOException ex) {
@@ -291,12 +267,10 @@ public class VisionProcessing {
 		}
 	}
 	
+	int[] imageBuffer;
+	
 	public void processImage(BufferedImage img) {
 		
-		/*		//Just in case you want to save the JPEGs
-
-		 */
-
 		double time_i = System.nanoTime();
 		
 		int w = img.getWidth();
@@ -309,7 +283,9 @@ public class VisionProcessing {
 		
 		double time_i2 = System.nanoTime();
 		ResultImage ri = new ResultImage(w, h);
-		Img img_copy = new Img(img.getRaster());
+		if(imageBuffer == null)
+			imageBuffer = new int[w*h];
+		Img img_copy = new Img(img.getRaster(), imageBuffer);
 		ri.computeResults(img_copy);
 		// /System.out.println("result Time = " + (System.nanoTime()-time_i2)/1000000000);
 		
@@ -368,7 +344,7 @@ public class VisionProcessing {
 		
 		Point2d[] pts = new Point2d[colors * 4];
 		for (int i = 0; i < colors; i++) {
-			if (blobSize[i] >= MinBlobSize) {
+			if (blobSize[i] >= conf.minBlobSize) {
 				// System.out.println(rough[i].x1 + ", " + rough[i].y1 + ", \n\t" + rough[i].x2 + ", " + rough[i].y2);
 				/*
 				Point2d topLeft		= getCorner(ri, -1, -1, rough[i]);
@@ -376,7 +352,7 @@ public class VisionProcessing {
 				Point2d bottomLeft	= getCorner(ri, -1, 1, rough[i]);
 				Point2d bottomRight	= getCorner(ri, 1, 1, rough[i]);
 				 */
-
+				
 				LinearRegression.RegressionResult top = getRegressionForSide(ri, Side_Top, rough[i]);
 				LinearRegression.RegressionResult bottom = getRegressionForSide(ri, Side_Bottom, rough[i]);
 				LinearRegression.RegressionResult left = getRegressionForSide(ri, Side_Left, rough[i]);
@@ -395,7 +371,8 @@ public class VisionProcessing {
 				Quad q = new com._604robotics.robot2012.vision.Quad(topLeft, topRight, bottomLeft, bottomRight);
 				
 				targets[i] = new DistanceCalculations().getAngleAndRelXYZOfTarget(q);
-				System.out.println(targets[i]);
+				if(conf.debug_Print)
+					System.out.println(targets[i]);
 				
 				targetQuads[i] = q;
 				
@@ -407,31 +384,62 @@ public class VisionProcessing {
 			}
 		}
 		
-		if (communicateToRobot) {
+		
+		//get rid of null targets...
+		int targetCount = 0;
+		for(int i = 0; i < colors; i++) {
+			if(targets[i] != null)
+				targetCount++;
+		}
+		Target[] targets_tmp = new Target[targetCount];
+		targetCount = 0;
+		for(int i = 0; i < colors; i++) {
+			if(targets[i] != null) {
+				targets_tmp[targetCount++] = targets[i];
+			}
+		}
+		targets = targets_tmp;
+		
+		//sort based on height...
+		Arrays.sort(targets);
+		
+		if(conf.debug_Print)
+			System.out.println(Arrays.toString(targets));
+		
+		if (conf.communicateToRobot) {
 			comm.writePoints(targets);
 		}
 		
-
-		System.out.println("Time = " + (System.nanoTime() - time_i) / 1000000000);
 		
-		System.out.println("--");
-		
-		if (Debug_ShowDisplay) {
-			display.lines = linearRegressions;
-			display.image = img;
-			display.resultImage = ri;
-			display.repaint();
+		if(conf.debug_Print) {
+			System.out.println("Time = " + (System.nanoTime() - time_i) / 1000000000);
 			
+			System.out.println("--");
+		}
 
+		display.image = img;
+		
+		if (conf.debug_ShowDisplay) {
+			display.targetSides = linearRegressions;
+			display.resultImage = ri;
+			display.hasPainted = false;
+			
+			
+			/* Uncomment out the following lines to only compute after rendering is finished
 			while (!display.hasPainted) {
 				try {
-					Thread.sleep(10);
+					Thread.sleep(2);
 				} catch (InterruptedException ex) {
 				}
 			}
+			 */
 			
+		} else {
+			display.targetSides = null;
+			display.resultImage = null;
 			display.hasPainted = false;
 		}
+		display.repaint();
 		
 	}
 }

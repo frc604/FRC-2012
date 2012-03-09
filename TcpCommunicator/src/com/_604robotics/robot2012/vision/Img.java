@@ -19,11 +19,11 @@ public class Img {
 		this.w = w;
 		this.h = h;
 	}
-	
-	public Img(Raster raster) {
+
+	public Img(Raster raster, int[] buff) {
 		w = raster.getWidth();
 		h = raster.getHeight();
-		dat = new int[w*h];
+		dat = buff;
 		
 		int[] pix = new int[3];
 		
@@ -34,6 +34,10 @@ public class Img {
 				dat[i + j*w] = ((pix[0])<<16) + ((pix[1])<<8) + pix[2];
 			}
 		}
+	}
+	public Img(Raster raster) {
+		this(raster, new int[raster.getWidth()*raster.getHeight()]);
+		
 	}
 
 	/**

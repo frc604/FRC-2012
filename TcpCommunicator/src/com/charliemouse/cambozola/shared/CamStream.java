@@ -1,25 +1,3 @@
-/**
- ** com/charliemouse/cambozola/shared/CamStream.java
- **  Copyright (C) Andy Wilcock, 2001.
- **  Available from http://www.charliemouse.com
- **
- ** This file is part of the Cambozola package (c) Andy Wilcock, 2001.
- ** Available from http://www.charliemouse.com
- **
- **  Cambozola is free software; you can redistribute it and/or modify
- **  it under the terms of the GNU General Public License as published by
- **  the Free Software Foundation; either version 2 of the License, or
- **  (at your option) any later version.
- **
- **  Cambozola is distributed in the hope that it will be useful,
- **  but WITHOUT ANY WARRANTY; without even the implied warranty of
- **  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- **  GNU General Public License for more details.
- **
- **  You should have received a copy of the GNU General Public License
- **  along with Cambozola; if not, write to the Free Software
- **  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- **/
 package com.charliemouse.cambozola.shared;
 
 import java.awt.Image;
@@ -30,6 +8,7 @@ import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Enumeration;
@@ -38,6 +17,31 @@ import java.util.Vector;
 
 import javax.imageio.ImageIO;
 
+/**
+ * com/charliemouse/cambozola/shared/CamStream.java	</br>
+ *  Copyright (C) Andy Wilcock, 2001.	</br>
+ *  Available from http://www.charliemouse.com	</br>
+ *	</br>
+ * This file is part of the Cambozola package (c) Andy Wilcock, 2001.	</br>
+ * Available from http://www.charliemouse.com	</br>
+ *	</br>
+ *  Cambozola is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.	</br>
+ *	</br>
+ *  Cambozola is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.	</br>
+ *	</br>
+ *  You should have received a copy of the GNU General Public License
+ *  along with Cambozola; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA	</br>
+ *	</br>
+ *	</br>
+ *  A few minor modifications to reduce latency have been made by Kevin Parker <kevin.m.parker@gmail.com>
+ **/
 public class CamStream extends Thread {
 	public static final int CONNECT_STYLE_SOCKET = 1;
 	public static final int CONNECT_STYLE_HTTP   = 2;
@@ -55,7 +59,7 @@ public class CamStream extends Thread {
 	private DataInputStream m_inputStream = null;
 	private boolean m_isDefunct = false;
 	private boolean m_collecting = false;
-	private byte[] m_rawImage;
+//	private byte[] m_rawImage;
 	private String m_imageType = "image/jpeg";
 	private long m_startTime = 0;
 	private int m_imgidx = 0;
@@ -97,10 +101,10 @@ public class CamStream extends Thread {
 	}
 
 
-	public synchronized final byte[] getRawImage()
-	{
-		return m_rawImage;
-	}
+//	public synchronized final byte[] getRawImage()
+//	{
+//		return m_rawImage;
+//	}
 
 
 	public synchronized int getIndex()
@@ -335,14 +339,12 @@ public class CamStream extends Thread {
 							System.err.println("// Reading to boundary");
 						}
 						
-						byte[] img = ssplit.readToBoundary(boundary);
-						if (img.length == 0) {
-							break;
-						}
+						InputStream imgStream = ssplit.getStreamToReadToBoundary(boundary);
+						
 						//
 						// Update the image [forces events off]
 						//
-						updateImage(ctype, img);
+						updateImage(ctype, imgStream);
 					}
 				}
 				try {
@@ -367,7 +369,7 @@ public class CamStream extends Thread {
 		//
 	}
 
-	private synchronized void updateImage(String ctype, byte[] img)
+	private synchronized void updateImage(String ctype, InputStream imgStream)
 	{
 		//
 		// Update our image...
@@ -375,11 +377,10 @@ public class CamStream extends Thread {
 		m_imageType = ctype;
 		//m_imain = m_tk.createImage(img);
 		try {
-//			long l1 = System.nanoTime();
-			m_imain = ImageIO.read(new ByteArrayInputStream(img));
-//			System.out.println((System.nanoTime() - l1)/1000000.0);
+			///long l1 = System.nanoTime();
+			m_imain = ImageIO.read(imgStream);
+			///System.out.println("Parse - "+(System.nanoTime() - l1)/1000000.0);
 		} catch (IOException ex) { }
-		m_rawImage = img;
 		m_imgidx++;
 
 		m_imain.getWidth(new ImageObserver()

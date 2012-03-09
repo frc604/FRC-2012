@@ -22,10 +22,7 @@
  **/
 package com.charliemouse.cambozola.shared;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
-import java.io.EOFException;
-import java.io.IOException;
+import java.io.*;
 import java.util.Hashtable;
 import java.net.URLConnection;
 
@@ -106,78 +103,112 @@ public class StreamSplit {
 
 	public void skipToBoundary(String boundary) throws IOException
 	{
-		readToBoundary(boundary);
+		getStreamToReadToBoundary(boundary);
 	}
 
 
-	public byte[] readToBoundary(String boundary) throws IOException
+	public InputStream getStreamToReadToBoundary(String boundary) throws IOException
 	{
-		ResizableByteArrayOutputStream baos = new ResizableByteArrayOutputStream();
-		StringBuffer lastLine = new StringBuffer();
-		int lineidx = 0;
-		int chidx = 0;
-		byte ch;
-		do {
-			try {
-				ch = m_dis.readByte();
-			} catch (EOFException e) {
-				m_streamEnd = true;
-				break;
-			}
-			if (ch == '\n' || ch == '\r') {
-				//
-				// End of line... Note, this will now look for the boundary
-                // within the line - more flexible as it can handle
-                // arfle--boundary\n  as well as
-                // arfle\n--boundary\n
-				//
-				String lls = lastLine.toString();
-                int idx = lls.indexOf(BOUNDARY_MARKER_PREFIX);
-                if (idx != -1) {
-                    lls = lastLine.substring(idx);
-                    if (lls.startsWith(boundary)) {
-                        //
-                        // Boundary found - check for termination
-                        //
-                        String btest = lls.substring(boundary.length());
-                        if (btest.equals(BOUNDARY_MARKER_TERM)) {
-                            m_streamEnd = true;
-                        }
-                        chidx = lineidx+idx;
-                        break;
-                    }
-				}
-				lastLine = new StringBuffer();
-				lineidx = chidx + 1;
-			} else {
-				lastLine.append((char) ch);
-			}
-			chidx++;
-			baos.write(ch);
-		} while (true);
-		//
-		baos.close();
-		baos.resize(chidx);
-		return baos.toByteArray();
+		return piper.go(boundary);
 	}
 
+	
+	private final BoundaryStreamPiper piper = new BoundaryStreamPiper();
+	
+	private class BoundaryStreamPiper implements Runnable {
+		
+		public BoundaryStreamPiper() {
+			new Thread(this).start();
+		}
+		
+		public PipedInputStream go(String boundary) throws IOException {
+			this.boundary = boundary;
+			
+			in = new PipedInputStream();
+			out = new PipedOutputStream(in);
+			
+			return in;
+		}
+
+		public PipedInputStream in;
+		public PipedOutputStream out;
+		String boundary;
+		
+		public synchronized void run() {
+			while(true) {
+				
+				while(out==null) {
+					try {
+						Thread.sleep(1);
+					} catch(Exception ex) {}
+				}
+				
+				StringBuffer lastLine = new StringBuffer();
+				int lineidx = 0;
+				int chidx = 0;
+				byte ch;
+				do {
+					try {
+						ch = m_dis.readByte();
+					} catch (IOException e) {
+						m_streamEnd = true;
+						break;
+					}
+					if (ch == '\n' || ch == '\r') {
+						//
+						// End of line... Note, this will now look for the boundary
+		                // within the line - more flexible as it can handle
+		                // arfle--boundary\n  as well as
+		                // arfle\n--boundary\n
+						//
+						String lls = lastLine.toString();
+		                int idx = lls.indexOf(BOUNDARY_MARKER_PREFIX);
+		                if (idx != -1) {
+		                    lls = lastLine.substring(idx);
+		                    if (lls.startsWith(boundary)) {
+		                        //
+		                        // Boundary found - check for termination
+		                        //
+		                        String btest = lls.substring(boundary.length());
+		                        if (btest.equals(BOUNDARY_MARKER_TERM)) {
+		                            m_streamEnd = true;
+		                        }
+		                        chidx = lineidx+idx;
+		                        break;
+		                    }
+						}
+						lastLine = new StringBuffer();
+						lineidx = chidx + 1;
+					} else {
+						lastLine.append((char) ch);
+					}
+					chidx++;
+					try {
+						out.write(ch);
+					} catch (IOException ex) {
+						ex.printStackTrace();
+					}
+				} while (true);
+				//
+				
+				///System.out.println("Here");
+
+				try {
+					out.flush();
+					out.close();
+				} catch (IOException ex) {
+					// TODO Auto-generated catch block
+					ex.printStackTrace();
+				}
+				
+				out = null;
+			}
+			
+		}
+	}
 
 	public boolean isAtStreamEnd()
 	{
 		return m_streamEnd;
-	}
-}
-
-
-class ResizableByteArrayOutputStream extends ByteArrayOutputStream {
-	public ResizableByteArrayOutputStream()
-	{
-		super();
-	}
-
-
-	public void resize(int size)
-	{
-		count = size;
 	}
 }
