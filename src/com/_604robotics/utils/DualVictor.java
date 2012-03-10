@@ -6,7 +6,7 @@ import edu.wpi.first.wpilibj.Victor;
 /**
  * Control two Victors like they're one.
  * 
- * Useful for PID controllers.
+ * Useful for PID controllers. Also, it's springable (see SpringableVictor).
  */
 public class DualVictor implements PIDOutput {
     private boolean sprung = false;
@@ -55,10 +55,18 @@ public class DualVictor implements PIDOutput {
         this.rightVictor = rightVictor;
     }
     
+    /**
+     * Has the victor been sprung?
+     * 
+     * @return  Whether or not the victor has been sprung.
+     */
     public boolean getSprung () {
         return this.sprung;
     }
     
+    /**
+     * Springs the victor.
+     */
     public void spring () {
         this.sprung = true;
     }
@@ -105,7 +113,7 @@ public class DualVictor implements PIDOutput {
         this.spring();
     }
     
-    /* 
+    /**
      * Function to hook into the PIDController.
      * 
      * Sets the power of the Victors.
@@ -116,6 +124,14 @@ public class DualVictor implements PIDOutput {
         this.set(output);
     }
     
+    /**
+     * Sets the deadband for the DualVictor.
+     * 
+     * The default is no deadband.
+     * 
+     * @param   lowerDeadband       The lower bound of the deadband.
+     * @param   upperDeadband       The upper bound of the deadband.
+     */
     public void setDeadband(double lowerDeadband, double upperDeadband) {
         this.lowerDeadband = lowerDeadband;
         this.upperDeadband = upperDeadband;
@@ -126,12 +142,14 @@ public class DualVictor implements PIDOutput {
      * 
      * @param   enabled     Whether or not safety is enabled.
      */
-    
     public void setSafetyEnabled (boolean enabled) {
         this.leftVictor.setSafetyEnabled(enabled);
         this.rightVictor.setSafetyEnabled(enabled);
     }
     
+    /**
+     * If the Victor has been sprung, unspring it; if not, set the output to 0.
+     */
     public void reload () {
         if (!this.sprung) {
             this.leftVictor.set(0D);

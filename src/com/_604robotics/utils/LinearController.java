@@ -110,6 +110,27 @@ public class LinearController {
     }
     
     /**
+     * Are we there yet?
+     * 
+     * Internal version that takes a pos parameter.
+     * 
+     * @param   pos     Our current position.
+     * @return  Whether or not we're there yet.
+     */
+    private boolean onTarget (double pos) {
+        return (this.direction == Direction.FORWARD && pos >= this.target) || (this.direction == Direction.REVERSE && pos <= this.target);
+    }
+    
+    /**
+     * Are we there yet?
+     * 
+     * @return  Whether or not we're there yet.
+     */
+    public boolean onTarget () {
+        return this.onTarget(this.source.pidGet());
+    }
+    
+    /**
      * Internal function that performs the output calculation.
      * 
      * @return  An output value, to be passed to a PIDOutput.
@@ -118,7 +139,7 @@ public class LinearController {
         double pos = this.source.pidGet();
         double dist = Math.abs(pos - this.target);
         
-        if ((this.direction == Direction.FORWARD && pos >= this.target) || (this.direction == Direction.REVERSE && pos <= this.target))
+        if (this.onTarget())
             return 0D;
         
         if (dist <= this.coastingRange)

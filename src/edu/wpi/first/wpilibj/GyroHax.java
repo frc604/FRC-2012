@@ -1,5 +1,10 @@
 package edu.wpi.first.wpilibj;
 
+/**
+ * Extender class for the Gyro class that exposes the underlying AnalogChannel.
+ * 
+ * @author  Michael Smith <mdsmtp@gmail.com>
+ */
 public class GyroHax extends Gyro {
     /**
      * Initializes a new GyroHax on the specified PWM port.
@@ -22,7 +27,11 @@ public class GyroHax extends Gyro {
      * @param   port    The PWM port the gyro is plugged into. Must be 1 or 2!
      */
     public GyroHax (int slot, int port) {
-        super(slot, port);
+        super(slot,/**
+     * Has the victor been sprung?
+     * 
+     * @return  Whether or not the victor has been sprung.
+     */ port);
     }
     
     /**
@@ -36,6 +45,11 @@ public class GyroHax extends Gyro {
         super(channel);
     }
     
+    /**
+     * Gets the raw AnalogChannel.
+     * 
+     * @return  The raw AnalogChannel.
+     */
     public AnalogChannel getAnalogChannel() {
         return this.m_analog;
     }

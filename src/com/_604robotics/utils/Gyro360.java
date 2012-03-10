@@ -5,7 +5,7 @@ import edu.wpi.first.wpilibj.Gyro;
 import edu.wpi.first.wpilibj.PIDSource;
 
 /**
- * Wrapper class to constrain the output of a Gyro to 360 degrees, looping.
+ * Extender class to constrain the output of a Gyro to 360 degrees, looping.
  * 
  * @author  Michael Smith <mdsmt@gmail.com>
  */
