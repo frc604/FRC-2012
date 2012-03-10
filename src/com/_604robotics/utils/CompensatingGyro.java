@@ -3,6 +3,11 @@ package com._604robotics.utils;
 import edu.wpi.first.wpilibj.AnalogChannel;
 import edu.wpi.first.wpilibj.GyroHax;
 
+/**
+ * Gyro with manual compensation-setting support.
+ * 
+ * @author  Michael Smith <mdsmtp@gmail.com>
+ */
 public class CompensatingGyro extends GyroHax {
     /**
      * Initializes a new CompensatingGyro on the specified PWM port.
@@ -39,6 +44,11 @@ public class CompensatingGyro extends GyroHax {
         super(channel);
     }
     
+    /**
+     * Manually sets the center for the accumulator.
+     * 
+     * @param   center      The center to set.
+     */
     public void setAccumulatorCenter(int center) {
         this.getAnalogChannel().setAccumulatorCenter(kPwmChannels);
     }
