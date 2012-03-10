@@ -71,6 +71,7 @@ public class CamStream extends Thread {
 	private String m_appName = "";
 	private boolean m_debug = true;
 
+	
 	public CamStream(URL strm, String app, URL docBase, int retryCount, int retryDelay, ExceptionReporter reporter, boolean debug)
 	{
 		m_tk = Toolkit.getDefaultToolkit();
