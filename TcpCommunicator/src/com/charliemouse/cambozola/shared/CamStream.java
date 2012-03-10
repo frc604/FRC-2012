@@ -15,65 +15,72 @@ import java.util.Hashtable;
 import java.util.Vector;
 
 import javax.imageio.ImageIO;
+
 /**
- * com/charliemouse/cambozola/shared/CamStream.java	</br>
- *  Copyright (C) Andy Wilcock, 2001.	</br>
- *  Available from http://www.charliemouse.com	</br>
- *	</br>
- * This file is part of the Cambozola package (c) Andy Wilcock, 2001.	</br>
- * Available from http://www.charliemouse.com	</br>
- *	</br>
- *  Cambozola is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2 of the License, or
- *  (at your option) any later version.	</br>
- *	</br>
- *  Cambozola is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.	</br>
- *	</br>
- *  You should have received a copy of the GNU General Public License
- *  along with Cambozola; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA	</br>
- *	</br>
- *	</br>
- *  <p>
- *  A few minor modifications to reduce latency have been made by Kevin Parker <kevin.m.parker@gmail.com>
- *  These modifications are intended to improve the speed/performance of MJPEG reading (latency has been
- *  reduced on my machine by another 10-20 ms; this is per-frame, so there are hundreds of ms of "waiting"
- *  reduced away. There are probably more changes that can still be made to greatly improve performance.)
- *  </p>
+ * com/charliemouse/cambozola/shared/CamStream.java </br> Copyright (C) Andy Wilcock, 2001. </br> Available from
+ * http://www.charliemouse.com </br> </br>
+ * 
+ * This file is part of the Cambozola package (c) Andy Wilcock, 2001. </br> Available from http://www.charliemouse.com
+ * </br> </br>
+ * 
+ * Cambozola is free software; you can redistribute it and/or modify it under the terms of the GNU General Public
+ * License as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later
+ * version. </br> </br>
+ * 
+ * Cambozola is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * </br> </br>
+ * 
+ * You should have received a copy of the GNU General Public License along with Cambozola; if not, write to the Free
+ * Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA </br>
+ * 
+ * </br> </br>
+ * 
+ * <p>
+ * A few minor modifications to reduce latency have been made by Kevin Parker <kevin.m.parker@gmail.com> These
+ * modifications are intended to improve the speed/performance of MJPEG reading (latency has been reduced on my machine
+ * by another 10-20 ms; this is per-frame, so there are hundreds of ms of "waiting" reduced away. There are probably
+ * more changes that can still be made to greatly improve performance.)
+ * </p>
+ * 
+ * <p>
+ * I (Kevin Parker) made the following changes. I made the JPEG data stream pipe directly into the parser, rather than
+ * loading the whole image into a buffer before parsing. I made a couple of minor changes, one of which was reducing
+ * some of the sleep lengths. I also did some minor code auto-cleanup. Finally, I added a few comments and javadocs.
+ * 
+ * TODO - make the last statement *not* a lie
+ * </p>
  **/
 public class CamStream extends Thread {
-	public static final int CONNECT_STYLE_SOCKET = 1;
-	public static final int CONNECT_STYLE_HTTP   = 2;
-
-
-	private static final int IMG_FLUFF_FACTOR = 1;
-
-	private ExceptionReporter m_reporter = null;
-	private Vector m_listeners;
-	private BufferedImage m_imain = null;
-	private Toolkit m_tk;
-	private URL m_stream;
-	private String m_userpassEncoded;
-	private URL m_docBase;
-	private DataInputStream m_inputStream = null;
-	private boolean m_isDefunct = false;
-	private boolean m_collecting = false;
-//	private byte[] m_rawImage;
-	private String m_imageType = "image/jpeg";
-	private long m_startTime = 0;
-	private int m_imgidx = 0;
-	private int m_retryCount = 1;
-	private int m_retryDelay = 1000;
-	private String m_appName = "";
-	private boolean m_debug = true;
-
 	
-	public CamStream(URL strm, String app, URL docBase, int retryCount, int retryDelay, ExceptionReporter reporter, boolean debug)
-	{
+	public static final int		CONNECT_STYLE_HTTP		= 2;
+	public static final int		CONNECT_STYLE_SOCKET	= 1;
+	
+
+	private static final int	IMG_FLUFF_FACTOR		= 1;
+	
+	private String				m_appName				= "";
+	private boolean				m_collecting			= false;
+	private boolean				m_debug					= true;
+	private URL					m_docBase;
+	// private byte[] m_rawImage;
+	private String				m_imageType				= "image/jpeg";
+	private BufferedImage		m_imain					= null;
+	private int					m_imgidx				= 0;
+	private DataInputStream		m_inputStream			= null;
+	private boolean				m_isDefunct				= false;
+	private Vector				m_listeners;
+	private ExceptionReporter	m_reporter				= null;
+	private int					m_retryCount			= 1;
+	private int					m_retryDelay			= 1000;
+	private long				m_startTime				= 0;
+	private URL					m_stream;
+	private Toolkit				m_tk;
+	private String				m_userpassEncoded;
+	
+	
+	public CamStream(URL strm, String app, URL docBase, int retryCount, int retryDelay, ExceptionReporter reporter,
+			boolean debug) {
 		m_tk = Toolkit.getDefaultToolkit();
 		m_listeners = new Vector();
 		//
@@ -85,8 +92,7 @@ public class CamStream extends Thread {
 		// Encode if needed...
 		//
 		m_userpassEncoded = null;
-		if (userPass != null && userPass.length() > 0)
-		{
+		if (userPass != null && userPass.length() > 0) {
 			m_userpassEncoded = Base64.encode(userPass.getBytes());
 		}
 		m_appName = app;
@@ -97,71 +103,68 @@ public class CamStream extends Thread {
 		m_retryDelay = retryDelay;
 		m_debug = debug;
 	}
-
-
-	public synchronized BufferedImage getCurrent()
-	{
-		return m_imain;
-	}
-
-
-//	public synchronized final byte[] getRawImage()
-//	{
-//		return m_rawImage;
-//	}
-
-
-	public synchronized int getIndex()
-	{
-		return m_imgidx;
-	}
-
-
-	public synchronized String getType()
-	{
-		return m_imageType;
-	}
-
-
-	public URL getStreamURL()
-	{
-		return m_stream;
-	}
-
-
-	public double getFPS()
-	{
-		if (m_startTime == 0) {
-			return 0.0;
-		}
-		long currTime = System.currentTimeMillis();
-		return (1000.0 * (m_imgidx - IMG_FLUFF_FACTOR)) / (currTime - m_startTime);
-	}
-
-
-	public void addImageChangeListener(ImageChangeListener cl)
-	{
+	
+	
+	public void addImageChangeListener(ImageChangeListener cl) {
 		m_listeners.addElement(cl);
 	}
+	
+	
+	// public synchronized final byte[] getRawImage()
+	// {
+	// return m_rawImage;
+	// }
+	
 
-
-	public void removeImageChangeListener(ImageChangeListener cl)
-	{
-		m_listeners.removeElement(cl);
+	@Override
+	public void finalize() throws Throwable {
+		unhook();
+		super.finalize();
 	}
-
-
-	private void fireImageChange()
-	{
+	
+	
+	private void fireImageChange() {
 		ImageChangeEvent ce = new ImageChangeEvent(this);
 		for (Enumeration e = m_listeners.elements(); e.hasMoreElements();) {
 			((ImageChangeListener) e.nextElement()).imageChanged(ce);
 		}
 	}
-
-
-	public void run()
-	{
+	
+	
+	public synchronized BufferedImage getCurrent() {
+		return m_imain;
+	}
+	
+	
+	public double getFPS() {
+		if (m_startTime == 0)
+			return 0.0;
+		long currTime = System.currentTimeMillis();
+		return 1000.0 * (m_imgidx - IMG_FLUFF_FACTOR) / (currTime - m_startTime);
+	}
+	
+	
+	public synchronized int getIndex() {
+		return m_imgidx;
+	}
+	
+	
+	public URL getStreamURL() {
+		return m_stream;
+	}
+	
+	
+	public synchronized String getType() {
+		return m_imageType;
+	}
+	
+	
+	public void removeImageChangeListener(ImageChangeListener cl) {
+		m_listeners.removeElement(cl);
+	}
+	
+	@Override
+	public void run() {
 		StreamSplit ssplit;
 		try {
 			//
@@ -180,9 +183,8 @@ public class CamStream extends Thread {
 				// Keep track of how many times we tried.
 				//
 				tryIndex++;
-
-				if (m_debug)
-				{
+				
+				if (m_debug) {
 					System.err.println("// Connection URL = " + m_stream);
 				}
 				//
@@ -204,12 +206,10 @@ public class CamStream extends Thread {
 				headers = StreamSplit.readHeaders(conn);
 				ssplit = new StreamSplit(m_inputStream);
 				//
-				if (m_debug)
-				{
+				if (m_debug) {
 					System.err.println("// Request sent; Main Response headers:");
-					for (Enumeration enm = headers.keys();enm.hasMoreElements();)
-					{
-						String hkey = (String)enm.nextElement();
+					for (Enumeration enm = headers.keys(); enm.hasMoreElements();) {
+						String hkey = (String) enm.nextElement();
 						System.err.println("//   " + hkey + " = " + headers.get(hkey));
 					}
 				}
@@ -224,26 +224,24 @@ public class CamStream extends Thread {
 					connectionError = "No main content type";
 				} else if (ctype.indexOf("text") != -1) {
 					String response;
-					//noinspection deprecation
+					// noinspection deprecation
 					while ((response = m_inputStream.readLine()) != null) {
 						System.out.println(response);
 					}
 					connectionError = "Failed to connect to server (denied?)";
 				}
-				if (connectionError == null)
-				{
+				if (connectionError == null) {
 					break; // Yay!! got one.
-				} else if (m_isDefunct) {
+				} else if (m_isDefunct)
 					//
 					// Not wanted any more...
 					//
 					return;
-				} else {
+				else {
 					//
 					// Wait a while before retrying...
 					//
-					if (m_debug)
-					{
+					if (m_debug) {
 						System.err.println("// Waiting for " + retryDelay + " ms");
 					}
 					m_reporter.reportFailure(connectionError);
@@ -252,9 +250,7 @@ public class CamStream extends Thread {
 			} while (tryIndex < retryCount);
 			//
 			if (connectionError != null)
-			{
 				return;
-			}
 			//
 			// Boundary will always be something - '--' or '--foobar'
 			//
@@ -266,9 +262,8 @@ public class CamStream extends Thread {
 				//
 				// Remove quotes around boundary string [if present]
 				//
-				if (boundary.startsWith("\"") && boundary.endsWith("\""))
-				{
-					boundary = boundary.substring(1, boundary.length()-1);
+				if (boundary.startsWith("\"") && boundary.endsWith("\"")) {
+					boundary = boundary.substring(1, boundary.length() - 1);
 				}
 				if (!boundary.startsWith(StreamSplit.BOUNDARY_MARKER_PREFIX)) {
 					boundary = StreamSplit.BOUNDARY_MARKER_PREFIX + boundary;
@@ -278,26 +273,24 @@ public class CamStream extends Thread {
 			// Now if we have a boundary, read up to that.
 			//
 			if (ctype.startsWith("multipart/x-mixed-replace")) {
-				if (m_debug)
-				{
+				if (m_debug) {
 					System.err.println("// Reading up to boundary");
 				}
 				ssplit.skipToBoundary(boundary);
 			}
-
+			
 			do {
 				if (m_collecting) {
 					//
 					// Now we have the real type...
-					//  More headers (for the part), then the object...
+					// More headers (for the part), then the object...
 					//
 					if (boundary != null) {
 						headers = ssplit.readHeaders();
 						if (m_debug) {
 							System.err.println("// Chunk Headers recieved:");
-							for (Enumeration enm = headers.keys();enm.hasMoreElements();)
-							{
-								String hkey = (String)enm.nextElement();
+							for (Enumeration enm = headers.keys(); enm.hasMoreElements();) {
+								String hkey = (String) enm.nextElement();
 								System.err.println("//   " + hkey + " = " + headers.get(hkey));
 							}
 						}
@@ -308,9 +301,8 @@ public class CamStream extends Thread {
 							break;
 						}
 						ctype = (String) headers.get("content-type");
-						if (ctype == null) {
+						if (ctype == null)
 							throw new Exception("No part content type");
-						}
 					}
 					//
 					// Mixed Type -> just skip...
@@ -327,7 +319,7 @@ public class CamStream extends Thread {
 						}
 						ssplit.skipToBoundary(boundary);
 					} else {
-
+						
 						//
 						// FPS counter.
 						//
@@ -335,7 +327,7 @@ public class CamStream extends Thread {
 							m_startTime = System.currentTimeMillis();
 						}
 						
-						
+
 						//
 						// Something we want to keep...
 						//
@@ -357,8 +349,7 @@ public class CamStream extends Thread {
 				}
 			} while (!m_isDefunct);
 		} catch (Exception e) {
-			if (!m_collecting)
-			{
+			if (!m_collecting) {
 				m_reporter.reportFailure(e.toString());
 			} else if (!m_isDefunct) {
 				m_reporter.reportError(e);
@@ -369,55 +360,47 @@ public class CamStream extends Thread {
 		//
 		// At this point, the m_stream m_inputStream done
 		// [could display a that's all folks - leaving it as it m_inputStream
-		//  will leave the last frame up]
+		// will leave the last frame up]
 		//
 	}
-
-	private synchronized void updateImage(String ctype, InputStream imgStream)
-	{
+	
+	public void unhook() {
+		m_collecting = false;
+		m_isDefunct = true;
+		try {
+			if (m_inputStream != null) {
+				m_inputStream.close();
+			}
+			m_inputStream = null;
+		} catch (Exception ignored) {
+		}
+	}
+	
+	
+	private synchronized void updateImage(String ctype, InputStream imgStream) {
 		//
 		// Update our image...
 		//
 		m_imageType = ctype;
-		//m_imain = m_tk.createImage(img);
+		// m_imain = m_tk.createImage(img);
 		try {
-			///long l1 = System.nanoTime();
+			// /long l1 = System.nanoTime();
 			m_imain = ImageIO.read(imgStream);
-			///System.out.println("Parse - "+(System.nanoTime() - l1)/1000000.0);
-		} catch (IOException ex) { }
+			// /System.out.println("Parse - "+(System.nanoTime() - l1)/1000000.0);
+		} catch (IOException ex) {
+		}
 		m_imgidx++;
-
-		m_imain.getWidth(new ImageObserver()
-		{
-			public boolean imageUpdate(Image img, int infoflags, int x, int y, int width, int height)
-			{
-				boolean fully = ((infoflags & (ImageObserver.ALLBITS | ImageObserver.PROPERTIES)) != 0);
+		
+		m_imain.getWidth(new ImageObserver() {
+			
+			@Override
+			public boolean imageUpdate(Image img, int infoflags, int x, int y, int width, int height) {
+				boolean fully = (infoflags & (ImageObserver.ALLBITS | ImageObserver.PROPERTIES)) != 0;
 				if (fully) {
 					fireImageChange();
 				}
 				return !fully;
 			}
 		});
-	}
-
-	public void finalize() throws Throwable
-	{
-		unhook();
-		super.finalize();
-	}
-
-
-	public void unhook()
-	{
-		m_collecting = false;
-		m_isDefunct = true;
-		try {
-			if (m_inputStream != null)
-			{
-				m_inputStream.close();
-			}
-			m_inputStream = null;
-		} catch (Exception ignored) {
-		}
 	}
 }
