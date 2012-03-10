@@ -5,7 +5,6 @@ import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 import java.awt.image.ImageObserver;
 import java.io.BufferedInputStream;
-import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,7 +15,6 @@ import java.util.Hashtable;
 import java.util.Vector;
 
 import javax.imageio.ImageIO;
-
 /**
  * com/charliemouse/cambozola/shared/CamStream.java	</br>
  *  Copyright (C) Andy Wilcock, 2001.	</br>
@@ -40,7 +38,12 @@ import javax.imageio.ImageIO;
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA	</br>
  *	</br>
  *	</br>
+ *  <p>
  *  A few minor modifications to reduce latency have been made by Kevin Parker <kevin.m.parker@gmail.com>
+ *  These modifications are intended to improve the speed/performance of MJPEG reading (latency has been
+ *  reduced on my machine by another 10-20 ms; this is per-frame, so there are hundreds of ms of "waiting"
+ *  reduced away. There are probably more changes that can still be made to greatly improve performance.)
+ *  </p>
  **/
 public class CamStream extends Thread {
 	public static final int CONNECT_STYLE_SOCKET = 1;
