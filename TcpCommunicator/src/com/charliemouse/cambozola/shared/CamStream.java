@@ -47,6 +47,7 @@ import javax.imageio.ImageIO;
  * I (Kevin Parker) made the following changes. I made the JPEG data stream pipe directly into the parser, rather than
  * loading the whole image into a buffer before parsing. I made a couple of minor changes, one of which was reducing
  * some of the sleep lengths. I also did some minor code auto-cleanup. Finally, I added a few comments and javadocs.
+ * (I also altered m_retryDelay and removed some unused member variables)
  * 
  * TODO - make the last statement *not* a lie
  * </p>
@@ -72,16 +73,14 @@ public class CamStream extends Thread {
 	private Vector				m_listeners;
 	private ExceptionReporter	m_reporter				= null;
 	private int					m_retryCount			= 1;
-	private int					m_retryDelay			= 1000;
+	private int					m_retryDelay			= 200;
 	private long				m_startTime				= 0;
 	private URL					m_stream;
-	private Toolkit				m_tk;
 	private String				m_userpassEncoded;
 	
 	
 	public CamStream(URL strm, String app, URL docBase, int retryCount, int retryDelay, ExceptionReporter reporter,
 			boolean debug) {
-		m_tk = Toolkit.getDefaultToolkit();
 		m_listeners = new Vector();
 		//
 		// Pull open stream - look for user/password.
