@@ -51,7 +51,10 @@ public class Aiming {
 	 * +------> +x
 	 * 
 	 * @return a Point3d holding the X, Y, and Z of the target, relative to the camera.
-	 * 
+	 * @param x1 x-value of the bottom left corner
+         * @param y1 y-value of the bottom left corner
+         * @param w width of the vision target
+         * @param h height of the vision target
 	 */
 	public Point3d getRelXYZOfTarget(double x1, double y1, double w, double h) {
 		double z = ky * heightOftarget / h;
@@ -76,6 +79,15 @@ public class Aiming {
 	 * If it causes issues (which the accuracy of this function doesn't need to be very high), we can fix it later.
 	 *
 	 * @return the resulting angle in radians.
+         * @param x1 x-value of the bottom left corner
+         * @param y1 y-value of the bottom left corner
+         * @param x2
+         * @param y2
+         * @param x3
+         * @param y3
+         * @param x4
+         * @param y4
+         * @param z 
 	 */
 	public double getAngleOfTarget(double x1, double y1, double x2, double y2, double x3, double y3, double x4, double y4, double z) {
 		//based on width/angles/etc of trapezoid

@@ -29,6 +29,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * @author  Kevin Parker <kevin.m.parker@gmail.com>
  * @author  Sebastian Merz <merzbasti95@gmail.com>
  * @author  Aaron Wang <aaronw94@gmail.com>
+ * @author  Colin Aitken <cacolinerd@gmail.com>
  */
 public class Robot2012Orange extends SimpleRobot {
     XboxController driveController;
@@ -258,7 +259,9 @@ public class Robot2012Orange extends SimpleRobot {
                 ? correctedValue
                 : xValue;
     }
-    
+    /**
+     * Aim at backboard, shoot.
+     */
     public void aimAndShoot() {
         ringLight.set(ActuatorConfiguration.RING_LIGHT.ON);
         
