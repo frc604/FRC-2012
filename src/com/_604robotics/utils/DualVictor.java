@@ -33,12 +33,6 @@ public class DualVictor implements PIDOutput {
         this.rightVictor = new Victor(rightPort);
     }
     
-    public DualVictor (int leftPort, int rightPort, PIDController controller) {
-        this.leftVictor = new Victor(leftPort);
-        this.rightVictor = new Victor(rightPort);
-        this.controller = controller;
-    }
-    
     /**
      * Initializes a DualVictor with left and right slot and PWM port.
      * 
@@ -52,12 +46,6 @@ public class DualVictor implements PIDOutput {
         this.rightVictor = new Victor(rightSlot, rightSlot);
     }
     
-    public DualVictor (int leftSlot, int leftPort, int rightSlot, int rightPort, PIDController controller) {
-        this.leftVictor = new Victor(leftSlot, leftPort);
-        this.rightVictor = new Victor(rightSlot, rightSlot);
-        this.controller = controller;
-    }
-    
     /**
      * Initializes a DualVictor with left and right slot and PWM port.
      * 
@@ -67,12 +55,6 @@ public class DualVictor implements PIDOutput {
     public DualVictor (Victor leftVictor, Victor rightVictor) {
         this.leftVictor = leftVictor;
         this.rightVictor = rightVictor;
-    }
-    
-    public DualVictor (Victor leftVictor, Victor rightVictor, PIDController controller) {
-        this.leftVictor = leftVictor;
-        this.rightVictor = rightVictor;
-        this.controller = controller;
     }
     
     /**
@@ -179,5 +161,9 @@ public class DualVictor implements PIDOutput {
         }
         
         this.sprung = false;
+    }
+    
+    public void setController (PIDController controller) {
+        this.controller = controller;
     }
 }

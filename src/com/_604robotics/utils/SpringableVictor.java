@@ -28,11 +28,6 @@ public class SpringableVictor extends Victor {
         super(port);
     }
     
-    public SpringableVictor (int port, PIDController controller) {
-        super(port);
-        this.controller = controller;
-    }
-    
     /**
      * Initializes a new SpringableVictor on the given module slot and PWM port.
      * 
@@ -41,11 +36,6 @@ public class SpringableVictor extends Victor {
      */
     public SpringableVictor (int slot, int port) {
         super(slot, port);
-    }
-    
-    public SpringableVictor (int slot, int port, PIDController controller) {
-        super(slot, port);
-        this.controller = controller;
     }
     
     /**
@@ -94,5 +84,9 @@ public class SpringableVictor extends Victor {
             super.set(0D);
         
         this.sprung = false;
+    }
+    
+    public void setController (PIDController controller) {
+        this.controller = controller;
     }
 }
