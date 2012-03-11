@@ -18,8 +18,8 @@ public interface SensorConfiguration {
         // TODO: Configure this.
     
     public interface Encoders {
-        public static final double TURRET_DEGREES_PER_CLICK = 1D;
-            // TODO: Configure this.
+        public static final double TURRET_DEGREES_PER_CLICK = 0.172801106;
+            // TODO: Make sure this is correct.x
         public static final double LEFT_DRIVE_INCHES_PER_CLICK = 1D;
             // TODO: Configure this.
         public static final double RIGHT_DRIVE_INCHES_PER_CLICK = 1D;
