@@ -11,7 +11,7 @@ public class PointAndAngle3d {
 	double x, y, z, angle;
 
 	/**
-	 * Initializes variables for the point..
+	 * Initializes variables for the point.
          * 
          * @param x     The x coordinate of the point.
 	 * @param y     The y coordinate of the point.
