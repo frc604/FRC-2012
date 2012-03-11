@@ -12,11 +12,17 @@ import edu.wpi.first.wpilibj.PIDSource;
  * for feedback.
  * 
  * @author  Michael Smith <mdsmtp@gmail.com>
+ * @author  Kevin Parker <kevin.m.parker@gmail.com>
  */
 public class VelocityController {
     private final Encoder encoder;
+    private final EncoderWrapper encoderWrapper;
     private final PIDOutput output;
     private final PIDController controller;
+    
+    private double P, I, D;
+    private double pAngleGain, iAngleGain, dAngleGain; // gains based on balane gyro values
+    private double angle;
     
     /**
      * Internal class that wraps around an Encoder object, implementing a
@@ -50,7 +56,7 @@ public class VelocityController {
     public VelocityController (double p, double i, double d, Encoder encoder, PIDOutput output) {
         this.encoder = encoder;
         this.output = output;
-        this.controller = new PIDController(p, i, d, new EncoderWrapper(encoder), output);
+        this.controller = new PIDController(p, i, d, encoderWrapper = new EncoderWrapper(encoder), output);
     }
     
     /**
@@ -88,7 +94,23 @@ public class VelocityController {
      * @param   d   The derivative term for the PIDController.
      */
     public void setGains(double p, double i, double d) {
-        this.controller.setPID(p, i, d);
+        P = p;
+        I = i;
+        D = d;
+        
+        updateGains();
+    }
+    
+    private void updateGains() {
+        double absAngle = Math.abs(angle);
+        
+        this.controller.setPID(P*(1+absAngle*pAngleGain),
+                                I*(1+absAngle*iAngleGain),
+                                D*(1+absAngle*dAngleGain));
+    }
+    
+    public void setBalanceAngle(double balAngle) {
+        angle = balAngle;
     }
     
     /**
