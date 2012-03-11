@@ -37,6 +37,10 @@ public class RemoteCameraTCP implements CameraInterface {
         return this.server.targets;
     }
     
+    public double getRecordedTime () {
+        return (new Date().getTime() - this.server.lastPacketTime) + 50;
+    }
+    
     /**
      * Returns the number of updates received per second.
      * 
@@ -57,6 +61,7 @@ public class RemoteCameraTCP implements CameraInterface {
 class RemoteCameraServer implements Runnable {
     public boolean enabled = false;
     public Target[] targets = new Target[] {  };
+    public double lastPacketTime = 0D;
     public int ups = 0;
     
     /**
@@ -228,6 +233,8 @@ class RemoteCameraServer implements Runnable {
                             }
                             
                             u++;
+                            
+                            this.lastPacketTime = new Date().getTime();
                             
                             break;
                     }

@@ -25,4 +25,6 @@ public interface CameraInterface {
      * @return  An array of Target that represents the visible targets.
      */
     public abstract Target[] getTargets ();
+    
+    public abstract double getRecordedTime();
 }

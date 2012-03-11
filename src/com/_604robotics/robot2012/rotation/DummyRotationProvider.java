@@ -19,6 +19,10 @@ public class DummyRotationProvider implements RotationProvider {
     public DummyRotationProvider (PIDController controller) {
         this.controller = controller;
     }
+
+    public void setDefaultPosition(double defaultPosition) {
+        
+    }
     
     public void update () {
         this.controller.setSetpoint(0D);

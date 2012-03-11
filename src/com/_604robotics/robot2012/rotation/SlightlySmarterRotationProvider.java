@@ -2,39 +2,20 @@ package com._604robotics.robot2012.rotation;
 
 import com._604robotics.robot2012.camera.CameraInterface;
 import com._604robotics.robot2012.vision.Target;
-import com._604robotics.utils.Gyro360;
 import com.sun.squawk.util.MathUtils;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.PIDController;
 
-/**
- * A naive implementation of a RotationProvider, taking a CameraInteface and a
- * Gyro360 as inputs to process.
- * 
- * @author  Michael Smith <mdsmtp@gmail.com>
- */
-public class NaiveRotationProvider implements RotationProvider {
-    // TODO: Test, update docs.
-    
+public class SlightlySmarterRotationProvider implements RotationProvider {
     private final PIDController controller;
     private final CameraInterface cameraInterface;
-    //private final Gyro360 gyroHeading;
     private final Encoder encoderTurret;
     
     private double defaultPosition = 0D;
     
-    /**
-     * Initializes a new NaiveRotationProvider, giving it control over the
-     * specified PIDController.
-     * 
-     * @param   controller      The PIDController to control.
-     * @param   cameraInterface The CameraInterface to read data from.
-     * @param   gyroHeading     The (heading) Gyro360 to read data from.
-     */
-    public NaiveRotationProvider (PIDController controller, CameraInterface cameraInterface/* , Gyro360 gyroHeading*/, Encoder encoderTurret) {
+    public SlightlySmarterRotationProvider (PIDController controller, CameraInterface cameraInterface/* , Gyro360 gyroHeading*/, Encoder encoderTurret) {
         this.controller = controller;
         this.cameraInterface = cameraInterface;
-        //this.gyroHeading = gyroHeading;
         this.encoderTurret = encoderTurret;
     }
     
@@ -53,8 +34,7 @@ public class NaiveRotationProvider implements RotationProvider {
         System.out.println("--------------------------------");
 
         if (targets.length != 0)
-            //this.controller.setSetpoint(Math.toDegrees(MathUtils.asin(targets[0].x / targets[0].z)) - gyroHeading.getAngle());
-            this.controller.setSetpoint(Math.toDegrees(MathUtils.asin(targets[0].x / targets[0].z)) + encoderTurret.getDistance());
+            this.controller.setSetpoint(Math.toDegrees(MathUtils.atan2(targets[0].z, targets[0].x)) + encoderTurret.getDistance() - (encoderTurret.getRate() / 1000D * this.cameraInterface.getRecordedTime()));
         else
             this.controller.setSetpoint(this.defaultPosition);
     }

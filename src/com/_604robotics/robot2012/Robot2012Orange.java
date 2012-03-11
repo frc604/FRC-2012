@@ -6,12 +6,10 @@ import com._604robotics.robot2012.autonomous.PIDDriveGyro;
 import com._604robotics.robot2012.camera.CameraInterface;
 import com._604robotics.robot2012.camera.RemoteCameraTCP;
 import com._604robotics.robot2012.configuration.*;
-import com._604robotics.robot2012.machine.ElevatorMachine;
+import com._604robotics.robot2012.machine.*;
 import com._604robotics.robot2012.machine.ElevatorMachine.ElevatorState;
-import com._604robotics.robot2012.machine.PickupMachine;
 import com._604robotics.robot2012.machine.PickupMachine.PickupState;
-import com._604robotics.robot2012.machine.StrangeMachine;
-import com._604robotics.robot2012.machine.TurretMachine;
+import com._604robotics.robot2012.machine.ShooterMachine.ShooterState;
 import com._604robotics.robot2012.machine.TurretMachine.TurretState;
 import com._604robotics.robot2012.rotation.DummyRotationProvider;
 import com._604robotics.robot2012.rotation.RotationProvider;
@@ -53,7 +51,7 @@ public class Robot2012Orange extends SimpleRobot {
     Encoder encoderRightDrive;
     
     EncoderPIDSource encoderElevator;
-    EncoderPIDSource encoderTurretRotation;
+    Encoder encoderTurretRotation;
     
     DigitalInput turretLimitSwitch;
     
@@ -74,6 +72,7 @@ public class Robot2012Orange extends SimpleRobot {
     StrangeMachine pickupMachine;
     StrangeMachine elevatorMachine;
     StrangeMachine turretMachine;
+    StrangeMachine shooterMachine;
     
     RotationProvider rotationProvider;
     
@@ -131,10 +130,12 @@ public class Robot2012Orange extends SimpleRobot {
         encoderRightDrive = new Encoder(PortConfiguration.Encoders.Drive.RIGHT_A, PortConfiguration.Encoders.Drive.RIGHT_B);
         
         encoderElevator = new EncoderPIDSource(PortConfiguration.Encoders.ELEVATOR_A, PortConfiguration.Encoders.ELEVATOR_B);
-        encoderTurretRotation = new EncoderPIDSource(PortConfiguration.Encoders.TURRET_ROTATION_A, PortConfiguration.Encoders.TURRET_ROTATION_B);
+        encoderTurretRotation = new Encoder(PortConfiguration.Encoders.TURRET_ROTATION_A, PortConfiguration.Encoders.TURRET_ROTATION_B);
         
         encoderLeftDrive.setPIDSourceParameter(Encoder.PIDSourceParameter.kDistance);
         encoderRightDrive.setPIDSourceParameter(Encoder.PIDSourceParameter.kDistance);
+        
+        encoderTurretRotation.setPIDSourceParameter(Encoder.PIDSourceParameter.kDistance);
         
         encoderLeftDrive.start();
         encoderRightDrive.start();
@@ -167,12 +168,15 @@ public class Robot2012Orange extends SimpleRobot {
          * SmartDashboard.
          */
         
-        pidElevator = new UpDownPIDController(new Gains(0.0085, 0D, 0.018), new Gains(0.0029, 0.000003, 0.007), encoderElevator, elevatorMotors);
+        DeadbandedSource elevatorSource = new DeadbandedSource(encoderElevator);
+        
+        pidElevator = new UpDownPIDController(new Gains(0.0085, 0D, 0.018), new Gains(0.0029, 0.000003, 0.007), elevatorSource, elevatorMotors);
         pidTurretRotation = new PIDController(0D, 0D, 0D, encoderTurretRotation, turretRotationMotor);
         
-        SmartDashboard.putDouble("P (Down)", 0.0029);
-        SmartDashboard.putDouble("I (Down)", -0.000003);
-        SmartDashboard.putDouble("D (Down)", 0.007);        pidElevator.setInputRange(0, 1550);
+        elevatorSource.setController(pidElevator);
+        elevatorSource.setDeadband(-5D, 5D);
+        
+        pidElevator.setInputRange(0, 1550);
         pidElevator.setOutputRange(ActuatorConfiguration.ELEVATOR_POWER_MIN, ActuatorConfiguration.ELEVATOR_POWER_MAX);
         pidElevator.setSetpoint(822);
         pidTurretRotation.setOutputRange(ActuatorConfiguration.TURRET_ROTATION_POWER_MIN, ActuatorConfiguration.TURRET_ROTATION_POWER_MAX);
@@ -186,6 +190,7 @@ public class Robot2012Orange extends SimpleRobot {
         pickupMachine = new PickupMachine(solenoidPickup);
         elevatorMachine = new ElevatorMachine(pidElevator, encoderElevator);
         turretMachine = new TurretMachine(pidTurretRotation, rotationProvider);
+        shooterMachine = new ShooterMachine(shooterMotors, hopperMotor);
         
         /* Sets up the switcher for autonomous. */
         
@@ -251,8 +256,7 @@ public class Robot2012Orange extends SimpleRobot {
             // TODO: Add actual firing stuff here.
             
             solenoidHopper.set(ActuatorConfiguration.SOLENOID_HOPPER.PUSH);
-            hopperMotor.set(ActuatorConfiguration.HOPPER_POWER);
-            shooterMotors.set(ActuatorConfiguration.SHOOTER_POWER);
+            shooterMachine.crank(ShooterState.SHOOTING);
         }
     }
 

@@ -7,6 +7,11 @@ package com._604robotics.robot2012.rotation;
  */
 public interface RotationProvider {
     /**
+     * Sets the "default" position, if no targets can be located.
+     */
+    public abstract void setDefaultPosition (double defaultPosition);
+    
+    /**
      * Updates the aiming of the turret.
      */
     public abstract void update ();
