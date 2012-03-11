@@ -1,6 +1,11 @@
 package com._604robotics.robot2012.vision;
 
 
+/**
+ * This represents a Point in 2d space
+ *
+ * @author Kevin Parker <kevin.m.parker@gmail.com>
+ */
 public class Point2d {
 	
 	/**

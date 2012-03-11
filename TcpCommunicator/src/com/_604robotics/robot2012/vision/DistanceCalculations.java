@@ -10,6 +10,13 @@ import static java.lang.Math.*;
 public class DistanceCalculations {
 	
 	
+	/**
+	 * A simple main() function added for debugging
+	 * 
+	 * TODO - delete this
+	 * 
+	 * @param args
+	 */
 	public static void main(String[] args) {
 		//about 46 in
 		//Quad [topLeft=Point2d [x=194.8762734332836, y=230.03676794085487], topRight=Point2d [x=555.0300833785902, y=249.79778560385398],

@@ -2,6 +2,11 @@ package com._604robotics.robot2012.vision;
 
 import java.awt.image.Raster;
 
+/**
+ * A simple class for accessing 2d data in a 1d array, with bounds checking.
+ *
+ * @author Kevin Parker <kevin.m.parker@gmail.com>
+ */
 public class Img {
 	int[] dat;
 	int w, h;

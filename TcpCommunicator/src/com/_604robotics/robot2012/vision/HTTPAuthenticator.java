@@ -3,6 +3,10 @@ package com._604robotics.robot2012.vision;
 import java.net.Authenticator;
 import java.net.PasswordAuthentication;
 
+/**
+ *
+ * TODO - crap, who wrote this?
+ */
 class HTTPAuthenticator extends Authenticator {
 	private String username, password;
 

@@ -7,6 +7,13 @@ import java.io.IOException;
 import java.util.Scanner;
 
 
+/**
+ * The configuration of the Team 604 FRCVision
+ * 
+ * TODO - make less kludgy
+ *
+ * @author Kevin Parker <kevin.m.parker@gmail.com>
+ */
 public class Config implements Cloneable {
 	
 	public Config clone() {

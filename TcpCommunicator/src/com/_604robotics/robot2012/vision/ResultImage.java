@@ -6,6 +6,13 @@ import com._604robotics.robot2012.vision.Result.AntiResult;
 import com._604robotics.robot2012.vision.Result.PlusResult;
 import com._604robotics.robot2012.vision.config.Config;
 
+/**
+ * A result image; it is treated like a giant boolean array externally, but internally, it is split up into small tiles.
+ * 
+ * TODO - explain more gooder.
+ *
+ * @author Kevin Parker <kevin.m.parker@gmail.com>
+ */
 public class ResultImage {
 
 	int imW, imH;

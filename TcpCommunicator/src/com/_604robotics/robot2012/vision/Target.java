@@ -7,7 +7,7 @@ package com._604robotics.robot2012.vision;
  * </p>
  * 
  * <p>
- * To get the position of the hoop use
+ * To get the position of the hoop, use the DistanceCalculations class.
  * </p>
  * 
  * @author Kevin Parker <kevin.m.parker@gmail.com>
@@ -84,7 +84,7 @@ public class Target implements Comparable<Target> {
 	
 	
 	/**
-	 * A blank constructer to easilly make a Target
+	 * A blank constructor to easily make a Target
 	 */
 	public Target() {
 		
@@ -164,12 +164,14 @@ public class Target implements Comparable<Target> {
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
-	@Override
 	public String toString() {
 		return "Target [x=" + x + ", y=" + y + ", z=" + z + ", angle=" + angle + "]";
 	}
 
 
+	/* (non-Javadoc)
+	 * @see java.lang.Comparable#compareTo(java.lang.Object)
+	 */
 	public int compareTo(Target that) {
 		if(this.y > that.y)
 			return -1;

@@ -4,11 +4,11 @@ package com._604robotics.robot2012.vision;
  * Accepts a sequence of pairs of real numbers and computes the best fit (least squares) line y = ax + b through the set
  * of points. Also computes the correlation coefficient and the standard error of the regression coefficients.
  * 
- * @author Kevin Parker <kevin.m.parker@gmail.com>
  * @author Robert Sedgewick <http://www.cs.princeton.edu/~rs>, Kevin Wayne <http://www.cs.princeton.edu/~wayne> </br>
  *         ({@link #getRegression(double[], double[])}) is adapted from <a
  *         href="http://introcs.cs.princeton.edu/java/97data/LinearRegression.java.html">
  *         introcs.cs.princeton.edu/java/97data/LinearRegression.java.html</a>)
+ * @author Kevin Parker <kevin.m.parker@gmail.com>
  * 
  */
 public class LinearRegression {

@@ -10,6 +10,11 @@ import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+/**
+ * A JSlider that displays its current position and name in JLabels next to it
+ *
+ * @author Kevin Parker <kevin.m.parker@gmail.com>
+ */
 public abstract class LinkedSlider extends Box implements ChangeListener {
 	
 	private static final long	serialVersionUID	= 1L;

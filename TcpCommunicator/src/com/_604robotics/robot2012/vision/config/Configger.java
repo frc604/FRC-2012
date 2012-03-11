@@ -15,6 +15,8 @@ import com._604robotics.robot2012.vision.VisionProcessing;
 /**
  * TODO - comments, javadoc
  * 
+ * TODO - make this whole mess less kludgy
+ * 
  * @author Kevin Parker <kevin.m.parker@gmail.com>
  */
 public class Configger {

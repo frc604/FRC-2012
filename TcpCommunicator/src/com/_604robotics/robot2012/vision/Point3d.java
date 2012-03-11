@@ -1,6 +1,11 @@
 package com._604robotics.robot2012.vision;
 
 
+/**
+ * This represents a point in 3d space
+ *
+ * @author Kevin Parker <kevin.m.parker@gmail.com>
+ */
 public class Point3d {
 	/**
 	 * the x value

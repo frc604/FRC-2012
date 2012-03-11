@@ -1,5 +1,10 @@
 package com._604robotics.robot2012.vision;
 
+/**
+ * TODO - javadoc
+ *
+ * @author Kevin Parker <kevin.m.parker@gmail.com>
+ */
 public abstract class Result {
 	public boolean hasPlus() {
 		return false;
