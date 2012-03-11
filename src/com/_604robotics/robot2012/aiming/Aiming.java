@@ -111,14 +111,29 @@ public class Aiming {
 
 		return MathUtils.acos(wRatio);
 	}
-
+        /**
+         * Get the angle from the targets, and the relative distances of the corners of the target as perceived by the camera.
+         * @param x1
+         * @param y1
+         * @param x2
+         * @param y2
+         * @param x3
+         * @param y3
+         * @param x4
+         * @param y4
+         * @return 
+         */
 	public PointAndAngle3d getAngleAndRelXYZOfTarget(double x1, double y1, double x2, double y2, double x3, double y3, double x4, double y4) {
 		Point3d p = getRelXYZOfTarget(-1, -1, -1, -1);//TODO - fix
 		double angle = getAngleOfTarget(x1, y1, x2, y2, x3, y3, x4, y4, p.z);
 		
 		return new PointAndAngle3d(p, angle);
 	}
-
+        /**
+         * Transform the point.
+         * @param pt
+         * @param angleOfCamera 
+         */
 	void transformPoint(Point2d pt, double angleOfCamera) {
 		// TODO - actually transform the point
 	}
