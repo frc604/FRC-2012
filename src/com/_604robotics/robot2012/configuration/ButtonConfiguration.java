@@ -12,8 +12,10 @@ public interface ButtonConfiguration {
         public static final int SHIFT = Button.EitherTrigger;
         public static final int PICKUP = Button.RB;
         
-        public static final int AUTO_BALANCE = Button.X;
+        public static final int AUTO_BALANCE = Button.A;
         public static final int GYRO_RESET = Button.Back;
+        
+        public static final int RESET_TURRET_ENCODER = Button.B;
         
         public static final int TOGGLE_ANGLE = Button.Y;
         public static final int TOGGLE_LIGHT = Button.X;

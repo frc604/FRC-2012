@@ -176,6 +176,10 @@ public class Robot2012Orange extends SimpleRobot {
         
         SmartDashboard.putDouble("Down Setpoint", 0D);
         
+        SmartDashboard.putDouble("P (Turret)", SmartDashboard.getDouble("P (Turret)", 0D));
+        SmartDashboard.putDouble("I (Turret)", SmartDashboard.getDouble("I (Turret)", 0D));
+        SmartDashboard.putDouble("D (Turret)", SmartDashboard.getDouble("D (Turret)", 0D));
+        
         //SmartDashboard.putDouble("Horizontal Range", 1000D);
         //SmartDashboard.putDouble("Horizontal Output", 0.8);
         //SmartDashboard.putDouble("Coasting Output", 150D);
@@ -438,6 +442,12 @@ public class Robot2012Orange extends SimpleRobot {
                 
                 System.out.println(" - UPS: " + ((RemoteCameraTCP) cameraInterface).getUPS() + " - ");
             }
+            
+            SmartDashboard.putDouble("Turret Output", pidTurretRotation.get());
+            pidTurretRotation.setPID(SmartDashboard.getDouble("P (Turret)", 0D), SmartDashboard.getDouble("I (Turret)", 0D), SmartDashboard.getDouble("D (Turret)", 0D));
+            
+            if (driveController.getButton(ButtonConfiguration.Driver.RESET_TURRET_ENCODER))
+                encoderTurretRotation.reset();
             
             if (manipulatorController.getButton(ButtonConfiguration.Manipulator.AIM_TURRET)) {
                 pidTurretRotation.enable();
