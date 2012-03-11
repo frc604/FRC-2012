@@ -108,7 +108,10 @@ public class VelocityController {
                                 I*(1+absAngle*iAngleGain),
                                 D*(1+absAngle*dAngleGain));
     }
-    
+    /**
+     * Sets the angle it is balancing at(?). Kevin has to look at this.
+     * @param balAngle 
+     */
     public void setBalanceAngle(double balAngle) {
         angle = balAngle;
     }
