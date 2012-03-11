@@ -119,6 +119,8 @@ public class XboxController {
      * 
      * @param   stick   One of the stick values specified in
      *                  XboxController.Stick.
+     * 
+     * @return  Whether or not there's a value reading on the stick.
      */
     public boolean getStick (int stick) {
         return this.getAxis(stick) != 0 || this.getAxis(stick + 1) != 0;

@@ -163,6 +163,14 @@ public class DualVictor implements PIDOutput {
         this.sprung = false;
     }
     
+    /**
+     * Sets the PIDController for this DualVictor, if there is one.
+     * 
+     * If the PIDController is enabled, reload will assume it's updating it, and
+     * won't reset the output to 0.
+     * 
+     * @param   controller  The PIDController for this DualVictor. 
+     */
     public void setController (PIDController controller) {
         this.controller = controller;
     }

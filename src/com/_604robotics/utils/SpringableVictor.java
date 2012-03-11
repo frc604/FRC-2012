@@ -86,6 +86,14 @@ public class SpringableVictor extends Victor {
         this.sprung = false;
     }
     
+    /**
+     * Sets the PIDController for this Victor, if there is one.
+     * 
+     * If the PIDController is enabled, reload will assume it's updating it, and
+     * won't reset the output to 0.
+     * 
+     * @param   controller  The PIDController for this Victor. 
+     */
     public void setController (PIDController controller) {
         this.controller = controller;
     }
