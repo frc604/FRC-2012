@@ -7,10 +7,8 @@ import com._604robotics.robot2012.camera.CameraInterface;
 import com._604robotics.robot2012.camera.RemoteCameraTCP;
 import com._604robotics.robot2012.configuration.*;
 import com._604robotics.robot2012.vision.Target;
-import com._604robotics.utils.DualVictor;
-import com._604robotics.utils.EncoderPIDSource;
-import com._604robotics.utils.Gyro360;
-import com._604robotics.utils.XboxController;
+import com._604robotics.utils.*;
+import com._604robotics.utils.UpDownPIDController.Gains;
 import com._604robotics.utils.XboxController.Axis;
 import com._604robotics.utils.XboxController.Button;
 import com.sun.squawk.util.MathUtils;
@@ -43,11 +41,11 @@ public class Robot2012Orange extends SimpleRobot {
     
     Relay ringLight;
     
-    EncoderPIDSource encoderLeftDrive;
-    EncoderPIDSource encoderRightDrive;
+    Encoder encoderLeftDrive;
+    Encoder encoderRightDrive;
     
-    Encoder encoderElevator;
-    Encoder encoderTurretRotation;
+    EncoderPIDSource encoderElevator;
+    EncoderPIDSource encoderTurretRotation;
     
     Gyro360 gyroHeading;
     Gyro gyroBalance;
@@ -60,8 +58,10 @@ public class Robot2012Orange extends SimpleRobot {
     DoubleSolenoid solenoidPickup;
     DoubleSolenoid solenoidHopper;
     
-    PIDController pidElevator;
+    UpDownPIDController pidElevator;
     PIDController pidTurretRotation;
+    
+    //LinearController elevatorController;
 
     CameraInterface cameraInterface;
     
@@ -98,7 +98,7 @@ public class Robot2012Orange extends SimpleRobot {
         /* Set up the elevator, shooter, hopper, pickup, and rotation motors. */
         
         elevatorMotors = new DualVictor(PortConfiguration.Motors.ELEVATOR_LEFT, PortConfiguration.Motors.ELEVATOR_RIGHT);
-        elevatorMotors.setDeadband(-0.2, 0.2);
+        //elevatorMotors.setDeadband(-0.2, 0.2);
         
         shooterMotor = new DualVictor(PortConfiguration.Motors.SHOOTER_LEFT, PortConfiguration.Motors.SHOOTER_RIGHT);
         hopperMotor = new Victor(PortConfiguration.Motors.HOPPER);
@@ -153,9 +153,11 @@ public class Robot2012Orange extends SimpleRobot {
          * SmartDashboard.
          */
         
-        pidElevator = new PIDController(0D, 0D, 0D, encoderElevator, elevatorMotors);
+        //elevatorController = new LinearController(encoderElevator, elevatorMotors, 1000D, 0.8, 150D, 0.25);
+        pidElevator = new UpDownPIDController(new Gains(0.0085, 0D, 0.018), new Gains(0.0085, 0D, 0.018), encoderElevator, elevatorMotors);
         pidTurretRotation = new PIDController(0D, 0D, 0D, encoderTurretRotation, turretRotationMotor);
-
+        
+        //elevatorController.setTarget(0);
         pidElevator.setInputRange(0, 1550);
         pidElevator.setOutputRange(ActuatorConfiguration.ELEVATOR_POWER_MIN, ActuatorConfiguration.ELEVATOR_POWER_MAX);
         pidElevator.setSetpoint(822);
@@ -164,9 +166,20 @@ public class Robot2012Orange extends SimpleRobot {
         SmartDashboard.putDouble("Elevator Setpoint", 0D);
         SmartDashboard.putDouble("Turret Setpoint", 0D);
         
-        SmartDashboard.putDouble("P", 0.005);
-        SmartDashboard.putDouble("I", 0D);
-        SmartDashboard.putDouble("D", 0.01);
+        SmartDashboard.putDouble("P (Up)", 0.0085);
+        SmartDashboard.putDouble("I (Up)", 0D);
+        SmartDashboard.putDouble("D (Up)", 0.018);
+        
+        SmartDashboard.putDouble("P (Down)", 0.0029);
+        SmartDashboard.putDouble("I (Down)", -0.000003);
+        SmartDashboard.putDouble("D (Down)", 0.007);
+        
+        SmartDashboard.putDouble("Down Setpoint", 0D);
+        
+        //SmartDashboard.putDouble("Horizontal Range", 1000D);
+        //SmartDashboard.putDouble("Horizontal Output", 0.8);
+        //SmartDashboard.putDouble("Coasting Output", 150D);
+        //SmartDashboard.putDouble("Coasting Output", 0.25);
         
         SmartDashboard.putBoolean("In the Middle?", false);
         
@@ -392,12 +405,13 @@ public class Robot2012Orange extends SimpleRobot {
             
             /* Controls the pickup mechanism. */
             
-            if (driveController.getButton(ButtonConfiguration.Manipulator.PICKUP)) {
-                solenoidShooter.set(ActuatorConfiguration.SOLENOID_PICKUP.OUT);
+            if (driveController.getButton(ButtonConfiguration.Driver.PICKUP)) {
+                solenoidPickup.set(ActuatorConfiguration.SOLENOID_PICKUP.OUT);
+                
                 pickupMotor.set(ActuatorConfiguration.PICKUP_POWER);
                 hopperMotor.set(ActuatorConfiguration.HOPPER_POWER);
             } else {
-                solenoidShooter.set(ActuatorConfiguration.SOLENOID_PICKUP.IN);
+                solenoidPickup.set(ActuatorConfiguration.SOLENOID_PICKUP.IN);
                 pickupMotor.set(0D);
                 
                 if (!manipulatorController.getButton(ButtonConfiguration.Manipulator.FIRE))
@@ -461,7 +475,7 @@ public class Robot2012Orange extends SimpleRobot {
             
             /* Toggles the shooter angle. */
             
-            if (manipulatorController.getToggle(ButtonConfiguration.Manipulator.TOGGLE_ANGLE)) {
+            if (manipulatorController.getToggle(ButtonConfiguration.Driver.TOGGLE_ANGLE)) {
                 if (solenoidShooter.get() == ActuatorConfiguration.SOLENOID_SHOOTER.LOWER_ANGLE)
                     solenoidShooter.set(ActuatorConfiguration.SOLENOID_SHOOTER.UPPER_ANGLE);
                 else
@@ -470,7 +484,7 @@ public class Robot2012Orange extends SimpleRobot {
             
             /* Toggles the light. */
             
-            if (manipulatorController.getToggle(ButtonConfiguration.Manipulator.TOGGLE_LIGHT)) {
+            if (manipulatorController.getToggle(ButtonConfiguration.Driver.TOGGLE_LIGHT)) {
                 lightOn = !lightOn;
                 
                 if (lightOn)
@@ -484,26 +498,46 @@ public class Robot2012Orange extends SimpleRobot {
             
             /* Automated control for the elevator. */
             
-            pidElevator.setSetpoint(SmartDashboard.getDouble("Elevator Setpoint", 0D));
-            pidElevator.setPID(SmartDashboard.getDouble("P", 0D), SmartDashboard.getDouble("I", 0D), SmartDashboard.getDouble("D", 0D));
+            //elevatorController.setTarget(SmartDashboard.getDouble("Elevator Setpoint", 0D));
+            //elevatorController.setHorizontalRange(SmartDashboard.getDouble("Horizontal Range", 0D), SmartDashboard.getDouble("Horizontal Output", 0D));
+            //elevatorController.setCoastingRange(SmartDashboard.getDouble("Coasting Range", 0D), SmartDashboard.getDouble("Coasting Output", 0D));
             
-            if (manipulatorController.getButton(ButtonConfiguration.Manipulator.AUTO_ELEVATOR)) {
-                if (!pidElevator.isEnable())
-                    pidElevator.enable();
+            pidElevator.setUpGains(new Gains(SmartDashboard.getDouble("P (Up)", 0D), SmartDashboard.getDouble("I (Up)", 0D), SmartDashboard.getDouble("D (Up)", 0D)));
+            pidElevator.setDownGains(new Gains(SmartDashboard.getDouble("P (Down)", 0D), SmartDashboard.getDouble("I (Down)", 0D), SmartDashboard.getDouble("D (Down)", 0D)));
+            
+            if (manipulatorController.getButton(ButtonConfiguration.Manipulator.Elevator.FORWARD) || manipulatorController.getButton(ButtonConfiguration.Manipulator.Elevator.LEFT) || manipulatorController.getButton(ButtonConfiguration.Manipulator.Elevator.RIGHT) || manipulatorController.getButton(ButtonConfiguration.Manipulator.Elevator.BACKWARD)) {
+                pidElevator.setSetpoint(1530D);
                 
-                SmartDashboard.putBoolean("PID Enabled", pidElevator.isEnable());
-                SmartDashboard.putString("Elevator Control", "Auto");
+                if (!pidElevator.isEnable())
+                   pidElevator.enable();
+                
+                //elevatorController.update();
+                
+                SmartDashboard.putString("Elevator Control", "Auto (Up)");
+            } else if (manipulatorController.getAxis(Axis.RIGHT_STICK_X) > 0.2 || manipulatorController.getAxis(Axis.RIGHT_STICK_X) < -0.2 || manipulatorController.getAxis(Axis.RIGHT_STICK_Y) > 0.2 || manipulatorController.getAxis(Axis.RIGHT_STICK_Y) < -0.2) {
+                pidElevator.setSetpoint(SmartDashboard.getDouble("Down Setpoint", 0D));
+                
+                if (!pidElevator.isEnable())
+                   pidElevator.enable();
+                
+                //elevatorController.update();
+                
+                SmartDashboard.putString("Elevator Control", "Auto (Down)");
             } else {
                 if (pidElevator.isEnable())
                     pidElevator.disable();
                 
-                elevatorMotors.set(manipulatorController.getAxis(Axis.RIGHT_STICK_Y));
+                //elevatorMotors.set(manipulatorController.getAxis(Axis.RIGHT_STICK_Y));
+                elevatorMotors.set(0D);
                 
                 SmartDashboard.putString("Elevator Control", "Manual");
             }
             
             SmartDashboard.putDouble("Current Elevator Setpoint", pidElevator.getSetpoint());
             SmartDashboard.putDouble("Current Elevator Output", pidElevator.get());
+            
+            //SmartDashboard.putDouble("Current Elevator Setpoint", elevatorController.getTarget());
+            //SmartDashboard.putDouble("Current Elevator Output", elevatorController.calculate());
             
             /* Debug output. */
             
