@@ -77,9 +77,9 @@ public class LinearController {
     /**
      * Updates the coasting values.
      * 
-     * @param   horizontalRange     The coasting range, as defined in the
+     * @param   coastingRange     The coasting range, as defined in the
      *                              class description.
-     * @param   horizontalOutput    The coasting output, as defined in the
+     * @param   coastingOutput    The coasting output, as defined in the
      *                              class description.
      */
     public void setCoastingRange (double coastingRange, double coastingOutput) {
