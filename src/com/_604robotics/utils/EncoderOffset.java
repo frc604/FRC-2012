@@ -13,7 +13,9 @@ import edu.wpi.first.wpilibj.Encoder;
  * 
  * @author  Michael Smith <mdsmtp@gmail.com>
  */
-public class EncoderPIDSource extends EncoderOffset {
+public class EncoderOffset extends Encoder {
+    private int offset = 0;
+    
     /**
      * Encoder constructor.
      * Construct a Encoder given a and b modules and channels fully specified.
@@ -24,7 +26,7 @@ public class EncoderPIDSource extends EncoderOffset {
      * @param reverseDirection represents the orientation of the encoder and inverts the output values
      * if necessary so forward represents positive values.
      */
-    public EncoderPIDSource (final int aSlot, final int aChannel, final int bSlot, final int bChannel, boolean reverseDirection) {
+    public EncoderOffset (final int aSlot, final int aChannel, final int bSlot, final int bChannel, boolean reverseDirection) {
         super(aSlot, aChannel, bSlot, bChannel, reverseDirection);
     }
 
@@ -36,7 +38,7 @@ public class EncoderPIDSource extends EncoderOffset {
      * @param bSlot The b channel digital input module.
      * @param bChannel The b channel digital input channel.
      */
-    public EncoderPIDSource (final int aSlot, final int aChannel, final int bSlot, final int bChannel) {
+    public EncoderOffset (final int aSlot, final int aChannel, final int bSlot, final int bChannel) {
         super(aSlot, aChannel, bSlot, bChannel);
     }
 
@@ -55,7 +57,7 @@ public class EncoderPIDSource extends EncoderOffset {
      * a counter object will be used and the returned value will either exactly match the spec'd count
      * or be double (2x) the spec'd count.
      */
-    public EncoderPIDSource (final int aSlot, final int aChannel, final int bSlot, final int bChannel, boolean reverseDirection, final EncodingType encodingType) {
+    public EncoderOffset (final int aSlot, final int aChannel, final int bSlot, final int bChannel, boolean reverseDirection, final EncodingType encodingType) {
         super(aSlot, aChannel, bSlot, bChannel, reverseDirection, encodingType);
     }
 
@@ -72,7 +74,7 @@ public class EncoderPIDSource extends EncoderOffset {
      * @param reverseDirection represents the orientation of the encoder and inverts the output values
      * if necessary so forward represents positive values.
      */
-    public EncoderPIDSource (final int aSlot, final int aChannel, final int bSlot, final int bChannel, final int indexSlot, final int indexChannel, boolean reverseDirection) {
+    public EncoderOffset (final int aSlot, final int aChannel, final int bSlot, final int bChannel, final int indexSlot, final int indexChannel, boolean reverseDirection) {
         super(aSlot, aChannel, bSlot, bChannel, indexSlot, indexChannel, reverseDirection);
     }
 
@@ -87,7 +89,7 @@ public class EncoderPIDSource extends EncoderOffset {
      * @param indexSlot The index channel digital input module.
      * @param indexChannel The index channel digital input channel.
      */
-    public EncoderPIDSource (final int aSlot, final int aChannel, final int bSlot, final int bChannel, final int indexSlot, final int indexChannel) {
+    public EncoderOffset (final int aSlot, final int aChannel, final int bSlot, final int bChannel, final int indexSlot, final int indexChannel) {
         super(aSlot, aChannel, bSlot, bChannel, indexSlot, indexChannel);
     }
 
@@ -99,7 +101,7 @@ public class EncoderPIDSource extends EncoderOffset {
      * @param reverseDirection represents the orientation of the encoder and inverts the output values
      * if necessary so forward represents positive values.
      */
-    public EncoderPIDSource (final int aChannel, final int bChannel, boolean reverseDirection) {
+    public EncoderOffset (final int aChannel, final int bChannel, boolean reverseDirection) {
         super(aChannel, bChannel, reverseDirection);
     }
 
@@ -109,7 +111,7 @@ public class EncoderPIDSource extends EncoderOffset {
      * @param aChannel The a channel digital input channel.
      * @param bChannel The b channel digital input channel.
      */
-    public EncoderPIDSource (final int aChannel, final int bChannel) {
+    public EncoderOffset (final int aChannel, final int bChannel) {
         super(aChannel, bChannel);
     }
 
@@ -126,7 +128,7 @@ public class EncoderPIDSource extends EncoderOffset {
      * a counter object will be used and the returned value will either exactly match the spec'd count
      * or be double (2x) the spec'd count.
      */
-    public EncoderPIDSource (final int aChannel, final int bChannel, boolean reverseDirection, final EncodingType encodingType) {
+    public EncoderOffset (final int aChannel, final int bChannel, boolean reverseDirection, final EncodingType encodingType) {
         super(aChannel, bChannel, reverseDirection, encodingType);
     }
 
@@ -140,7 +142,7 @@ public class EncoderPIDSource extends EncoderOffset {
      * @param reverseDirection represents the orientation of the encoder and inverts the output values
      * if necessary so forward represents positive values.
      */
-    public EncoderPIDSource (final int aChannel, final int bChannel, final int indexChannel, boolean reverseDirection) {
+    public EncoderOffset (final int aChannel, final int bChannel, final int indexChannel, boolean reverseDirection) {
         super(aChannel, bChannel, indexChannel, reverseDirection);
     }
 
@@ -152,7 +154,7 @@ public class EncoderPIDSource extends EncoderOffset {
      * @param bChannel The b channel digital input channel.
      * @param indexChannel The index channel digital input channel.
      */
-    public EncoderPIDSource (final int aChannel, final int bChannel, final int indexChannel) {
+    public EncoderOffset (final int aChannel, final int bChannel, final int indexChannel) {
         super(aChannel, bChannel, indexChannel);
     }
 
@@ -166,7 +168,7 @@ public class EncoderPIDSource extends EncoderOffset {
      * @param reverseDirection represents the orientation of the encoder and inverts the output values
      * if necessary so forward represents positive values.
      */
-    public EncoderPIDSource (DigitalSource aSource, DigitalSource bSource, boolean reverseDirection) {
+    public EncoderOffset (DigitalSource aSource, DigitalSource bSource, boolean reverseDirection) {
         super(aSource, bSource, reverseDirection);
     }
 
@@ -178,7 +180,7 @@ public class EncoderPIDSource extends EncoderOffset {
      * @param aSource The source that should be used for the a channel.
      * @param bSource the source that should be used for the b channel.
      */
-    public EncoderPIDSource (DigitalSource aSource, DigitalSource bSource) {
+    public EncoderOffset (DigitalSource aSource, DigitalSource bSource) {
         super(aSource, bSource);
     }
 
@@ -197,7 +199,7 @@ public class EncoderPIDSource extends EncoderOffset {
      * a counter object will be used and the returned value will either exactly match the spec'd count
      * or be double (2x) the spec'd count.
      */
-    public EncoderPIDSource (DigitalSource aSource, DigitalSource bSource, boolean reverseDirection, final EncodingType encodingType) {
+    public EncoderOffset (DigitalSource aSource, DigitalSource bSource, boolean reverseDirection, final EncodingType encodingType) {
         super(aSource, bSource, reverseDirection, encodingType);
     }
 
@@ -212,7 +214,7 @@ public class EncoderPIDSource extends EncoderOffset {
      * @param reverseDirection represents the orientation of the encoder and inverts the output values
      * if necessary so forward represents positive values.
      */
-    public EncoderPIDSource (DigitalSource aSource, DigitalSource bSource, DigitalSource indexSource, boolean reverseDirection) {
+    public EncoderOffset (DigitalSource aSource, DigitalSource bSource, DigitalSource indexSource, boolean reverseDirection) {
         super(aSource, bSource, indexSource, reverseDirection);
     }
 
@@ -225,20 +227,30 @@ public class EncoderPIDSource extends EncoderOffset {
      * @param bSource the source that should be used for the b channel.
      * @param indexSource the source that should be used for the index channel.
      */
-    public EncoderPIDSource (DigitalSource aSource, DigitalSource bSource, DigitalSource indexSource) {
+    public EncoderOffset (DigitalSource aSource, DigitalSource bSource, DigitalSource indexSource) {
         super(aSource, bSource, indexSource);
     }
     
+    public int getRaw () {
+        return super.getRaw() + this.offset;
+    }
+    
     /**
-     * Hooks into the PIDSource interface.
+     * Resets the Encoder.
      * 
-     * This method overrides the one implemented by the underlying Encoder
-     * class, simply returning the value of this.get();
-     * 
-     * @return  The value to pass back to the PIDSource; in this case,
-     *          that of this.get();
+     * Also undoes any offsets previously set.
      */
-    public double pidGet () {
-        return this.get();
+    public void reset () {
+        this.offset = 0;
+        this.reset();
+    }
+    
+    /**
+     * Sets the offset value for the Encoder.
+     * 
+     * @param   offset  The offset value for the encoder.
+     */
+    public void setOffset (int offset) {
+        this.offset = offset * 4;
     }
 }

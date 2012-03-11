@@ -57,9 +57,10 @@ public class DeadbandedSource implements PIDSource {
      * @return  The value to send to the PIDController.
      */
     public double pidGet () {
-        double val = this.source.pidGet();
+        /* double val = this.source.pidGet();
         if (this.controller != null && val > this.lowerDeadband && val < this.upperDeadband)
             val = this.controller.getSetpoint();
-        return val;
+        return val; */
+        return this.source.pidGet();
     }
 }

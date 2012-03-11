@@ -51,8 +51,9 @@ public class Robot2012Orange extends SimpleRobot {
     Encoder encoderRightDrive;
     
     EncoderPIDSource encoderElevator;
-    Encoder encoderTurretRotation;
+    EncoderOffset encoderTurretRotation;
     
+    DigitalInput elevatorLimitSwitch;
     DigitalInput turretLimitSwitch;
     
     Gyro360 gyroHeading;
@@ -82,6 +83,9 @@ public class Robot2012Orange extends SimpleRobot {
     
     boolean upHigh = false;
     boolean pickupIn = true;
+    
+    boolean noFixedDirection = true;
+    int turretDirection = TurretState.FORWARD;
     
     /**
      * Constructor.
@@ -141,9 +145,9 @@ public class Robot2012Orange extends SimpleRobot {
         encoderLeftDrive.setDistancePerPulse(SensorConfiguration.Encoders.LEFT_DRIVE_INCHES_PER_CLICK);
         encoderRightDrive.setDistancePerPulse(SensorConfiguration.Encoders.RIGHT_DRIVE_INCHES_PER_CLICK);
         
-        encoderTurretRotation.setDistancePerPulse(SensorConfiguration.Encoders.TURRET_DEGREES_PER_CLICK);
-        
         encoderElevator.setOffset(450);
+        
+        encoderTurretRotation.setDistancePerPulse(SensorConfiguration.Encoders.TURRET_DEGREES_PER_CLICK);
         
         encoderLeftDrive.setPIDSourceParameter(Encoder.PIDSourceParameter.kDistance);
         encoderRightDrive.setPIDSourceParameter(Encoder.PIDSourceParameter.kDistance);
@@ -293,7 +297,8 @@ public class Robot2012Orange extends SimpleRobot {
         int step = 0;
         double backwardDistance = AutonomousConfiguration.BACKWARD_DISTANCE;
         
-        int calibrationState = 0;
+        boolean turretCalibrated = false;
+        boolean elevatorCalibrated = false;
         
         /*
          * If we're not in the middle, skip over the bridge stuff, and change
@@ -328,31 +333,29 @@ public class Robot2012Orange extends SimpleRobot {
             /* Calibrate the turret while everything else is going on. */
             
             if (step < 8) {
-                switch (calibrationState) {
-                    case 0:
-                        if (turretLimitSwitch.get()) {
-                            turretRotationMotor.set(-0.4);
+                if (!turretCalibrated) {
+                    if (!turretLimitSwitch.get()) {
+                        turretRotationMotor.set(-0.4);
+                    } else {
+                        turretRotationMotor.set(0D);
+                        
+                        encoderTurretRotation.reset();
+                        encoderTurretRotation.setOffset(SensorConfiguration.TURRET_CALIBRATION_OFFSET);;
+                        
+                        turretCalibrated = true;
+                    }
+                } else {
+                    if (step > 3 && !elevatorCalibrated) {
+                        if (!elevatorLimitSwitch.get()) {
+                            elevatorMotors.set(-0.6);
                         } else {
-                            turretRotationMotor.set(0D);
-                            encoderTurretRotation.reset();
+                            elevatorMotors.set(0D);
                             
-                            step++;
-                        }
-                        break;
-                    case 1:
-                        pidTurretRotation.setSetpoint(90D);
-                        
-                        if (!pidTurretRotation.isEnable())
-                            pidTurretRotation.enable();
-                        
-                        if (pidTurretRotation.onTarget()) {
-                            pidTurretRotation.disable();
-                            encoderTurretRotation.reset();
+                            encoderElevator.reset();
                             
-                            step++;
+                            elevatorCalibrated = true;
                         }
-                        
-                        break;
+                    }
                 }
             }
             
@@ -443,7 +446,7 @@ public class Robot2012Orange extends SimpleRobot {
                     
                     driveTrain.tankDrive(0D, 0D);
                     
-                    if (calibrationState > 1)
+                    if (turretCalibrated && elevatorCalibrated)
                         step++;
                 case 8:
                     // TODO: Aim and shoot. Maybe we could have a single "Shoot" function, that could be called in both Autonomous and Teleop modes? Same goes for aiming.
@@ -475,9 +478,6 @@ public class Robot2012Orange extends SimpleRobot {
 
         double accelPower;
         
-        boolean noFixedDirection = true;
-        int turretDirection = TurretState.FORWARD;
-        
         int settleState = 2;
         Timer settleTimer = new Timer();
         
@@ -487,10 +487,14 @@ public class Robot2012Orange extends SimpleRobot {
         pidElevator.reset();
         pidTurretRotation.reset();
         
+        boolean b;
+        boolean c;
+        boolean d;
+        
         while (isOperatorControl() && isEnabled()) {
             shooterMachine.setShooterSpeed(SmartDashboard.getDouble("Shooter Speed", 1D));
             
-            if (driveController.getButton(ButtonConfiguration.Driver.RESET_ELEVATOR_ENCODER))
+            if (elevatorLimitSwitch.get())
                 encoderElevator.reset();
             
             /* Controls the gear shift. */
@@ -584,7 +588,7 @@ public class Robot2012Orange extends SimpleRobot {
                     elevatorMachine.crank(ElevatorState.MEDIUM);
                 }
             } else {
-                boolean b = turretMachine.crank(TurretState.SIDEWAYS);
+                b = turretMachine.crank(TurretState.SIDEWAYS);
                 System.out.println("Turret Is There (Faked)? " + b);
                 if (b) {
                     /*
@@ -593,7 +597,7 @@ public class Robot2012Orange extends SimpleRobot {
                      * position.
                      */
                     
-                    boolean c = pickupMachine.crank(PickupState.OUT);
+                    c = pickupMachine.crank(PickupState.OUT);
                     System.out.println("Pickup Is Out? " + c);
                     if (c) {
                         /*
@@ -601,7 +605,7 @@ public class Robot2012Orange extends SimpleRobot {
                          * then allow the user to trigger the pickup mechanism.
                          */
                         
-                        boolean d = elevatorMachine.crank(ElevatorState.LOW);
+                        d = elevatorMachine.crank(ElevatorState.LOW);
                         System.out.println("Elevator Is Down? " + d);
                         if (d) {
                             /* Controls the pickup mechanism. */
