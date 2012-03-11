@@ -1,4 +1,4 @@
- FIRST Team 604's 2012 Robot "Orange"
+FIRST Team 604's 2012 Robot "Orange"
 ====================================
 
 ### What is this branch?
