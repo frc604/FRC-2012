@@ -15,6 +15,8 @@ public interface ButtonConfiguration {
         
         public static final int AUTO_BALANCE = Button.X;
         public static final int GYRO_RESET = Button.Back;
+        
+        public static final int RESET_ELEVATOR_ENCODER = Button.Y;
     }
     
     public interface Manipulator {

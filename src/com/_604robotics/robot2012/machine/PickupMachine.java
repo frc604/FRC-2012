@@ -20,6 +20,7 @@ public class PickupMachine implements StrangeMachine {
     
     public PickupMachine (DoubleSolenoid pickup) {
         this.pickup = pickup;
+        this.switchTimer.start();
     }
     
     public boolean test (int state) {

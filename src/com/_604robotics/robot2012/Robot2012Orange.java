@@ -80,6 +80,9 @@ public class Robot2012Orange extends SimpleRobot {
     
     CameraInterface cameraInterface;
     
+    boolean upHigh = false;
+    boolean pickupIn = true;
+    
     /**
      * Constructor.
      * 
@@ -140,7 +143,7 @@ public class Robot2012Orange extends SimpleRobot {
         
         encoderTurretRotation.setDistancePerPulse(SensorConfiguration.Encoders.TURRET_DEGREES_PER_CLICK);
         
-        encoderElevator.setOffset(525);
+        encoderElevator.setOffset(450);
         
         encoderLeftDrive.setPIDSourceParameter(Encoder.PIDSourceParameter.kDistance);
         encoderRightDrive.setPIDSourceParameter(Encoder.PIDSourceParameter.kDistance);
@@ -184,7 +187,7 @@ public class Robot2012Orange extends SimpleRobot {
         pidTurretRotation = new PIDController(-0.0022, -0.0008, -0.006, encoderTurretRotation, turretRotationMotor);
         
         elevatorSource.setController(pidElevator);
-        elevatorSource.setDeadband(-5D, 5D);
+        elevatorSource.setDeadband(-20D, 0D);
         
         pidElevator.setInputRange(0, 1550);
         pidElevator.setOutputRange(ActuatorConfiguration.ELEVATOR_POWER_MIN, ActuatorConfiguration.ELEVATOR_POWER_MAX);
@@ -472,9 +475,6 @@ public class Robot2012Orange extends SimpleRobot {
 
         double accelPower;
         
-        boolean upHigh = false;
-        boolean pickupIn = true;
-        
         boolean noFixedDirection = true;
         int turretDirection = TurretState.FORWARD;
         
@@ -489,6 +489,9 @@ public class Robot2012Orange extends SimpleRobot {
         
         while (isOperatorControl() && isEnabled()) {
             shooterMachine.setShooterSpeed(SmartDashboard.getDouble("Shooter Speed", 1D));
+            
+            if (driveController.getButton(ButtonConfiguration.Driver.RESET_ELEVATOR_ENCODER))
+                encoderElevator.reset();
             
             /* Controls the gear shift. */
             
