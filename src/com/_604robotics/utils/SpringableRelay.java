@@ -19,16 +19,38 @@ public class SpringableRelay extends Relay {
     private final Value defaultDirection;
     private boolean sprung = false;
     
+    /**
+     * Initializes a new SpringableRelay.
+     * 
+     * @param   moduleNumber        The module slot the Relay is on.
+     * @param   channel             The channel the Relay is on.
+     * @param   direction           The direction the Relay should control.
+     * @param   defaultDirection    The default direction for reloading.
+     */
     public SpringableRelay (int moduleNumber, int channel, Direction direction, Value defaultDirection) {
         super(moduleNumber, channel, direction);
         super.set(this.defaultDirection = defaultDirection);
     }
     
+    /**
+     * Initializes a new SpringableRelay.
+     * 
+     * @param   channel             The channel the Relay is on.
+     * @param   direction           The direction the Relay should control.
+     * @param   defaultDirection    The default direction for reloading.
+     */
     public SpringableRelay (int channel, Direction direction, Value defaultDirection) {
         super(channel, direction);
         super.set(this.defaultDirection = defaultDirection);
     }
     
+    /**
+     * Initializes a new SpringableRelay.
+     * 
+     * @param   moduleNumber        The module slot the Relay is on.
+     * @param   channel             The channel the Relay is on.
+     * @param   defaultDirection    The default direction for reloading.
+     */
     public SpringableRelay (int moduleNumber, int channel, Value defaultDirection) {
         super(moduleNumber, channel);
         super.set(this.defaultDirection = defaultDirection);
@@ -37,8 +59,8 @@ public class SpringableRelay extends Relay {
     /**
      * Initializes a new SpringableRelay.
      * 
-     * @param channel
-     * @param defaultDirection 
+     * @param   channel             The channel the Relay is on.
+     * @param   defaultDirection    The default direction for reloading.
      */
     public SpringableRelay (int channel, Value defaultDirection) {
         super(channel);
