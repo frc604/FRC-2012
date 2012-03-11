@@ -36,18 +36,20 @@ public class PickupMachine implements StrangeMachine {
     public boolean crank(int state) {
         switch (state) {
             case PickupState.OUT:
-                if (this.pickup.get() == ActuatorConfiguration.SOLENOID_PICKUP.IN)
+                if (this.pickup.get() != ActuatorConfiguration.SOLENOID_PICKUP.OUT)
                     this.switchTimer.reset();
                 this.pickup.set(ActuatorConfiguration.SOLENOID_PICKUP.OUT);
                 break;
             case PickupState.IN:
-                if (this.pickup.get() == ActuatorConfiguration.SOLENOID_PICKUP.OUT)
+                if (this.pickup.get() != ActuatorConfiguration.SOLENOID_PICKUP.IN)
                     switchTimer.reset();
                 this.pickup.set(ActuatorConfiguration.SOLENOID_PICKUP.IN);
                 break;
             default:
                 return false;
         }
+        
+        System.out.println("switchTimer? " + this.switchTimer.get());
         
         return this.switchTimer.get() >= 1;
     }

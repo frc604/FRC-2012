@@ -99,6 +99,9 @@ public class Robot2012Orange extends SimpleRobot {
         driveController = new XboxController(PortConfiguration.Controllers.DRIVE);
         manipulatorController = new XboxController(PortConfiguration.Controllers.MANIPULATOR);
         
+        manipulatorController.setDeadband(Axis.RIGHT_STICK_X, -0.2, 0.2);
+        manipulatorController.setDeadband(Axis.RIGHT_STICK_Y, -0.2, 0.2);
+        
         /* Set up the drive train. */
         
         driveTrain = new RobotDrive(new Victor(PortConfiguration.Motors.LEFT_DRIVE), new Victor(PortConfiguration.Motors.RIGHT_DRIVE));
@@ -186,6 +189,9 @@ public class Robot2012Orange extends SimpleRobot {
         pidElevator.setOutputRange(ActuatorConfiguration.ELEVATOR_POWER_MIN, ActuatorConfiguration.ELEVATOR_POWER_MAX);
         pidElevator.setSetpoint(822);
         pidTurretRotation.setOutputRange(ActuatorConfiguration.TURRET_ROTATION_POWER_MIN, ActuatorConfiguration.TURRET_ROTATION_POWER_MAX);
+        
+        elevatorMotors.setController(pidElevator);
+        turretRotationMotor.setController(pidTurretRotation);
         
         /* Sets up the rotation provider. */
         
@@ -464,7 +470,7 @@ public class Robot2012Orange extends SimpleRobot {
         double accelPower;
         
         boolean upHigh = false;
-        boolean pickupUpIn = false;
+        boolean pickupIn = true;
         
         boolean noFixedDirection = true;
         int turretDirection = TurretState.FORWARD;
@@ -529,10 +535,10 @@ public class Robot2012Orange extends SimpleRobot {
             /* Toggle the pickup state between "up" and "down". */
             
             if (driveController.getToggle(ButtonConfiguration.Driver.TOGGLE_PICKUP))
-                pickupUpIn = !pickupUpIn;
+                pickupIn = !pickupIn;
             
             /*
-             * If pickUpIn is true, or upHigh is true, then make sure the elevator
+             * If pickupIn is true, or upHigh is true, then make sure the elevator
              * is up high enough, then lift up the pickup.
              * 
              * Else, check the "default" position. If it is up high, then lower
@@ -541,7 +547,10 @@ public class Robot2012Orange extends SimpleRobot {
              * elevator.
              */
             
-            if (pickupUpIn || upHigh) {
+            System.out.println("pickupIn: " + pickupIn);
+            System.out.println("upHigh: " + upHigh);
+            
+            if (pickupIn || upHigh) {
                 if (elevatorMachine.test(ElevatorState.PICKUP_OKAY)) {
                     pickupMachine.crank(PickupState.IN);
                     
@@ -569,20 +578,26 @@ public class Robot2012Orange extends SimpleRobot {
                     elevatorMachine.crank(ElevatorState.MEDIUM);
                 }
             } else {
-                if (turretMachine.crank(TurretState.SIDEWAYS)) {
+                boolean b = turretMachine.crank(TurretState.SIDEWAYS);
+                System.out.println("Turret Is There (Faked)? " + b);
+                if (b) {
                     /*
                      * To prevent us from unintentionally violating <G21>, the
                      * pickup cannot go out until the turret is in the sideways
                      * position.
                      */
                     
-                    if (pickupMachine.crank(PickupState.OUT)) {
+                    boolean c = pickupMachine.crank(PickupState.OUT);
+                    System.out.println("Pickup Is Out? " + c);
+                    if (c) {
                         /*
                          * If the pickup is down and the elevator is at rest,
                          * then allow the user to trigger the pickup mechanism.
                          */
-
-                        if (elevatorMachine.crank(ElevatorState.LOW)) {
+                        
+                        boolean d = elevatorMachine.crank(ElevatorState.LOW);
+                        System.out.println("Elevator Is Down? " + d);
+                        if (d) {
                             /* Controls the pickup mechanism. */
 
                             if (manipulatorController.getButton(ButtonConfiguration.Manipulator.PICKUP)) {

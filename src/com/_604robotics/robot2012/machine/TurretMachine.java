@@ -30,7 +30,7 @@ public class TurretMachine implements StrangeMachine {
     public boolean test (int state) {
         switch (state) {
             case TurretState.SIDEWAYS:
-                return this.controller.getSetpoint() == ActuatorConfiguration.TURRET_POSITION.SIDEWAYS && this.controller.onTarget();
+                return true;//this.controller.getSetpoint() == ActuatorConfiguration.TURRET_POSITION.SIDEWAYS && this.controller.onTarget();
             case TurretState.AIMED:
                 return this.controller.onTarget();
             case TurretState.FORWARD:
@@ -74,6 +74,6 @@ public class TurretMachine implements StrangeMachine {
         if (!this.controller.isEnable())
             this.controller.enable();
         
-        return this.controller.onTarget();
+        return state == TurretState.SIDEWAYS || this.controller.onTarget();
     }
 }
