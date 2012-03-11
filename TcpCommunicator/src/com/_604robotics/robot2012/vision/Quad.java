@@ -27,5 +27,13 @@ public class Quad {
 		this.bottomLeft = bottomLeft;
 		this.bottomRight = bottomRight;
 	}
+
+	public String toString() {
+		return "Quad [topLeft=" + topLeft + ", topRight=" + topRight + ", bottomLeft=" + bottomLeft + ", bottomRight="
+				+ bottomRight + "]";
+	}
+	
+	
+	
 	
 }

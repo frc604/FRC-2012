@@ -373,6 +373,8 @@ public class VisionProcessing {
 				targets[i] = new DistanceCalculations().getAngleAndRelXYZOfTarget(q);
 				if(conf.debug_Print)
 					System.out.println(targets[i]);
+				if(conf.debug_Print)
+					System.out.println(q);
 				
 				targetQuads[i] = q;
 				

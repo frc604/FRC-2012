@@ -350,7 +350,10 @@ public class CamStream extends Thread {
 			} while (!m_isDefunct);
 		} catch (Exception e) {
 			if (!m_collecting) {
-				m_reporter.reportFailure(e.toString());
+				if(m_reporter == null)
+					e.printStackTrace();
+				else
+					m_reporter.reportFailure(e.toString());
 			} else if (!m_isDefunct) {
 				m_reporter.reportError(e);
 			}
