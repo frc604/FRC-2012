@@ -132,6 +132,11 @@ public class Robot2012Orange extends SimpleRobot {
         encoderElevator = new EncoderPIDSource(PortConfiguration.Encoders.ELEVATOR_A, PortConfiguration.Encoders.ELEVATOR_B);
         encoderTurretRotation = new Encoder(PortConfiguration.Encoders.TURRET_ROTATION_A, PortConfiguration.Encoders.TURRET_ROTATION_B);
         
+        encoderLeftDrive.setDistancePerPulse(SensorConfiguration.Encoders.LEFT_DRIVE_INCHES_PER_CLICK);
+        encoderRightDrive.setDistancePerPulse(SensorConfiguration.Encoders.RIGHT_DRIVE_INCHES_PER_CLICK);
+        
+        encoderTurretRotation.setDistancePerPulse(SensorConfiguration.Encoders.TURRET_DEGREES_PER_CLICK);
+        
         encoderElevator.setOffset(525);
         
         encoderLeftDrive.setPIDSourceParameter(Encoder.PIDSourceParameter.kDistance);
@@ -173,7 +178,7 @@ public class Robot2012Orange extends SimpleRobot {
         DeadbandedSource elevatorSource = new DeadbandedSource(encoderElevator);
         
         pidElevator = new UpDownPIDController(new Gains(0.0085, 0D, 0.018), new Gains(0.0029, 0.000003, 0.007), elevatorSource, elevatorMotors);
-        pidTurretRotation = new PIDController(0D, 0D, 0D, encoderTurretRotation, turretRotationMotor);
+        pidTurretRotation = new PIDController(-0.0022, -0.0008, -0.006, encoderTurretRotation, turretRotationMotor);
         
         elevatorSource.setController(pidElevator);
         elevatorSource.setDeadband(-5D, 5D);
@@ -470,6 +475,9 @@ public class Robot2012Orange extends SimpleRobot {
         
         manipulatorController.resetToggles();
         driveController.resetToggles();
+        
+        pidElevator.reset();
+        pidTurretRotation.reset();
         
         while (isOperatorControl() && isEnabled()) {
             shooterMachine.setShooterSpeed(SmartDashboard.getDouble("Shooter Speed", 1D));
