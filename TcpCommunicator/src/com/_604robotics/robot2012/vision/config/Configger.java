@@ -107,7 +107,7 @@ public class Configger {
 		acceptButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
-					VisionProcessing.defaultProcessing.conf.save(Config.defaultConfigFile);
+					VisionProcessing.defaultProcessing.conf.saveDefaultConfig();
 				} catch (IOException ex) {
 					ex.printStackTrace();
 				}
@@ -248,8 +248,11 @@ public class Configger {
 	
 	///private LinkedSlider[] sliders = {rTarget, gTarget, bTarget, rSlider, gSlider, bSlider, sensSlider, minBlobSize, tileSize};
 	
+	/**
+	 * Revert to the previously saved Config file
+	 */
 	private void revertToConf() {
-		Config conf = Config.readConfig(Config.defaultConfigFile);
+		Config conf = Config.readDefaultConfig();
 
 		rTarget.setValue(conf.color_targetR);
 		gTarget.setValue(conf.color_targetG);

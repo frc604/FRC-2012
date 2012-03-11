@@ -2,6 +2,11 @@ package com._604robotics.robot2012.vision;
 
 import static java.lang.Math.*;
 
+/**
+ * This code does the 2D-to-3D calculations
+ * 
+ * @author Kevin Parker <kevin.m.parker@gmail.com>
+ */
 public class DistanceCalculations {
 	
 	

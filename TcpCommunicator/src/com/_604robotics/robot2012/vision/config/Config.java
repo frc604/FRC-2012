@@ -17,8 +17,8 @@ public class Config implements Cloneable {
 			return null;
 		}
 	}
-	
-	public static final File	defaultConfigFile	= new File("vision.conf");
+
+	private static final File	defaultConfigFile	= new File("vision.conf");
 	
 	public static Config conf;
 	
@@ -68,6 +68,13 @@ public class Config implements Cloneable {
 		} catch (Exception ex) {
 			return def;
 		}
+	}
+
+	public static Config readDefaultConfig() {
+		return readConfig(defaultConfigFile);
+	}
+	public void saveDefaultConfig() throws IOException {
+		save(defaultConfigFile);
 	}
 	
 	public static Config readConfig(File file) /*throws FileNotFoundException*/ {

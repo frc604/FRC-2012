@@ -35,7 +35,7 @@ public class VisionProcessing {
 	 */
 	public static final int			Side_Left				= 0, Side_Top = 1, Side_Right = 2, Side_Bottom = 3;
 	
-	public Config conf = Config.readConfig(Config.defaultConfigFile);
+	public Config conf = Config.readDefaultConfig();
 	
 	/**
 	 * This function determines the distances from a side to the points on the target, in a direction perpendicular to
