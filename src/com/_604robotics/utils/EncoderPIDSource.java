@@ -248,11 +248,21 @@ public class EncoderPIDSource extends Encoder {
         return this.get();
     }
     
+    /**
+     * Resets the Encoder.
+     * 
+     * Also undoes any offsets previously set.
+     */
     public void reset () {
         this.offset = 0;
         this.reset();
     }
     
+    /**
+     * Sets the offset value for the Encoder.
+     * 
+     * @param   offset  The offset value for the encoder.
+     */
     public void setOffset (int offset) {
         this.offset = offset * 4;
     }
