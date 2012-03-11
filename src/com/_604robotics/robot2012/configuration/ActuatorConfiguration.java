@@ -16,11 +16,11 @@ public interface ActuatorConfiguration {
     public static final double HOPPER_POWER_REVERSE = -0.5;
     public static final double PICKUP_POWER = 0.8;
     
-    public static final double ELEVATOR_POWER_MIN = -08D;
-    public static final double ELEVATOR_POWER_MAX = 0.8D;
+    public static final double ELEVATOR_POWER_MIN = -0.8;
+    public static final double ELEVATOR_POWER_MAX = 0.8;
     
-    public static final double TURRET_ROTATION_POWER_MIN = -0.5D;
-    public static final double TURRET_ROTATION_POWER_MAX = 0.5D;
+    public static final double TURRET_ROTATION_POWER_MIN = -0.8;
+    public static final double TURRET_ROTATION_POWER_MAX = 0.8;
     
     public interface TURRET_POSITION {
         public static final double SIDEWAYS = -90D;
