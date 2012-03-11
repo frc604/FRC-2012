@@ -36,7 +36,10 @@ public class RemoteCameraTCP implements CameraInterface {
     public Target[] getTargets () {
         return this.server.targets;
     }
-    
+    /**
+     * Records the time elapsed between reception of data packets from camera.
+     * @return The elapsed time since the last packet was received.
+     */
     public double getRecordedTime () {
         return (new Date().getTime() - this.server.lastPacketTime) + 50;
     }
