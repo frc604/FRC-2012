@@ -52,8 +52,8 @@ public interface PortConfiguration {
         public static final int ELEVATOR_A = 8;
         public static final int ELEVATOR_B = 9;
         
-        public static final int TURRET_ROTATION_A = 12;
-        public static final int TURRET_ROTATION_B = 13;
+        public static final int TURRET_ROTATION_A = 5;
+        public static final int TURRET_ROTATION_B = 6;
     }
     
     public interface Pneumatics {

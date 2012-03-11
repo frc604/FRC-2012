@@ -72,7 +72,7 @@ public class Robot2012Orange extends SimpleRobot {
     StrangeMachine pickupMachine;
     StrangeMachine elevatorMachine;
     StrangeMachine turretMachine;
-    StrangeMachine shooterMachine;
+    ShooterMachine shooterMachine;
     
     RotationProvider rotationProvider;
     
@@ -199,6 +199,8 @@ public class Robot2012Orange extends SimpleRobot {
         inTheMiddle.addObject("Autonomous: On the Sides", "No");
         
         SmartDashboard.putData("inTheMiddle", inTheMiddle);
+        
+        SmartDashboard.putDouble("Shooter Speed", 1D);
         
         /* Sets up the camera inteface. */
         
@@ -470,6 +472,8 @@ public class Robot2012Orange extends SimpleRobot {
         driveController.resetToggles();
         
         while (isOperatorControl() && isEnabled()) {
+            shooterMachine.setShooterSpeed(SmartDashboard.getDouble("Shooter Speed", 1D));
+            
             /* Controls the gear shift. */
             
             if (driveController.getButton(ButtonConfiguration.Driver.SHIFT))

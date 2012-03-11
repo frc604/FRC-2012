@@ -16,6 +16,8 @@ public class ShooterMachine implements StrangeMachine {
     private final DualVictor shooter;
     private final Victor hopper;
     
+    private double speed = 0D;
+    
     public interface ShooterState {
         public static final int SHOOTING = 0;
     }
@@ -23,6 +25,10 @@ public class ShooterMachine implements StrangeMachine {
     public ShooterMachine (DualVictor shooter, Victor hopper) {
         this.shooter = shooter;
         this.hopper = hopper;
+    }
+    
+    public void setShooterSpeed (double speed) {
+        this.speed = speed;
     }
 
     public boolean test (int state) {
@@ -37,18 +43,18 @@ public class ShooterMachine implements StrangeMachine {
     public boolean crank (int state) {
         switch (state) {
             case ShooterState.SHOOTING:
-                if (this.shooter.get() != ActuatorConfiguration.SHOOTER_POWER) {
-                    this.shooter.set(ActuatorConfiguration.SHOOTER_POWER);
+                if (this.shooter.get() != this.speed) {
+                    this.shooter.set(this.speed);
                     
                     this.spinTimer.reset();
                     this.spinTimer.start();
                     
                     return false;
                 } else if (this.spinTimer.get() >= 0.5) {
-                    this.shooter.set(ActuatorConfiguration.SHOOTER_POWER);
+                    this.shooter.set(this.speed);
                     this.hopper.set(ActuatorConfiguration.HOPPER_POWER);
                 } else {
-                    this.shooter.set(ActuatorConfiguration.SHOOTER_POWER);
+                    this.shooter.set(this.speed);
                 }
         }
         
