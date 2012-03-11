@@ -69,7 +69,7 @@ public class LinearController {
      * @param   horizontalOutput    The horizontal output, as defined in the
      *                              class description.
      */
-    public void setHorizontalValues (double horizontalRange, double horizontalOutput) {
+    public void setHorizontalRange (double horizontalRange, double horizontalOutput) {
         this.horizontalRange = horizontalRange;
         this.horizontalOutput = horizontalOutput;
     }
@@ -131,11 +131,13 @@ public class LinearController {
     }
     
     /**
-     * Internal function that performs the output calculation.
+     * Function that performs the output calculation.
+     * 
+     * Exposed for debug use, mainly.
      * 
      * @return  An output value, to be passed to a PIDOutput.
      */
-    private double calculate () {
+    public double calculate () {
         double pos = this.source.pidGet();
         double dist = Math.abs(pos - this.target);
         
