@@ -34,6 +34,12 @@ public class SpringableRelay extends Relay {
         super.set(this.defaultDirection = defaultDirection);
     }
     
+    /**
+     * Initializes a new SpringableRelay.
+     * 
+     * @param channel
+     * @param defaultDirection 
+     */
     public SpringableRelay (int channel, Value defaultDirection) {
         super(channel);
         super.set(this.defaultDirection = defaultDirection);
