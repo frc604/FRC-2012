@@ -253,7 +253,9 @@ public class Robot2012Orange extends SimpleRobot {
                 ? correctedValue
                 : xValue;
     }
-    
+    /**
+     * Aim at backboard, shoot.
+     */
     public void aimAndShoot() {
         ringLight.set(ActuatorConfiguration.RING_LIGHT.ON);
         
