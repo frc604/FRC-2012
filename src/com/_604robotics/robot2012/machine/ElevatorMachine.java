@@ -1,6 +1,7 @@
 package com._604robotics.robot2012.machine;
 
 import com._604robotics.robot2012.configuration.ActuatorConfiguration;
+import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.PIDController;
 
 /**
@@ -10,15 +11,18 @@ import edu.wpi.first.wpilibj.PIDController;
  */
 public class ElevatorMachine implements StrangeMachine {
     private final PIDController controller;
+    private final Encoder encoder;
     
     public interface ElevatorState {
         public static final int HIGH = 0;
         public static final int MEDIUM = 1;
         public static final int LOW = 2;
+        public static final int PICKUP_OKAY = 3;
     }
     
-    public ElevatorMachine (PIDController controller) {
+    public ElevatorMachine (PIDController controller, Encoder encoder) {
         this.controller = controller;
+        this.encoder = encoder;
     }
 
     public boolean test (int state) {
@@ -29,6 +33,8 @@ public class ElevatorMachine implements StrangeMachine {
                 return this.controller.getSetpoint() == ActuatorConfiguration.ELEVATOR.MEDIUM && this.controller.onTarget();
             case ElevatorState.LOW:
                 return this.controller.getSetpoint() == ActuatorConfiguration.ELEVATOR.LOW && this.controller.onTarget();
+            case ElevatorState.PICKUP_OKAY:
+                return this.encoder.get() >= ActuatorConfiguration.ELEVATOR.MEDIUM;
         }
         
         return false;

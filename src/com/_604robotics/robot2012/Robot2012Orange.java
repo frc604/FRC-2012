@@ -11,12 +11,14 @@ import com._604robotics.robot2012.machine.ElevatorMachine.ElevatorState;
 import com._604robotics.robot2012.machine.PickupMachine;
 import com._604robotics.robot2012.machine.PickupMachine.PickupState;
 import com._604robotics.robot2012.machine.StrangeMachine;
+import com._604robotics.robot2012.machine.TurretMachine;
 import com._604robotics.robot2012.machine.TurretMachine.TurretState;
 import com._604robotics.robot2012.rotation.DummyRotationProvider;
 import com._604robotics.robot2012.rotation.RotationProvider;
 import com._604robotics.robot2012.vision.Target;
 import com._604robotics.utils.*;
 import com._604robotics.utils.XboxController.Axis;
+import com._604robotics.utils.XboxController.Stick;
 import com.sun.squawk.util.MathUtils;
 import edu.wpi.first.wpilibj.RobotDrive.MotorType;
 import edu.wpi.first.wpilibj.*;
@@ -45,7 +47,7 @@ public class Robot2012Orange extends SimpleRobot {
     
     SpringableVictor turretRotationMotor;
     
-    Relay ringLight;
+    SpringableRelay ringLight;
     
     Encoder encoderLeftDrive;
     Encoder encoderRightDrive;
@@ -61,10 +63,10 @@ public class Robot2012Orange extends SimpleRobot {
     
     Compressor compressorPump;
     
-    DoubleSolenoid solenoidShifter;
+    SpringableDoubleSolenoid solenoidShifter;
     DoubleSolenoid solenoidShooter;
     DoubleSolenoid solenoidPickup;
-    DoubleSolenoid solenoidHopper;
+    SpringableDoubleSolenoid solenoidHopper;
     
     PIDController pidElevator;
     PIDController pidTurretRotation;
@@ -121,7 +123,7 @@ public class Robot2012Orange extends SimpleRobot {
         
         /* Sets up the ring light relay. */
         
-        ringLight = new Relay(PortConfiguration.Relays.RING_LIGHT_PORT, PortConfiguration.Relays.RING_LIGHT_DIRECTION);
+        ringLight = new SpringableRelay(PortConfiguration.Relays.RING_LIGHT_PORT, PortConfiguration.Relays.RING_LIGHT_DIRECTION, ActuatorConfiguration.RING_LIGHT.OFF);
         
         /* Sets up the encoders for the drive, elevator, and turret. */
         
@@ -155,15 +157,10 @@ public class Robot2012Orange extends SimpleRobot {
         
         compressorPump = new Compressor(PortConfiguration.Pneumatics.PRESSURE_SWITCH, PortConfiguration.Pneumatics.COMPRESSOR);
         
-        solenoidShifter = new DoubleSolenoid(PortConfiguration.Pneumatics.SHIFTER_SOLENOID.FORWARD, PortConfiguration.Pneumatics.SHIFTER_SOLENOID.REVERSE);
-        solenoidShooter = new DoubleSolenoid(PortConfiguration.Pneumatics.SHOOTER_SOLENOID.FORWARD, PortConfiguration.Pneumatics.SHOOTER_SOLENOID.REVERSE);
-        solenoidPickup = new DoubleSolenoid(PortConfiguration.Pneumatics.PICKUP_SOLENOID.FORWARD, PortConfiguration.Pneumatics.PICKUP_SOLENOID.REVERSE);
-        solenoidHopper = new DoubleSolenoid(PortConfiguration.Pneumatics.HOPPER_SOLENOID.FORWARD, PortConfiguration.Pneumatics.HOPPER_SOLENOID.REVERSE);
-        
-        solenoidShifter.set(ActuatorConfiguration.SOLENOID_SHIFTER.LOW_POWER);
-        solenoidShooter.set(ActuatorConfiguration.SOLENOID_SHOOTER.LOWER_ANGLE);
-        solenoidPickup.set(ActuatorConfiguration.SOLENOID_PICKUP.IN);
-        solenoidHopper.set(ActuatorConfiguration.SOLENOID_HOPPER.REGULAR);
+        solenoidShifter = new SpringableDoubleSolenoid(PortConfiguration.Pneumatics.SHIFTER_SOLENOID.LOW_GEAR, PortConfiguration.Pneumatics.SHIFTER_SOLENOID.HIGH_GEAR, ActuatorConfiguration.SOLENOID_SHIFTER.LOW_GEAR);
+        solenoidShooter = new DoubleSolenoid(PortConfiguration.Pneumatics.SHOOTER_SOLENOID.LOWER_ANGLE, PortConfiguration.Pneumatics.SHOOTER_SOLENOID.UPPER_ANGLE);
+        solenoidPickup = new DoubleSolenoid(PortConfiguration.Pneumatics.PICKUP_SOLENOID.IN, PortConfiguration.Pneumatics.PICKUP_SOLENOID.OUT);
+        solenoidHopper = new SpringableDoubleSolenoid(PortConfiguration.Pneumatics.HOPPER_SOLENOID.FORWARD, PortConfiguration.Pneumatics.HOPPER_SOLENOID.REVERSE, ActuatorConfiguration.SOLENOID_HOPPER.REGULAR);
         
         /*
          * Sets up the PID controllers, and initializes inputs on the
@@ -176,15 +173,15 @@ public class Robot2012Orange extends SimpleRobot {
         pidElevator.setOutputRange(ActuatorConfiguration.ELEVATOR_POWER_MIN, ActuatorConfiguration.ELEVATOR_POWER_MAX);
         pidTurretRotation.setOutputRange(ActuatorConfiguration.TURRET_ROTATION_POWER_MIN, ActuatorConfiguration.TURRET_ROTATION_POWER_MAX);
         
-        /* Sets up the Machines. */
-        
-        pickupMachine = new PickupMachine(solenoidPickup);
-        elevatorMachine = new ElevatorMachine(pidElevator);
-        turretMachine = new ElevatorMachine(pidTurretRotation);
-        
         /* Sets up the rotation provider. */
         
         rotationProvider = new DummyRotationProvider(pidTurretRotation);
+        
+        /* Sets up the Machines. */
+        
+        pickupMachine = new PickupMachine(solenoidPickup);
+        elevatorMachine = new ElevatorMachine(pidElevator, encoderElevator);
+        turretMachine = new TurretMachine(pidTurretRotation, rotationProvider);
         
         /* Sets up the switcher for autonomous. */
         
@@ -237,6 +234,22 @@ public class Robot2012Orange extends SimpleRobot {
         return (isInRange(xValue, upperBand, lowerBand))
                 ? correctedValue
                 : xValue;
+    }
+    
+    public void aimAndShoot() {
+        ringLight.set(ActuatorConfiguration.RING_LIGHT.ON);
+        
+        /*
+         * Aim, or make sure we're aimed. Then fire.
+         */
+        
+        if (turretMachine.crank(TurretState.AIMED)) {
+            // TODO: Add actual firing stuff here.
+            
+            solenoidHopper.set(ActuatorConfiguration.SOLENOID_HOPPER.PUSH);
+            hopperMotor.set(ActuatorConfiguration.HOPPER_POWER);
+            shooterMotors.set(ActuatorConfiguration.SHOOTER_POWER);
+        }
     }
 
     /**
@@ -434,32 +447,25 @@ public class Robot2012Orange extends SimpleRobot {
 
         double accelPower;
         
-        boolean lightOn = false;
         boolean upHigh = false;
-        boolean pickupUp = false;
+        boolean pickupUpIn = false;
+        
+        boolean noFixedDirection = true;
+        int turretDirection = TurretState.FORWARD;
         
         Target[] targets;
+        
+        int settleState = 2;
+        Timer settleTimer = new Timer();
         
         manipulatorController.resetToggles();
         driveController.resetToggles();
         
-        // TODO: Move over gyro stuff from other project, once it's all hammered out.
-
         while (isOperatorControl() && isEnabled()) {
-            /* Updates the rotational tracking. */
-            
-            rotationProvider.update();
-            SmartDashboard.putDouble("Current Turret Setpoint", pidTurretRotation.get());
-            
             /* Controls the gear shift. */
             
-            if (driveController.getButton(ButtonConfiguration.Driver.SHIFT)) {
-                solenoidShifter.set(ActuatorConfiguration.SOLENOID_SHIFTER.HIGH_POWER);
-                SmartDashboard.putString("Gear", "High");
-            } else {
-                solenoidShifter.set(ActuatorConfiguration.SOLENOID_SHIFTER.LOW_POWER);
-                SmartDashboard.putString("Gear", "Low");
-            }
+            if (driveController.getButton(ButtonConfiguration.Driver.SHIFT))
+                solenoidShifter.set(ActuatorConfiguration.SOLENOID_SHIFTER.HIGH_GEAR);
             
             /* 
              * Automatically balances the robot on the bridge. Well, that's the
@@ -481,17 +487,34 @@ public class Robot2012Orange extends SimpleRobot {
             
             /* Toggle the "default" height between "up high" and "down low". */
             
-            if (manipulatorController.getToggle(ButtonConfiguration.Manipulator.TOGGLE_HEIGHT))
-                upHigh = !upHigh;
+            if (manipulatorController.getButton(ButtonConfiguration.Manipulator.Elevator.FORWARD)) {
+                upHigh = true;
+                noFixedDirection = false;
+                turretDirection = TurretState.FORWARD;
+            } else if (manipulatorController.getButton(ButtonConfiguration.Manipulator.Elevator.LEFT)) {
+                upHigh = true;
+                noFixedDirection = false;
+                turretDirection = TurretState.LEFT;
+            } else if (manipulatorController.getButton(ButtonConfiguration.Manipulator.Elevator.RIGHT)) {
+                upHigh = true;
+                noFixedDirection = false;
+                turretDirection = TurretState.RIGHT;
+            } else if (manipulatorController.getButton(ButtonConfiguration.Manipulator.Elevator.BACKWARD)) {
+                upHigh = true;
+                noFixedDirection = false;
+                turretDirection = TurretState.BACKWARD;
+            } else if (manipulatorController.getStick(ButtonConfiguration.Manipulator.Elevator.DOWN)) {
+                upHigh = false;
+            }
             
             /* Toggle the pickup state between "up" and "down". */
             
-            if (manipulatorController.getToggle(ButtonConfiguration.Driver.TOGGLE_PICKUP))
-                pickupUp = !pickupUp;
+            if (driveController.getToggle(ButtonConfiguration.Driver.TOGGLE_PICKUP))
+                pickupUpIn = !pickupUpIn;
             
             /*
-             * If pickUp is true, make sure the elevator is up high enough,
-             * then lift up the pickup.
+             * If pickUpIn is true, or upHigh is true, then make sure the elevator
+             * is up high enough, then lift up the pickup.
              * 
              * Else, check the "default" position. If it is up high, then lower
              * the pickup and raise the elevator simultaneously. If it is down
@@ -499,14 +522,35 @@ public class Robot2012Orange extends SimpleRobot {
              * elevator.
              */
             
-            if (pickupUp) {
-                if ((upHigh && elevatorMachine.crank(ElevatorState.HIGH)) || elevatorMachine.crank(ElevatorState.MEDIUM))
+            if (pickupUpIn || upHigh) {
+                if (elevatorMachine.test(ElevatorState.PICKUP_OKAY)) {
                     pickupMachine.crank(PickupState.IN);
-            } else {
+                    
+                    if (upHigh && noFixedDirection)
+                        noFixedDirection = turretMachine.crank(turretDirection);
+                }
+                
                 if (upHigh) {
-                    pickupMachine.crank(PickupState.OUT);
-                    elevatorMachine.crank(ElevatorState.HIGH);
-                } else if (turretMachine.crank(TurretState.SIDEWAYS)) {
+                    if (elevatorMachine.crank(ElevatorState.HIGH)) {
+                        SmartDashboard.putString("Ready to Shoot", "Yes");
+                        
+                        /* Toggles the shooter angle. */
+                        
+                        if (manipulatorController.getToggle(ButtonConfiguration.Manipulator.TOGGLE_ANGLE)) {
+                            if (solenoidShooter.get() == ActuatorConfiguration.SOLENOID_SHOOTER.LOWER_ANGLE)
+                                solenoidShooter.set(ActuatorConfiguration.SOLENOID_SHOOTER.UPPER_ANGLE);
+                            else
+                                solenoidShooter.set(ActuatorConfiguration.SOLENOID_SHOOTER.LOWER_ANGLE);
+                        }
+                        
+                        if (manipulatorController.getButton(ButtonConfiguration.Manipulator.AIM_AND_SHOOT))
+                            this.aimAndShoot();
+                    }
+                } else {
+                    elevatorMachine.crank(ElevatorState.MEDIUM);
+                }
+            } else {
+                if (turretMachine.crank(TurretState.SIDEWAYS)) {
                     /*
                      * To prevent us from unintentionally violating <G21>, the
                      * pickup cannot go out until the turret is in the sideways
@@ -522,88 +566,56 @@ public class Robot2012Orange extends SimpleRobot {
                         if (elevatorMachine.crank(ElevatorState.LOW)) {
                             /* Controls the pickup mechanism. */
 
-                            if (driveController.getButton(ButtonConfiguration.Manipulator.PICKUP)) {
+                            if (manipulatorController.getButton(ButtonConfiguration.Manipulator.PICKUP)) {
                                 pickupMotor.set(ActuatorConfiguration.PICKUP_POWER);
                                 hopperMotor.set(ActuatorConfiguration.HOPPER_POWER);
+                                
+                                settleState = 0;
+                                settleTimer.stop();
                             }
                         }
                     }
                 }
             }
-        
+            
             /*
-             * If the default position is set up high, and the elevator is at
-             * that position now, allow the user to toggle the angle, aim the
-             * turret, and shoot.
+             * Settle the balls back in a bit after picking up.
              */
-            
-            if (upHigh && elevatorMachine.test(ElevatorState.HIGH)) {
-                SmartDashboard.putString("Ready to Shoot", "Yes");
-                
-                /* Toggles the shooter angle. */
-
-                if (manipulatorController.getToggle(ButtonConfiguration.Manipulator.TOGGLE_ANGLE)) {
-                    if (solenoidShooter.get() == ActuatorConfiguration.SOLENOID_SHOOTER.LOWER_ANGLE)
-                        solenoidShooter.set(ActuatorConfiguration.SOLENOID_SHOOTER.UPPER_ANGLE);
-                    else
-                        solenoidShooter.set(ActuatorConfiguration.SOLENOID_SHOOTER.LOWER_ANGLE);
+        
+            if (!manipulatorController.getButton(ButtonConfiguration.Manipulator.PICKUP) && settleState != 2) {
+                if (settleState == 0) {
+                    settleTimer.reset();
+                    settleTimer.start();
+                    
+                    settleState = 1;
                 }
                 
-                /* Aims the turret based on the vision output. */
-                
-                if (manipulatorController.getButton(ButtonConfiguration.Manipulator.AIM_AND_FIRE)) {
-                    if (!pidTurretRotation.isEnable())
-                        pidTurretRotation.enable();
-                    
-                    if (pidTurretRotation.onTarget()) {
-                        /* Fires the shooter. */
-                        
-                        // TODO: Put in more firing, physics stuff, etc.
-                        
-                        shooterMotors.set(ActuatorConfiguration.SHOOTER_POWER);
-                        hopperMotor.set(ActuatorConfiguration.HOPPER_POWER);
-                        solenoidHopper.set(ActuatorConfiguration.SOLENOID_HOPPER.PUSH);
-                    } else {
-                        solenoidHopper.set(ActuatorConfiguration.SOLENOID_HOPPER.REGULAR);
-                    }
+                if (settleTimer.get() < 0.5) {
+                    hopperMotor.set(ActuatorConfiguration.HOPPER_POWER_REVERSE);
                 } else {
-                    if (pidTurretRotation.isEnable())
-                        pidTurretRotation.disable();
+                    settleTimer.stop();
                     
-                    solenoidHopper.set(ActuatorConfiguration.SOLENOID_HOPPER.REGULAR);
+                    settleState = 2;
                 }
-            } else {
-                if (pidTurretRotation.isEnable())
-                    pidTurretRotation.disable();
-
-                solenoidHopper.set(ActuatorConfiguration.SOLENOID_HOPPER.REGULAR);
-
-                SmartDashboard.putString("Ready to Shoot", "No");
             }
-            
-            SmartDashboard.putBoolean("Turret Tracking?", pidTurretRotation.isEnable());
-            SmartDashboard.putBoolean("Turret On Target?", pidTurretRotation.onTarget());
             
             /* Toggles the light. */
             
-            if (manipulatorController.getToggle(ButtonConfiguration.Manipulator.TOGGLE_LIGHT)) {
-                lightOn = !lightOn;
-                
-                if (lightOn)
-                    ringLight.set(ActuatorConfiguration.RING_LIGHT.ON);
-                else
-                    ringLight.set(ActuatorConfiguration.RING_LIGHT.OFF);
-            }
+            if (manipulatorController.getToggle(ButtonConfiguration.Manipulator.TOGGLE_LIGHT))
+                ringLight.set(ActuatorConfiguration.RING_LIGHT.ON);
             
-            /* Reload the springs of the Victors. */
+            /* Reload the springs. */
             
             elevatorMotors.reload();
-            
             shooterMotors.reload();
             hopperMotor.reload();
             pickupMotor.reload();
-            
             turretRotationMotor.reload();
+            
+            ringLight.reload();
+            
+            solenoidShifter.reload();
+            solenoidHopper.reload();
             
             /* Debug output. */
             
@@ -618,6 +630,8 @@ public class Robot2012Orange extends SimpleRobot {
             SmartDashboard.putDouble("encoderTurretRotation", encoderTurretRotation.get());
             
             SmartDashboard.putInt("ups", ((RemoteCameraTCP) cameraInterface).getUPS());
+            
+            SmartDashboard.putDouble("Current Turret Setpoint", pidTurretRotation.get());
         }
 
         compressorPump.stop();

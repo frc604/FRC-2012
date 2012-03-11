@@ -42,6 +42,15 @@ public class XboxController {
     }
     
     /**
+     * Enumeration for the available sticks on the Xbox controller.
+     */
+    public interface Stick {
+        public static final int LEFT_STICK = 1;
+        public static final int RIGHT_STICK = 4;
+        public static final int DPAD = 6;
+    }
+    
+    /**
      * Enumeration for the available axes on the Xbox controller.
      */
     public interface Axis {
@@ -103,6 +112,16 @@ public class XboxController {
      */
     public double getAxis (int axis) {
         return this.deadband(axis, this.joystick.getRawAxis(axis));
+    }
+    
+    /**
+     * Get whether or not there's a value reading on the stick.
+     * 
+     * @param   stick   One of the stick values specified in
+     *                  XboxController.Stick.
+     */
+    public boolean getStick (int stick) {
+        return this.getAxis(stick) != 0 || this.getAxis(stick + 1) != 0;
     }
     
     /**

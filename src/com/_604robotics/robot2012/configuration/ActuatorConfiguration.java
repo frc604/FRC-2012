@@ -13,16 +13,23 @@ public interface ActuatorConfiguration {
         // TODO: Configure this.
     
     public static final double HOPPER_POWER = 0.8;
+    public static final double HOPPER_POWER_REVERSE = -0.5;
     public static final double PICKUP_POWER = 0.8;
     public static final double SHOOTER_POWER = 1D;
     
     public static final double ELEVATOR_POWER_MIN = -0.8D;
     public static final double ELEVATOR_POWER_MAX = 0.8D;
     
-    public static final double TURRET_ROTATION_POWER_MIN = -0.8D;
-    public static final double TURRET_ROTATION_POWER_MAX = 0.8D;
+    public static final double TURRET_ROTATION_POWER_MIN = -1D;
+    public static final double TURRET_ROTATION_POWER_MAX = 1D;
     
-    public static final double TURRET_SIDEWAYS_POSITION = -90D;
+    public interface TURRET_POSITION {
+        public static final double SIDEWAYS = -90D;
+        public static final double FORWARD = 0D;
+        public static final double LEFT = -90D;
+        public static final double RIGHT = 90D;
+        public static final double BACKWARD = -180D;
+    }
     
     public interface RING_LIGHT {
         public static final Value ON = Value.kOn;
@@ -39,8 +46,8 @@ public interface ActuatorConfiguration {
     }
     
     public interface SOLENOID_SHIFTER {
-        public static final DoubleSolenoid.Value LOW_POWER  = DoubleSolenoid.Value.kForward;
-        public static final DoubleSolenoid.Value HIGH_POWER = DoubleSolenoid.Value.kReverse;
+        public static final DoubleSolenoid.Value LOW_GEAR  = DoubleSolenoid.Value.kForward;
+        public static final DoubleSolenoid.Value HIGH_GEAR = DoubleSolenoid.Value.kReverse;
     }
     
     public interface SOLENOID_SHOOTER {

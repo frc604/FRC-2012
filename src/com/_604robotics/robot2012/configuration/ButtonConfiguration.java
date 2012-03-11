@@ -1,6 +1,7 @@
 package com._604robotics.robot2012.configuration;
 
 import com._604robotics.utils.XboxController.Button;
+import com._604robotics.utils.XboxController.Stick;
 
 /**
  * Button configuration.
@@ -10,21 +11,30 @@ import com._604robotics.utils.XboxController.Button;
 public interface ButtonConfiguration {
     public interface Driver {
         public static final int SHIFT = Button.EitherTrigger;
-        public static final int TOGGLE_PICKUP = Button.B;
+        public static final int TOGGLE_PICKUP = Button.RB;
         
         public static final int AUTO_BALANCE = Button.X;
         public static final int GYRO_RESET = Button.Back;
     }
     
     public interface Manipulator {
-        public static final int AIM_AND_FIRE = Button.A;
+        public interface Elevator {
+            public static final int FORWARD = Button.Y;
+            public static final int LEFT = Button.X;
+            public static final int RIGHT = Button.B;
+            public static final int BACKWARD = Button.A;
+            
+            public static final int DOWN = Stick.RIGHT_STICK;
+        }
         
-        public static final int TOGGLE_ANGLE = Button.Y;
+        public static final int AIM_AND_SHOOT = Button.RT;
+        public static final int PICKUP = Button.LT;
+        
+        public static final int TOGGLE_HEIGHT = Button.RB;
+        
+        public static final int TOGGLE_ANGLE = Button.LB;
         public static final int TOGGLE_LIGHT = Button.Back;
         
-        public static final int PICKUP = Button.X;
         
-        public static final int TOGGLE_HEIGHT = Button.EitherTrigger;
-        public static final int AUTO_TURRET = Button.LB;
     }
 }
