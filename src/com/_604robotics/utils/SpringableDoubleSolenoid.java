@@ -22,8 +22,7 @@ public class SpringableDoubleSolenoid extends DoubleSolenoid {
     private boolean sprung = false;
     
     /**
-     * Initializes a new SpringableDoubleSolenoid with the specified forward
-     * channel, reverse channel, and default direction.
+     * Initializes a new SpringableDoubleSolenoid.
      * 
      * @param   forwardChannel      The forward channel of the DoubleSolenoid.
      * @param   reverseChannel      The reverse channel of the DoubleSolenoid.
@@ -35,8 +34,7 @@ public class SpringableDoubleSolenoid extends DoubleSolenoid {
     }
     
     /**
-     * Initializes a new SpringableDoubleSolenoid with the specified forward
-     * channel, reverse channel, and default direction.
+     * Initializes a new SpringableDoubleSolenoid.
      * 
      * @param   moduleNumber        The slot number of the solenoid module.
      * @param   forwardChannel      The forward channel of the DoubleSolenoid.
