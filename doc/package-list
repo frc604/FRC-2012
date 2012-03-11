@@ -8,4 +8,5 @@ com._604robotics.robot2012.physics
 com._604robotics.robot2012.rotation
 com._604robotics.robot2012.vision
 com._604robotics.utils
+edu.wpi.first.wpilibj
 frc.vision

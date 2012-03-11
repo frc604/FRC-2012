@@ -10,6 +10,9 @@ package frc.vision;
 public class Target {
     public int x1, y1, w, h;
     
+    /**
+     * Blank constructor.  Does nothing.
+     */
     public Target() {
         
     }
