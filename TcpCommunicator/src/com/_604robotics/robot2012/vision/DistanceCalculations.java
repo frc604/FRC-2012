@@ -47,7 +47,6 @@ public class DistanceCalculations {
 	public Target getAngleAndRelXYZOfTarget(Quad quad) {
 
 		Quad qTrans = new Quad(null, null, null, null);
-		Quad q2 = new Quad(null, null, null, null);
 		
 		//transform the quad based on vertical orientation
 
@@ -56,13 +55,7 @@ public class DistanceCalculations {
 		qTrans.topLeft = transformPoint(quad.topLeft);
 		qTrans.topRight = transformPoint(quad.topRight);
 
-		q2.bottomLeft = transform2Point(quad.bottomLeft);
-		q2.bottomRight = transform2Point(quad.bottomRight);
-		q2.topLeft = transform2Point(quad.topLeft);
-		q2.topRight = transform2Point(quad.topRight);
-
 		System.out.println(qTrans);
-		System.out.println(q2);
 		
 		Point3d p = getRelXYZOfTarget(qTrans);
 		double angle = getAngleOfTarget(qTrans, p.z);
@@ -70,13 +63,10 @@ public class DistanceCalculations {
 		return new Target(p, angle);
 	}
 	
-	private Point2d transform2Point(Point2d p) {
-		double	x = (p.x-cameraPixelWidth/2) / kx,
-		y = (cameraPixelHeight/2-p.y) / ky;
-		
-		return new Point2d(x, y);
-	}
-	
+	/**
+	 * @param p - the Point2d to transform
+	 * @return the transformed point (based on camera coords and rotUpDown into values indicating x/z and y/z)
+	 */
 	private Point2d transformPoint(Point2d p) {
 		double	x = (p.x-cameraPixelWidth/2) / kx,
 				y = (cameraPixelHeight/2-p.y) / ky;
