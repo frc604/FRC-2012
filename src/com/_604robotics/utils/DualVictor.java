@@ -1,5 +1,6 @@
 package com._604robotics.utils;
 
+import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.Victor;
 
@@ -10,6 +11,7 @@ import edu.wpi.first.wpilibj.Victor;
  */
 public class DualVictor implements PIDOutput {
     private boolean sprung = false;
+    private PIDController controller = null;
     
     private final Victor leftVictor;
     private final Victor rightVictor;
@@ -31,6 +33,12 @@ public class DualVictor implements PIDOutput {
         this.rightVictor = new Victor(rightPort);
     }
     
+    public DualVictor (int leftPort, int rightPort, PIDController controller) {
+        this.leftVictor = new Victor(leftPort);
+        this.rightVictor = new Victor(rightPort);
+        this.controller = controller;
+    }
+    
     /**
      * Initializes a DualVictor with left and right slot and PWM port.
      * 
@@ -44,6 +52,12 @@ public class DualVictor implements PIDOutput {
         this.rightVictor = new Victor(rightSlot, rightSlot);
     }
     
+    public DualVictor (int leftSlot, int leftPort, int rightSlot, int rightPort, PIDController controller) {
+        this.leftVictor = new Victor(leftSlot, leftPort);
+        this.rightVictor = new Victor(rightSlot, rightSlot);
+        this.controller = controller;
+    }
+    
     /**
      * Initializes a DualVictor with left and right slot and PWM port.
      * 
@@ -53,6 +67,12 @@ public class DualVictor implements PIDOutput {
     public DualVictor (Victor leftVictor, Victor rightVictor) {
         this.leftVictor = leftVictor;
         this.rightVictor = rightVictor;
+    }
+    
+    public DualVictor (Victor leftVictor, Victor rightVictor, PIDController controller) {
+        this.leftVictor = leftVictor;
+        this.rightVictor = rightVictor;
+        this.controller = controller;
     }
     
     /**
@@ -153,7 +173,7 @@ public class DualVictor implements PIDOutput {
      * If the Victor has been sprung, unspring it; if not, set the output to 0.
      */
     public void reload () {
-        if (!this.sprung) {
+        if (!this.sprung && (this.controller == null || !this.controller.isEnable())) {
             this.leftVictor.set(0D);
             this.rightVictor.set(0D);
         }

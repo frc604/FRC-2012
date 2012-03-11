@@ -90,7 +90,7 @@ public class SpringableVictor extends Victor {
      * If the Victor has been sprung, unspring it; if not, set the output to 0.
      */
     public void reload () {
-        if (!this.sprung)
+        if (!this.sprung && (this.controller == null || !this.controller.isEnable()))
             super.set(0D);
         
         this.sprung = false;
