@@ -6,11 +6,11 @@ public class DistanceCalculations {
 	
 	
 	public static void main(String[] args) {
+		//about 46 in
 		//Quad [topLeft=Point2d [x=194.8762734332836, y=230.03676794085487], topRight=Point2d [x=555.0300833785902, y=249.79778560385398],
 		//  bottomLeft=Point2d [x=215.42447837542025, y=434.28831770391776], bottomRight=Point2d [x=533.6907841935421, y=443.64852472363634]]
 		Quad q = new Quad(new Point2d(194.9, 230), new Point2d(555, 249.8), new Point2d(215.4, 434.3), new Point2d(553.7, 443.6));
 		
-		//about 46 in
 		DistanceCalculations dc = new DistanceCalculations();
 		
 		System.out.println(dc.getAngleAndRelXYZOfTarget(q));
@@ -21,8 +21,8 @@ public class DistanceCalculations {
 	
 	//320 / (tan(47 / 2 degrees));
 	double	FOV					= 47;	// degrees
-	double	kx					= 570;	//was 736
-	double	ky					= kx;
+	double	kx					= 700;	//was 736, then 605; then excel said 695-705
+	double	ky					= 530;	//was 736, then 605; then excel said 514
 	double	targetHeight		= 24;	// inches
 	double	targetWidth			= 18;	// inches
 	
