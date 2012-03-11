@@ -17,8 +17,8 @@ import com._604robotics.robot2012.rotation.DummyRotationProvider;
 import com._604robotics.robot2012.rotation.RotationProvider;
 import com._604robotics.robot2012.vision.Target;
 import com._604robotics.utils.*;
+import com._604robotics.utils.UpDownPIDController.Gains;
 import com._604robotics.utils.XboxController.Axis;
-import com._604robotics.utils.XboxController.Stick;
 import com.sun.squawk.util.MathUtils;
 import edu.wpi.first.wpilibj.RobotDrive.MotorType;
 import edu.wpi.first.wpilibj.*;
@@ -68,7 +68,7 @@ public class Robot2012Orange extends SimpleRobot {
     DoubleSolenoid solenoidPickup;
     SpringableDoubleSolenoid solenoidHopper;
     
-    PIDController pidElevator;
+    UpDownPIDController pidElevator;
     PIDController pidTurretRotation;
 
     StrangeMachine pickupMachine;
@@ -167,10 +167,14 @@ public class Robot2012Orange extends SimpleRobot {
          * SmartDashboard.
          */
         
-        pidElevator = new PIDController(0D, 0D, 0D, encoderElevator, elevatorMotors);
+        pidElevator = new UpDownPIDController(new Gains(0.0085, 0D, 0.018), new Gains(0.0029, 0.000003, 0.007), encoderElevator, elevatorMotors);
         pidTurretRotation = new PIDController(0D, 0D, 0D, encoderTurretRotation, turretRotationMotor);
-
+        
+        SmartDashboard.putDouble("P (Down)", 0.0029);
+        SmartDashboard.putDouble("I (Down)", -0.000003);
+        SmartDashboard.putDouble("D (Down)", 0.007);        pidElevator.setInputRange(0, 1550);
         pidElevator.setOutputRange(ActuatorConfiguration.ELEVATOR_POWER_MIN, ActuatorConfiguration.ELEVATOR_POWER_MAX);
+        pidElevator.setSetpoint(822);
         pidTurretRotation.setOutputRange(ActuatorConfiguration.TURRET_ROTATION_POWER_MIN, ActuatorConfiguration.TURRET_ROTATION_POWER_MAX);
         
         /* Sets up the rotation provider. */

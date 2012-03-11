@@ -37,7 +37,7 @@ public interface ActuatorConfiguration {
     }
     
     public interface ELEVATOR {
-        public static final int HIGH = 1550;
+        public static final int HIGH = 1530;
             // TODO: Configure this.
         public static final int MEDIUM = 822;
             // TODO: Configure this.
