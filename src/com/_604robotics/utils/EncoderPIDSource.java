@@ -14,6 +14,8 @@ import edu.wpi.first.wpilibj.Encoder;
  * @author  Michael Smith <mdsmtp@gmail.com>
  */
 public class EncoderPIDSource extends Encoder {
+    private int offset = 0;
+    
     /**
      * Encoder constructor.
      * Construct a Encoder given a and b modules and channels fully specified.
@@ -229,6 +231,10 @@ public class EncoderPIDSource extends Encoder {
         super(aSource, bSource, indexSource);
     }
     
+    public int getRaw () {
+        return super.getRaw() + this.offset;
+    }
+    
     /**
      * Hooks into the PIDSource interface.
      * 
@@ -240,5 +246,14 @@ public class EncoderPIDSource extends Encoder {
      */
     public double pidGet () {
         return this.get();
+    }
+    
+    public void reset () {
+        this.offset = 0;
+        this.reset();
+    }
+    
+    public void setOffset (int offset) {
+        this.offset = offset * 4;
     }
 }

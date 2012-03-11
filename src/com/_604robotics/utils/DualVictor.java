@@ -110,6 +110,8 @@ public class DualVictor implements PIDOutput {
         this.leftVictor.set((this.leftInversion) ? speed * -1 : speed);
         this.rightVictor.set((this.rightInversion) ? speed * -1 : speed);
         
+        System.out.println(speed);
+        
         this.spring();
     }
     

@@ -132,6 +132,8 @@ public class Robot2012Orange extends SimpleRobot {
         encoderElevator = new EncoderPIDSource(PortConfiguration.Encoders.ELEVATOR_A, PortConfiguration.Encoders.ELEVATOR_B);
         encoderTurretRotation = new Encoder(PortConfiguration.Encoders.TURRET_ROTATION_A, PortConfiguration.Encoders.TURRET_ROTATION_B);
         
+        encoderElevator.setOffset(525);
+        
         encoderLeftDrive.setPIDSourceParameter(Encoder.PIDSourceParameter.kDistance);
         encoderRightDrive.setPIDSourceParameter(Encoder.PIDSourceParameter.kDistance);
         
@@ -463,8 +465,6 @@ public class Robot2012Orange extends SimpleRobot {
         boolean noFixedDirection = true;
         int turretDirection = TurretState.FORWARD;
         
-        Target[] targets;
-        
         int settleState = 2;
         Timer settleTimer = new Timer();
         
@@ -643,9 +643,16 @@ public class Robot2012Orange extends SimpleRobot {
             
             SmartDashboard.putInt("ups", ((RemoteCameraTCP) cameraInterface).getUPS());
             
-            SmartDashboard.putDouble("Current Turret Setpoint", pidTurretRotation.get());
+            SmartDashboard.putDouble("Turret Output", pidTurretRotation.get());
+            SmartDashboard.putDouble("Elevator Output", pidElevator.get());
+            
+            SmartDashboard.putDouble("Current Turret Setpoint", pidTurretRotation.getSetpoint());
+            SmartDashboard.putDouble("Current Elevator Setpoint", pidElevator.getSetpoint());
         }
 
+        pidElevator.disable();
+        pidTurretRotation.disable();
+        
         compressorPump.stop();
         
         driveTrain.setSafetyEnabled(false);

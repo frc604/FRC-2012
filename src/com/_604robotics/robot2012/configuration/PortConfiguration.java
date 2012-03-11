@@ -34,8 +34,8 @@ public interface PortConfiguration {
     }
     
     public interface Sensors {
-        public static final int GYRO_HEADING = 1;
-        public static final int GYRO_BALANCE = 2;
+        public static final int GYRO_HEADING = 2;
+        public static final int GYRO_BALANCE = 1;
         public static final int ACCELEROMETER = 3;
         public static final int TURRET_LIMIT_SWITCH = 4;
     }
@@ -52,8 +52,8 @@ public interface PortConfiguration {
         public static final int ELEVATOR_A = 8;
         public static final int ELEVATOR_B = 9;
         
-        public static final int TURRET_ROTATION_A = 5;
-        public static final int TURRET_ROTATION_B = 6;
+        public static final int TURRET_ROTATION_A = 6;
+        public static final int TURRET_ROTATION_B = 7;
     }
     
     public interface Pneumatics {
@@ -66,13 +66,13 @@ public interface PortConfiguration {
         }
         
         public interface SHOOTER_SOLENOID {
-            public static final int LOWER_ANGLE = 5; // FORWARD
-            public static final int UPPER_ANGLE = 6; // REVERSE
+            public static final int LOWER_ANGLE = 6; // FORWARD
+            public static final int UPPER_ANGLE = 5; // REVERSE
         }
         
         public interface PICKUP_SOLENOID {
-            public static final int IN = 1; // FORWARD
-            public static final int OUT = 2; // REVERSE
+            public static final int IN = 2; // FORWARD
+            public static final int OUT = 1; // REVERSE
         }
         
         public interface HOPPER_SOLENOID {

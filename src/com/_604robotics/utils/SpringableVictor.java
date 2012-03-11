@@ -1,5 +1,6 @@
 package com._604robotics.utils;
 
+import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.Victor;
 
 /**
@@ -16,6 +17,7 @@ import edu.wpi.first.wpilibj.Victor;
  */
 public class SpringableVictor extends Victor {
     private boolean sprung = false;
+    private PIDController controller = null;
     
     /**
      * Initializes a new SpringableVictor on the given PWM port.
@@ -26,6 +28,11 @@ public class SpringableVictor extends Victor {
         super(port);
     }
     
+    public SpringableVictor (int port, PIDController controller) {
+        super(port);
+        this.controller = controller;
+    }
+    
     /**
      * Initializes a new SpringableVictor on the given module slot and PWM port.
      * 
@@ -34,6 +41,11 @@ public class SpringableVictor extends Victor {
      */
     public SpringableVictor (int slot, int port) {
         super(slot, port);
+    }
+    
+    public SpringableVictor (int slot, int port, PIDController controller) {
+        super(slot, port);
+        this.controller = controller;
     }
     
     /**
