@@ -55,7 +55,7 @@ public class NaiveRotationProvider implements RotationProvider {
         if (targets.length != 0)
             //this.controller.setSetpoint(Math.toDegrees(MathUtils.asin(targets[0].x / targets[0].z)) - gyroHeading.getAngle());
             this.controller.setSetpoint(Math.toDegrees(MathUtils.asin(targets[0].x / targets[0].z)) + encoderTurret.getDistance());
-        else
+        else if (this.controller.onTarget())
             this.controller.setSetpoint(this.defaultPosition);
     }
 }

@@ -35,7 +35,7 @@ public class SlightlySmarterRotationProvider implements RotationProvider {
 
         if (targets.length != 0)
             this.controller.setSetpoint(Math.toDegrees(MathUtils.atan2(targets[0].z, targets[0].x)) + encoderTurret.getDistance() - (encoderTurret.getRate() / 1000D * this.cameraInterface.getRecordedTime()));
-        else
+        else if (this.controller.onTarget())
             this.controller.setSetpoint(this.defaultPosition);
     }
 }
