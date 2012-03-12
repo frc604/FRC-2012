@@ -635,7 +635,7 @@ public class Robot2012Orange extends SimpleRobot {
                     settleState = 1;
                 }
                 
-                if (settleTimer.get() < 0.5) {
+                if (settleTimer.get() < 0.3) {
                     hopperMotor.set(ActuatorConfiguration.HOPPER_POWER_REVERSE);
                 } else {
                     settleTimer.stop();
