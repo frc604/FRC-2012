@@ -19,7 +19,6 @@ public class TurretMachine implements StrangeMachine {
         public static final int FORWARD = 2;
         public static final int LEFT = 3;
         public static final int RIGHT = 4;
-        public static final int BACKWARD = 5;
     }
     
     public TurretMachine (PIDController controller, RotationProvider provider) {
@@ -30,7 +29,7 @@ public class TurretMachine implements StrangeMachine {
     public boolean test (int state) {
         switch (state) {
             case TurretState.SIDEWAYS:
-                return true;//this.controller.getSetpoint() == ActuatorConfiguration.TURRET_POSITION.SIDEWAYS && this.controller.onTarget();
+                return this.controller.getSetpoint() == ActuatorConfiguration.TURRET_POSITION.SIDEWAYS && this.controller.onTarget();
             case TurretState.AIMED:
                 return this.controller.onTarget();
             case TurretState.FORWARD:
@@ -39,8 +38,6 @@ public class TurretMachine implements StrangeMachine {
                 return this.controller.getSetpoint() == ActuatorConfiguration.TURRET_POSITION.LEFT && this.controller.onTarget();
             case TurretState.RIGHT:
                 return this.controller.getSetpoint() == ActuatorConfiguration.TURRET_POSITION.RIGHT && this.controller.onTarget();
-            case TurretState.BACKWARD:
-                return this.controller.getSetpoint() == ActuatorConfiguration.TURRET_POSITION.BACKWARD && this.controller.onTarget();
         }
         
         return false;
@@ -52,8 +49,7 @@ public class TurretMachine implements StrangeMachine {
                 this.controller.setSetpoint(ActuatorConfiguration.TURRET_POSITION.SIDEWAYS);
                 break;
             case TurretState.AIMED:
-                this.provider.update();
-                break;
+                return this.provider.update();
             case TurretState.FORWARD:
                 this.controller.setSetpoint(ActuatorConfiguration.TURRET_POSITION.FORWARD);
                 break;
@@ -63,9 +59,6 @@ public class TurretMachine implements StrangeMachine {
             case TurretState.RIGHT:
                 this.controller.setSetpoint(ActuatorConfiguration.TURRET_POSITION.RIGHT);
                 break;
-            case TurretState.BACKWARD:
-                this.controller.setSetpoint(ActuatorConfiguration.TURRET_POSITION.BACKWARD);
-                break;
             default:
                 this.controller.disable();
                 return false;
@@ -74,6 +67,6 @@ public class TurretMachine implements StrangeMachine {
         if (!this.controller.isEnable())
             this.controller.enable();
         
-        return state == TurretState.SIDEWAYS || this.controller.onTarget();
+        return true;//this.controller.onTarget();
     }
 }

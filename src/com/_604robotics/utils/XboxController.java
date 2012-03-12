@@ -135,9 +135,9 @@ public class XboxController {
     public boolean getButton (int button) {
         switch (button) {
             case Button.LT:
-                return this.joystick.getRawAxis(3) < 0D;
-            case Button.RT:
                 return this.joystick.getRawAxis(3) > 0D;
+            case Button.RT:
+                return this.joystick.getRawAxis(3) < 0D;
             case Button.EitherTrigger:
                 return this.joystick.getRawAxis(3) != 0D;
             case Button.DPad.Up:

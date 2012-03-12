@@ -14,5 +14,5 @@ public interface RotationProvider {
     /**
      * Updates the aiming of the turret.
      */
-    public abstract void update ();
+    public abstract boolean update ();
 }

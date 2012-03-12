@@ -42,8 +42,10 @@ public class NaiveRotationProvider implements RotationProvider {
         this.defaultPosition = defaultPosition;
     }
     
-    public void update () {
+    public boolean update () {
         Target[] targets = cameraInterface.getTargets();
+        
+        System.out.println("--------------------------------");
         
         for (int i = 0; i < targets.length; i++) {
             System.out.println("x: " + targets[0].x + ", y: " + targets[0].y + ", z: " + targets[0].z + ", angle: " + targets[0].angle);
@@ -54,8 +56,10 @@ public class NaiveRotationProvider implements RotationProvider {
 
         if (targets.length != 0)
             //this.controller.setSetpoint(Math.toDegrees(MathUtils.asin(targets[0].x / targets[0].z)) - gyroHeading.getAngle());
-            this.controller.setSetpoint(Math.toDegrees(MathUtils.asin(targets[0].x / targets[0].z)) + encoderTurret.getDistance());
+            this.controller.setSetpoint((Math.toDegrees(MathUtils.atan2(targets[0].z, targets[0].x)) * -1) + encoderTurret.getDistance());
         else if (this.controller.onTarget())
             this.controller.setSetpoint(this.defaultPosition);
+        
+        return false;
     }
 }

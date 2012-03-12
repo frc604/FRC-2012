@@ -28,13 +28,15 @@ public class ElevatorMachine implements StrangeMachine {
     public boolean test (int state) {
         switch (state) {
             case ElevatorState.HIGH:
-                return this.controller.getSetpoint() == ActuatorConfiguration.ELEVATOR.HIGH && this.controller.onTarget();
+                //return this.controller.getSetpoint() == ActuatorConfiguration.ELEVATOR.HIGH && this.controller.onTarget();
+                return true;
             case ElevatorState.MEDIUM:
                 return this.controller.getSetpoint() == ActuatorConfiguration.ELEVATOR.MEDIUM && this.controller.onTarget();
             case ElevatorState.LOW:
                 return this.controller.getSetpoint() == ActuatorConfiguration.ELEVATOR.LOW && this.controller.onTarget();
             case ElevatorState.PICKUP_OKAY:
-                return this.encoder.get() >= ActuatorConfiguration.ELEVATOR.MEDIUM;
+                //return this.encoder.get() >= ActuatorConfiguration.ELEVATOR.MEDIUM;
+                return true;
         }
         
         return false;
@@ -59,6 +61,6 @@ public class ElevatorMachine implements StrangeMachine {
         if (!this.controller.isEnable())
             this.controller.enable();
         
-        return this.controller.onTarget();
+        return (state == ElevatorState.HIGH) || this.controller.onTarget();
     }
 }

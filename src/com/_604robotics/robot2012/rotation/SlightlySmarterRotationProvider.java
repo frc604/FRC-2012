@@ -23,7 +23,7 @@ public class SlightlySmarterRotationProvider implements RotationProvider {
         this.defaultPosition = defaultPosition;
     }
     
-    public void update () {
+    public boolean update () {
         Target[] targets = cameraInterface.getTargets();
         
         for (int i = 0; i < targets.length; i++) {
@@ -34,8 +34,10 @@ public class SlightlySmarterRotationProvider implements RotationProvider {
         System.out.println("--------------------------------");
 
         if (targets.length != 0)
-            this.controller.setSetpoint(Math.toDegrees(MathUtils.atan2(targets[0].z, targets[0].x)) + encoderTurret.getDistance() - (encoderTurret.getRate() / 1000D * this.cameraInterface.getRecordedTime()));
+            this.controller.setSetpoint((Math.toDegrees(MathUtils.atan2(targets[0].z, targets[0].x)) * -1) + encoderTurret.getDistance() - (encoderTurret.getRate() / 1000D * this.cameraInterface.getRecordedTime()));
         else if (this.controller.onTarget())
             this.controller.setSetpoint(this.defaultPosition);
+        
+        return false;
     }
 }

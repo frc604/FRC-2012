@@ -25,9 +25,8 @@ public interface ActuatorConfiguration {
     public interface TURRET_POSITION {
         public static final double SIDEWAYS = -90D;
         public static final double FORWARD = 0D;
-        public static final double LEFT = -90D;
-        public static final double RIGHT = 90D;
-        public static final double BACKWARD = -180D;
+        public static final double LEFT = -45D;
+        public static final double RIGHT = 45D;
     }
     
     public interface RING_LIGHT {

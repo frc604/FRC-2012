@@ -22,9 +22,7 @@ public interface ButtonConfiguration {
             public static final int FORWARD = Button.Y;
             public static final int LEFT = Button.X;
             public static final int RIGHT = Button.B;
-            public static final int BACKWARD = Button.A;
-            
-            public static final int DOWN = Stick.RIGHT_STICK;
+            public static final int DOWN = Button.A;
         }
         
         public static final int AIM_AND_SHOOT = Button.RT;

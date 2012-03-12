@@ -41,7 +41,7 @@ public class RemoteCameraTCP implements CameraInterface {
      * @return The elapsed time since the last packet was received.
      */
     public double getRecordedTime () {
-        return (new Date().getTime() - this.server.lastPacketTime) + 50;
+        return (new Date().getTime() - this.server.lastPacketTime) + 100;
     }
     
     /**
@@ -253,6 +253,12 @@ class RemoteCameraServer implements Runnable {
                 }
                 
                 second.stop();
+                
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException ex) {
+                    
+                }
                 
                 System.out.println("Connection closed.");
             } catch (IOException ex) {

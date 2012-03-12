@@ -24,7 +24,8 @@ public class DummyRotationProvider implements RotationProvider {
         
     }
     
-    public void update () {
+    public boolean update () {
         this.controller.setSetpoint(0D);
+        return false;
     }
 }

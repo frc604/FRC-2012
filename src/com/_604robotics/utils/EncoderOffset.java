@@ -242,7 +242,7 @@ public class EncoderOffset extends Encoder {
      */
     public void reset () {
         this.offset = 0;
-        this.reset();
+        super.reset();
     }
     
     /**

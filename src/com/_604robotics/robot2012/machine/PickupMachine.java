@@ -50,8 +50,6 @@ public class PickupMachine implements StrangeMachine {
                 return false;
         }
         
-        System.out.println("switchTimer? " + this.switchTimer.get());
-        
         return this.switchTimer.get() >= 1;
     }
 }
