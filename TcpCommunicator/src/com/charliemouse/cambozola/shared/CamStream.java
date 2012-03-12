@@ -190,6 +190,7 @@ public class CamStream extends Thread {
 				// Better method - access via URL Connection
 				//
 				URLConnection conn = m_stream.openConnection();
+				conn.setReadTimeout(5000);
 				if (m_docBase != null) {
 					conn.setRequestProperty("Referer", m_docBase.toString());
 				}
