@@ -1,9 +1,6 @@
 package com._604robotics.utils;
 
-import edu.wpi.first.wpilibj.Encoder;
-import edu.wpi.first.wpilibj.PIDController;
-import edu.wpi.first.wpilibj.PIDOutput;
-import edu.wpi.first.wpilibj.PIDSource;
+import edu.wpi.first.wpilibj.*;
 
 /**
  * Class for controlling a motor's velocity, rather than its power directly.
@@ -19,10 +16,10 @@ public class VelocityController {
     private final EncoderWrapper encoderWrapper;
     private final PIDOutput output;
     private final PIDController controller;
+    private final Gyro gyro;
     
     private double P, I, D;
     private double pAngleGain, iAngleGain, dAngleGain; // gains based on balane gyro values
-    private double angle;
     
     /**
      * Internal class that wraps around an Encoder object, implementing a
@@ -53,10 +50,11 @@ public class VelocityController {
      * @param   output      The PIDOutput to control. Usually some sort of
      *                      motor.
      */
-    public VelocityController (double p, double i, double d, Encoder encoder, PIDOutput output) {
+    public VelocityController (double p, double i, double d, Encoder encoder, PIDOutput output, Gyro gyro) {
         this.encoder = encoder;
         this.output = output;
         this.controller = new PIDController(p, i, d, encoderWrapper = new EncoderWrapper(encoder), output);
+        this.gyro = gyro;
     }
     
     /**
@@ -101,21 +99,31 @@ public class VelocityController {
         updateGains();
     }
     
+    /**
+     * Based on gyro angles
+     * 
+     * TODO - javadoc
+     * 
+     * @param   p   The
+     * @param   i   The
+     * @param   d   The
+     */
+    public void setAngleGains(double pAngle, double iAngle, double dAngle) {
+        pAngleGain = pAngle;
+        iAngleGain = iAngle;
+        dAngleGain = dAngle;
+        
+        updateGains();
+    }
+    
     private void updateGains() {
-        double absAngle = Math.abs(angle);
+        double absAngle = Math.abs(gyro.getAngle());
         
         this.controller.setPID(P*(1+absAngle*pAngleGain),
                                 I*(1+absAngle*iAngleGain),
                                 D*(1+absAngle*dAngleGain));
     }
-    /**
-     * Sets the angle it is balancing at(?). Kevin has to look at this.
-     * @param balAngle 
-     */
-    public void setBalanceAngle(double balAngle) {
-        angle = balAngle;
-    }
-    
+        
     /**
      * Enables the VelocityController.
      */
