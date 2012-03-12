@@ -112,22 +112,31 @@ public class DistanceCalculations {
 		// Uncertainties
 		{
 			double plusOrMinus = .5;
-			double targetPixHeight = kx/quad.getAvgHeight();
-			double frac = (targetPixHeight+plusOrMinus)/(targetPixHeight-plusOrMinus) - 1;
-			t.setZUncertainty(frac*t.getZ());
-		
-		}
-
-		if (quad.getMinX() <= (cameraCorner_topLeft.x + nearSideTolerance))
-			t.setXUncertainty(9001);
-		if (quad.getMaxX() >= (cameraCorner_bottomRight.x - nearSideTolerance))
-			t.setXUncertainty(9001);
-
-		if (quad.getMinY() <= (cameraCorner_bottomRight.y + nearSideTolerance))
-			t.setYUncertainty(9001);
-		if (quad.getMaxY() >= (cameraCorner_topLeft.y - nearSideTolerance))
-			t.setYUncertainty(9001);
+			double targetPixHeight = kx / quad.getAvgHeight();
+			double frac = (targetPixHeight + plusOrMinus) / (targetPixHeight - plusOrMinus) - 1;
+			t.setZUncertainty(frac * t.getZ());
 			
+			t.setXUncertainty(t.getZ() / kx); // approximately 1 pixel of uncertainty
+			t.setYUncertainty(t.getZ() / ky); // approximately 1 pixel of uncertainty
+			
+			t.setAngleUncertainty(.25); // constant, for now; unknown
+			
+			if (quad.getMinX() <= cameraCorner_topLeft.x + nearSideTolerance) {
+				t.setXUncertainty(9001);
+			}
+			if (quad.getMaxX() >= cameraCorner_bottomRight.x - nearSideTolerance) {
+				t.setXUncertainty(9001);
+			}
+			
+			if (quad.getMinY() <= cameraCorner_bottomRight.y + nearSideTolerance) {
+				t.setYUncertainty(9001);
+			}
+			if (quad.getMaxY() >= cameraCorner_topLeft.y - nearSideTolerance) {
+				t.setYUncertainty(9001);
+			}
+			
+		}
+		
 		return t;
 	}
 	
