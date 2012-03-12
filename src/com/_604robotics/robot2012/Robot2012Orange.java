@@ -3,6 +3,7 @@ package com._604robotics.robot2012;
 import com._604robotics.robot2012.autonomous.PIDDriveEncoderDifference;
 import com._604robotics.robot2012.autonomous.PIDDriveEncoderOutput;
 import com._604robotics.robot2012.autonomous.PIDDriveGyro;
+import com._604robotics.robot2012.balancing.Balancing;
 import com._604robotics.robot2012.camera.CameraInterface;
 import com._604robotics.robot2012.camera.RemoteCameraTCP;
 import com._604robotics.robot2012.configuration.*;
@@ -16,7 +17,6 @@ import com._604robotics.robot2012.rotation.SlowbroRotationProvider;
 import com._604robotics.utils.UpDownPIDController.Gains;
 import com._604robotics.utils.*;
 import com._604robotics.utils.XboxController.Axis;
-import com.sun.squawk.util.MathUtils;
 import edu.wpi.first.wpilibj.RobotDrive.MotorType;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -81,6 +81,8 @@ public class Robot2012Orange extends SimpleRobot {
     SendableChooser inTheMiddle;
     
     CameraInterface cameraInterface;
+    
+    VelocityController velocityController;
     
     boolean upHigh = false;
     boolean pickupIn = true;
@@ -224,6 +226,13 @@ public class Robot2012Orange extends SimpleRobot {
         elevatorMachine = new ElevatorMachine(pidElevator, encoderElevator);
         turretMachine = new TurretMachine(pidTurretRotation, rotationProvider, encoderTurretRotation);
         shooterMachine = new ShooterMachine(shooterMotors, hopperMotor);
+        
+        double p_Vel, i_Vel, d_Vel;
+        SmartDashboard.putDouble("P_Vel", p_Vel = SmartDashboard.getDouble("P_Vel", 0));
+        SmartDashboard.putDouble("I_Vel", i_Vel = SmartDashboard.getDouble("I_Vel", 0));
+        SmartDashboard.putDouble("D_Vel", d_Vel = SmartDashboard.getDouble("D_Vel", 0));
+        
+        velocityController = new VelocityController(p_Vel, i_Vel, d_Vel, encoderLeftDrive, encoderRightDrive, driveTrain);
         
         SmartDashboard.putInt("Confidence Threshold", 700);
         SmartDashboard.putInt("Target Timeout", 1500);
@@ -510,8 +519,14 @@ public class Robot2012Orange extends SimpleRobot {
             if (driveController.getButton(ButtonConfiguration.Driver.AUTO_BALANCE)) {
                 // TODO: Replace this with stuff from the balancing code, once it's hammered out.
                 
-                accelPower = deadband(MathUtils.asin(accelBalance.getAcceleration()), 0.1745, -0.1745, 0D) / SensorConfiguration.ACCELEROMETER_UPPER_RADIANS * ActuatorConfiguration.ACCELEROMETER_DRIVE_POWER;
-                driveTrain.tankDrive(accelPower, accelPower);
+                //accelPower = deadband(MathUtils.asin(accelBalance.getAcceleration()), 0.1745, -0.1745, 0D) / SensorConfiguration.ACCELEROMETER_UPPER_RADIANS * ActuatorConfiguration.ACCELEROMETER_DRIVE_POWER;
+                
+                double driveVel = Balancing.getSpeedforBalance(gyroBalance.getAngle());
+                
+                velocityController.setVelocity(driveVel);
+                SmartDashboard.putDouble("Drive Velocity", driveVel);
+                
+                //driveTrain.tankDrive(accelPower, accelPower);
                 
                 SmartDashboard.putString("Drive Mode", "Balancing");
                 SmartDashboard.putDouble("Accel Output", accelPower);

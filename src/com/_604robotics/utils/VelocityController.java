@@ -12,10 +12,14 @@ import edu.wpi.first.wpilibj.*;
  * @author  Kevin Parker <kevin.m.parker@gmail.com>
  */
 public class VelocityController {
-    private final Encoder encoder;
-    private final EncoderWrapper encoderWrapper;
-    private final PIDOutput output;
-    private final PIDController controller;
+    private final Encoder encoderLeft;
+    private final Encoder encoderRight;
+    private final EncoderWrapper encoderWrapperLeft;
+    private final EncoderWrapper encoderWrapperRight;
+    private final PIDOutput outputLeft;
+    private final PIDOutput outputRight;
+    private final PIDController controllerLeft;
+    private final PIDController controllerRight;
     private final Gyro gyro;
     
     private double P, I, D;

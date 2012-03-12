@@ -10,7 +10,7 @@ package com._604robotics.robot2012.balancing;
  */
 public class Balancing {
     
-    public double getSpeedforBalance(double balGyroReading) {
+    public static double getSpeedforBalance(double balGyroReading) {
         double speed = .2;
         double angles = 12;
         
