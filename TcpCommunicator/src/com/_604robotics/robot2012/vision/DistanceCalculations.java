@@ -109,7 +109,14 @@ public class DistanceCalculations {
 		t.setPoint(p);
 		t.setAngle(getAngleOfTarget(qTrans, p.z));
 		
-		t.setXUncertainty(quad.getAvgHeight());
+		// Uncertainties
+		{
+			double plusOrMinus = .5;
+			double targetPixHeight = kx/quad.getAvgHeight();
+			double frac = (targetPixHeight+plusOrMinus)/(targetPixHeight-plusOrMinus) - 1;
+			t.setZUncertainty(frac*t.getZ());
+		
+		}
 
 		if (quad.getMinX() <= (cameraCorner_topLeft.x + nearSideTolerance))
 			t.setXUncertainty(9001);
