@@ -26,6 +26,8 @@ public interface ActuatorConfiguration {
         public static final double FORWARD = 0D;
         public static final double LEFT = -45D;
         public static final double RIGHT = 45D;
+        
+        public static final double TOLERANCE = 1D;
     }
     
     public interface RING_LIGHT {
@@ -42,14 +44,14 @@ public interface ActuatorConfiguration {
             public static final int HIGH = 1510;
             public static final int MEDIUM_UPPER = 840;
             public static final int MEDIUM_LOWER = 800;
-            public static final int LOW = 5;
+            public static final int LOW = 10;
         }
         
         public interface DEADBAND {
             public static final int HIGH = 1500;
             public static final int MEDIUM_UPPER = 860;
             public static final int MEDIUM_LOWER = 780;
-            public static final int LOW = 10;
+            public static final int LOW = 20;
         }
     }
     
