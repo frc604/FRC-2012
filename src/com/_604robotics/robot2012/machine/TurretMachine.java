@@ -13,6 +13,8 @@ public class TurretMachine implements StrangeMachine {
     private final PIDController controller;
     private final RotationProvider provider;
     
+    private int turretSidewaysPosition = 0;
+    
     public interface TurretState {
         public static final int SIDEWAYS = 0;
         public static final int AIMED = 1;
@@ -29,7 +31,7 @@ public class TurretMachine implements StrangeMachine {
     public boolean test (int state) {
         switch (state) {
             case TurretState.SIDEWAYS:
-                return this.controller.getSetpoint() == ActuatorConfiguration.TURRET_POSITION.SIDEWAYS && this.controller.onTarget();
+                return this.controller.getSetpoint() == this.turretSidewaysPosition && this.controller.onTarget();
             case TurretState.AIMED:
                 return this.controller.onTarget();
             case TurretState.FORWARD:
@@ -46,7 +48,7 @@ public class TurretMachine implements StrangeMachine {
     public boolean crank (int state) {
         switch (state) {
             case TurretState.SIDEWAYS:
-                this.controller.setSetpoint(ActuatorConfiguration.TURRET_POSITION.SIDEWAYS);
+                this.controller.setSetpoint(this.turretSidewaysPosition);
                 break;
             case TurretState.AIMED:
                 return this.provider.update();
@@ -67,6 +69,10 @@ public class TurretMachine implements StrangeMachine {
         if (!this.controller.isEnable())
             this.controller.enable();
         
-        return true;//this.controller.onTarget();
+        return this.controller.onTarget();
+    }
+    
+    public void setTurretSidewaysPosition (int turretSidewaysPosition) {
+        this.turretSidewaysPosition = turretSidewaysPosition;
     }
 }

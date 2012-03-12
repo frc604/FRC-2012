@@ -13,6 +13,9 @@ public class ElevatorMachine implements StrangeMachine {
     private final PIDController controller;
     private final Encoder encoder;
     
+    private int lastState = ElevatorState.MEDIUM;
+    private boolean withinTolerance = false;
+    
     public interface ElevatorState {
         public static final int HIGH = 0;
         public static final int MEDIUM = 1;
@@ -28,21 +31,30 @@ public class ElevatorMachine implements StrangeMachine {
     public boolean test (int state) {
         switch (state) {
             case ElevatorState.HIGH:
-                //return this.controller.getSetpoint() == ActuatorConfiguration.ELEVATOR.HIGH && this.controller.onTarget();
-                return true;
+                if (this.encoder.get() >= ActuatorConfiguration.ELEVATOR.TOLERANCE.HIGH)
+                    this.withinTolerance = true;
+                return this.lastState == ElevatorState.HIGH && this.withinTolerance && this.encoder.get() >= ActuatorConfiguration.ELEVATOR.DEADBAND.HIGH;
             case ElevatorState.MEDIUM:
-                return this.controller.getSetpoint() == ActuatorConfiguration.ELEVATOR.MEDIUM && this.controller.onTarget();
+                if (this.encoder.get() >= ActuatorConfiguration.ELEVATOR.TOLERANCE.MEDIUM_LOWER && this.encoder.get() <= ActuatorConfiguration.ELEVATOR.TOLERANCE.MEDIUM_UPPER)
+                    this.withinTolerance = true;
+                return this.lastState == ElevatorState.MEDIUM && this.withinTolerance && this.encoder.get() >= ActuatorConfiguration.ELEVATOR.DEADBAND.MEDIUM_LOWER && this.encoder.get() <= ActuatorConfiguration.ELEVATOR.DEADBAND.MEDIUM_UPPER;
             case ElevatorState.LOW:
-                return this.controller.getSetpoint() == ActuatorConfiguration.ELEVATOR.LOW && this.controller.onTarget();
+                if (this.encoder.get() <= ActuatorConfiguration.ELEVATOR.TOLERANCE.LOW)
+                    this.withinTolerance = true;
+                return this.lastState == ElevatorState.LOW && this.withinTolerance && this.encoder.get() <= ActuatorConfiguration.ELEVATOR.DEADBAND.LOW;
             case ElevatorState.PICKUP_OKAY:
-                //return this.encoder.get() >= ActuatorConfiguration.ELEVATOR.MEDIUM;
-                return true;
+                return this.lastState != ElevatorState.LOW && this.encoder.get() >= ActuatorConfiguration.ELEVATOR.DEADBAND.MEDIUM_LOWER;
         }
         
         return false;
     }
     
     public boolean crank (int state) {
+        if (this.lastState != state) {
+            this.withinTolerance = false;
+            this.lastState = state;
+        }
+        
         switch (state) {
             case ElevatorState.HIGH:
                 this.controller.setSetpoint(ActuatorConfiguration.ELEVATOR.HIGH);
@@ -58,9 +70,16 @@ public class ElevatorMachine implements StrangeMachine {
                 return false;
         }
         
-        if (!this.controller.isEnable())
-            this.controller.enable();
+        boolean ret = this.test(state);
         
-        return (state == ElevatorState.HIGH) || this.controller.onTarget();
+        if (ret) {
+            if (this.controller.isEnable())
+                this.controller.disable();
+        } else {
+            if (!this.controller.isEnable())
+                this.controller.enable();
+        }
+        
+        return ret;
     }
 }

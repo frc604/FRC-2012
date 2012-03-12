@@ -23,7 +23,6 @@ public interface ActuatorConfiguration {
     public static final double TURRET_ROTATION_POWER_MAX = 0.8;
     
     public interface TURRET_POSITION {
-        public static final double SIDEWAYS = -90D;
         public static final double FORWARD = 0D;
         public static final double LEFT = -45D;
         public static final double RIGHT = 45D;
@@ -36,11 +35,22 @@ public interface ActuatorConfiguration {
     
     public interface ELEVATOR {
         public static final int HIGH = 1540;
-            // TODO: Configure this.
         public static final int MEDIUM = 832;
-            // TODO: Configure this.
         public static final int LOW = 0;
-            // TODO: Configure this.
+        
+        public interface TOLERANCE {
+            public static final int HIGH = 1510;
+            public static final int MEDIUM_UPPER = 840;
+            public static final int MEDIUM_LOWER = 800;
+            public static final int LOW = 5;
+        }
+        
+        public interface DEADBAND {
+            public static final int HIGH = 1500;
+            public static final int MEDIUM_UPPER = 860;
+            public static final int MEDIUM_LOWER = 780;
+            public static final int LOW = 10;
+        }
     }
     
     public interface SOLENOID_SHIFTER {
