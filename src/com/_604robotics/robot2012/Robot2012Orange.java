@@ -222,7 +222,7 @@ public class Robot2012Orange extends SimpleRobot {
         
         pickupMachine = new PickupMachine(solenoidPickup);
         elevatorMachine = new ElevatorMachine(pidElevator, encoderElevator);
-        turretMachine = new TurretMachine(pidTurretRotation, rotationProvider);
+        turretMachine = new TurretMachine(pidTurretRotation, rotationProvider, encoderTurretRotation);
         shooterMachine = new ShooterMachine(shooterMotors, hopperMotor);
         
         SmartDashboard.putInt("Confidence Threshold", 700);
@@ -524,14 +524,20 @@ public class Robot2012Orange extends SimpleRobot {
             
             if (manipulatorController.getButton(ButtonConfiguration.Manipulator.Elevator.FORWARD)) {
                 upHigh = true;
+                pickupIn = true;
+                
                 noFixedDirection = false;
                 turretDirection = TurretState.FORWARD;
             } else if (manipulatorController.getButton(ButtonConfiguration.Manipulator.Elevator.LEFT)) {
                 upHigh = true;
+                pickupIn = true;
+                
                 noFixedDirection = false;
                 turretDirection = TurretState.LEFT;
             } else if (manipulatorController.getButton(ButtonConfiguration.Manipulator.Elevator.RIGHT)) {
                 upHigh = true;
+                pickupIn = true;
+                
                 noFixedDirection = false;
                 turretDirection = TurretState.RIGHT;
             } else if (manipulatorController.getButton(ButtonConfiguration.Manipulator.Elevator.DOWN)) {

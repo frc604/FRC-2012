@@ -2,6 +2,7 @@ package com._604robotics.robot2012.machine;
 
 import com._604robotics.robot2012.configuration.ActuatorConfiguration;
 import com._604robotics.robot2012.rotation.RotationProvider;
+import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.PIDController;
 
 /**
@@ -12,8 +13,10 @@ import edu.wpi.first.wpilibj.PIDController;
 public class TurretMachine implements StrangeMachine {
     private final PIDController controller;
     private final RotationProvider provider;
+    private final Encoder encoder;
     
     private int turretSidewaysPosition = 0;
+    private boolean isAimed = false;
     
     public interface TurretState {
         public static final int SIDEWAYS = 0;
@@ -23,23 +26,28 @@ public class TurretMachine implements StrangeMachine {
         public static final int RIGHT = 4;
     }
     
-    public TurretMachine (PIDController controller, RotationProvider provider) {
+    public TurretMachine (PIDController controller, RotationProvider provider, Encoder encoder) {
         this.controller = controller;
         this.provider = provider;
+        this.encoder = encoder;
+    }
+    
+    private boolean onTarget (double target) {
+        return Math.abs(target - this.encoder.get()) <= ActuatorConfiguration.TURRET_POSITION.TOLERANCE;
     }
 
     public boolean test (int state) {
         switch (state) {
             case TurretState.SIDEWAYS:
-                return this.controller.getSetpoint() == this.turretSidewaysPosition && this.controller.onTarget();
+                return this.controller.getSetpoint() == this.turretSidewaysPosition && onTarget(this.turretSidewaysPosition);
             case TurretState.AIMED:
-                return this.controller.onTarget();
+                return this.isAimed;
             case TurretState.FORWARD:
-                return this.controller.getSetpoint() == ActuatorConfiguration.TURRET_POSITION.FORWARD && this.controller.onTarget();
+                return this.controller.getSetpoint() == ActuatorConfiguration.TURRET_POSITION.FORWARD && onTarget(ActuatorConfiguration.TURRET_POSITION.FORWARD);
             case TurretState.LEFT:
-                return this.controller.getSetpoint() == ActuatorConfiguration.TURRET_POSITION.LEFT && this.controller.onTarget();
+                return this.controller.getSetpoint() == ActuatorConfiguration.TURRET_POSITION.LEFT && onTarget(ActuatorConfiguration.TURRET_POSITION.LEFT);
             case TurretState.RIGHT:
-                return this.controller.getSetpoint() == ActuatorConfiguration.TURRET_POSITION.RIGHT && this.controller.onTarget();
+                return this.controller.getSetpoint() == ActuatorConfiguration.TURRET_POSITION.RIGHT && onTarget(ActuatorConfiguration.TURRET_POSITION.RIGHT);
         }
         
         return false;
@@ -51,7 +59,8 @@ public class TurretMachine implements StrangeMachine {
                 this.controller.setSetpoint(this.turretSidewaysPosition);
                 break;
             case TurretState.AIMED:
-                return this.provider.update();
+                this.isAimed = this.provider.update();
+                return this.isAimed;
             case TurretState.FORWARD:
                 this.controller.setSetpoint(ActuatorConfiguration.TURRET_POSITION.FORWARD);
                 break;
@@ -63,13 +72,16 @@ public class TurretMachine implements StrangeMachine {
                 break;
             default:
                 this.controller.disable();
+                this.isAimed = false;
                 return false;
         }
+        
+        this.isAimed = false;
         
         if (!this.controller.isEnable())
             this.controller.enable();
         
-        return this.controller.onTarget();
+        return this.test(state);
     }
     
     public void setTurretSidewaysPosition (int turretSidewaysPosition) {
