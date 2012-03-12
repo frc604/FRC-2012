@@ -7,6 +7,7 @@ import com.sun.squawk.util.MathUtils;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import java.util.Vector;
 
 public class SlowbroRotationProvider implements RotationProvider {
     private final ConvertingPIDController controller;
@@ -34,7 +35,8 @@ public class SlowbroRotationProvider implements RotationProvider {
     }
     
     public boolean update () {
-        Target[] targets = cameraInterface.getTargets();
+        Target[] targetsIn = cameraInterface.getTargets();
+        Vector targets = new Vector();
         Target target = null;
         
         /* for (int i = 0; i < targets.length; i++) {
@@ -42,8 +44,18 @@ public class SlowbroRotationProvider implements RotationProvider {
                 target = targets[i];
         } */
         
-        if (targets.length > 0)
-            target = targets[0];
+        for (int i = 0; i < targetsIn.length; i++) {
+            if (targetsIn[i].x_uncertainty < 9000)
+                targets.addElement(targetsIn[i]);
+        }
+        
+        if (targets.size() > 0) {
+            target = (Target) targets.elementAt(0);
+            System.out.println("x: " + target.x + ", y: " + target.y + ", z: " + target.z);
+            System.out.println("x_uncertainty: " + target.x_uncertainty);
+        }
+        
+        System.out.println("--------------------");
         
         if (Math.abs(this.encoderTurret.get() - this.controller.getRealSetpoint()) < 10) {
             if (this.confidenceTimer.get() >= SmartDashboard.getDouble("Confidence Threshold", 0.7)) {

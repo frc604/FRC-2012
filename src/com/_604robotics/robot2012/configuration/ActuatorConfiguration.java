@@ -41,14 +41,14 @@ public interface ActuatorConfiguration {
         public static final int LOW = 0;
         
         public interface TOLERANCE {
-            public static final int HIGH = 1510;
+            public static final int HIGH = 1505;
             public static final int MEDIUM_UPPER = 840;
             public static final int MEDIUM_LOWER = 800;
             public static final int LOW = 15;
         }
         
         public interface DEADBAND {
-            public static final int HIGH = 1500;
+            public static final int HIGH = 1490;
             public static final int MEDIUM_UPPER = 860;
             public static final int MEDIUM_LOWER = 780;
             public static final int LOW = 25;
