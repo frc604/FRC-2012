@@ -32,8 +32,44 @@ public class Quad {
 		return "Quad [topLeft=" + topLeft + ", topRight=" + topRight + ", bottomLeft=" + bottomLeft + ", bottomRight="
 				+ bottomRight + "]";
 	}
+
+	/**
+	 * @return the average width of this Quad
+	 */
+	public double getAvgWidth() {
+		return (topRight.x+bottomRight.x-topLeft.x-bottomLeft.x)/2;
+	}
+	/**
+	 * @return the average height of this Quad
+	 */
+	public double getAvgHeight() {
+		return (topLeft.y+topRight.y-bottomLeft.y-bottomRight.y)/2;
+	}
+
+	/**
+	 * @return the average X values of this Quad
+	 */
+	public double getAvgX() {
+		return (topLeft.x + topRight.x + bottomLeft.x + bottomRight.x) / 4;
+	}
+	/**
+	 * @return the average Y values of this Quad
+	 */
+	public double getAvgY() {
+		return (topLeft.y + topRight.y + bottomLeft.y + bottomRight.y) / 4;
+	}
 	
-	
-	
-	
+
+	public double getMinX() {
+		return Math.min(topLeft.x, bottomLeft.x);
+	}
+	public double getMaxX() {
+		return Math.max(topRight.x, bottomRight.x);
+	}
+	public double getMinY() {
+		return Math.min(bottomLeft.y, bottomRight.y);
+	}
+	public double getMaxY() {
+		return Math.max(topLeft.y, topRight.y);
+	}
 }

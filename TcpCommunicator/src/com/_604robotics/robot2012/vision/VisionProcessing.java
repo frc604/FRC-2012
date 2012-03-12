@@ -237,8 +237,6 @@ public class VisionProcessing {
 				ex.printStackTrace();
 			}
 			
-			//System.out.println(stream.getFPS());
-			
 			currentFrame++;
 			
 			if (conf.debug_SaveImagesToFiles) {
@@ -276,18 +274,13 @@ public class VisionProcessing {
 		int w = img.getWidth();
 		int h = img.getHeight();
 		
-		// int[] dat = new int[w * h];
-		
-		// int[] dat = img.getRGB(0, 0, w, h, null, 0, w);
-		// img.getR
-		
-		double time_i2 = System.nanoTime();
+		//double time_i2 = System.nanoTime();
 		ResultImage ri = new ResultImage(w, h);
 		if(imageBuffer == null)
 			imageBuffer = new int[w*h];
 		Img img_copy = new Img(img.getRaster(), imageBuffer);
 		ri.computeResults(img_copy);
-		// /System.out.println("result Time = " + (System.nanoTime()-time_i2)/1000000000);
+		// System.out.println("result Time = " + (System.nanoTime()-time_i2)/1000000000);
 		
 		// now go thru and compute targets and their AABBs
 		
@@ -301,7 +294,6 @@ public class VisionProcessing {
 		}
 		
 		// Blob stuff
-		// /double time_i2 = System.nanoTime();
 		int colors = 0;
 		for (int i = 0; i < results.w; i++) {
 			for (int j = 0; j < results.h; j++) {
@@ -310,8 +302,7 @@ public class VisionProcessing {
 				}
 			}
 		}
-		// /System.out.println("Blob Time = " + (System.nanoTime()-time_i2)/1000000000);
-		// 3.1104E-4
+		// This took < 1 ms during testing
 		
 		int[] blobSize = new int[colors];// blob 0 is 0
 		AABB[] rough = new AABB[colors];// target 0 is null
@@ -334,7 +325,7 @@ public class VisionProcessing {
 			}
 		}
 		
-		// System.out.println(colors);
+		// TODO - combine blobs with intersecting AABBs
 		
 		LinearRegression.RegressionResult[] linearRegressions = new LinearRegression.RegressionResult[colors * 4];
 		
@@ -345,13 +336,6 @@ public class VisionProcessing {
 		Point2d[] pts = new Point2d[colors * 4];
 		for (int i = 0; i < colors; i++) {
 			if (blobSize[i] >= conf.minBlobSize) {
-				// System.out.println(rough[i].x1 + ", " + rough[i].y1 + ", \n\t" + rough[i].x2 + ", " + rough[i].y2);
-				/*
-				Point2d topLeft		= getCorner(ri, -1, -1, rough[i]);
-				Point2d topRight	= getCorner(ri, 1, -1, rough[i]);
-				Point2d bottomLeft	= getCorner(ri, -1, 1, rough[i]);
-				Point2d bottomRight	= getCorner(ri, 1, 1, rough[i]);
-				 */
 				
 				LinearRegression.RegressionResult top = getRegressionForSide(ri, Side_Top, rough[i]);
 				LinearRegression.RegressionResult bottom = getRegressionForSide(ri, Side_Bottom, rough[i]);
@@ -370,7 +354,7 @@ public class VisionProcessing {
 				
 				Quad q = new com._604robotics.robot2012.vision.Quad(topLeft, topRight, bottomLeft, bottomRight);
 				
-				targets[i] = new DistanceCalculations().getAngleAndRelXYZOfTarget(q);
+				targets[i] = new DistanceCalculations().getApproximationOfTarget(q);
 				if(conf.debug_Print)
 					System.out.println(targets[i]);
 				if(conf.debug_Print)

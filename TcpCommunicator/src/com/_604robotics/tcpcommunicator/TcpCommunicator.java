@@ -193,10 +193,10 @@ public class TcpCommunicator implements Runnable {
                 this.writeDouble(points[i].z);
                 this.writeDouble(points[i].angle);
                 
-                this.writeDouble(points[i].x_uncertainty);
-                this.writeDouble(points[i].y_uncertainty);
-                this.writeDouble(points[i].z_uncertainty);
-                this.writeDouble(points[i].angle_uncertainty);
+                this.writeDouble(points[i].xUncertainty);
+                this.writeDouble(points[i].yUncertainty);
+                this.writeDouble(points[i].zUncertainty);
+                this.writeDouble(points[i].angleUncertainty);
 
                 this.out.flush();
             }

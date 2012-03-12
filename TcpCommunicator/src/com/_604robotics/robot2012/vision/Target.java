@@ -23,27 +23,20 @@ public class Target implements Comparable<Target> {
 	 */
 	public static final double	RelHoopZ	= +15;	// inches
 													
+
 	/**
 	 * This is the angle of the target, relative to the camera. </br>
 	 * 
 	 * </br>
 	 * 
-	 * (angle)							</br>
-	 * ......(Target)					</br>
-	 * ......./							</br>
-	 * ....../							</br>
-	 * ...../							</br>
-	 * ..../ - - - - - - - |> (Camera)	</br>
-	 * .../								</br>
-	 * ../								</br>
-	 * ./								</br>
-	 * /
-	 * </br>
+	 * (angle) </br> ......(Target) </br> ......./ </br> ....../ </br> ...../ </br> ..../ - - - - - - - |> (Camera)
+	 * </br> .../ </br> ../ </br> ./ </br> / </br>
 	 * 
 	 * this value is expressed in radians.
 	 */
 	public double				angle;
 	
+
 
 	/**
 	 * 
@@ -55,8 +48,9 @@ public class Target implements Comparable<Target> {
 	 * 
 	 * 
 	 */
-	public double				angle_uncertainty;
+	public double				angleUncertainty;
 	
+
 
 	/**
 	 * x, y, and z represent the 3-d position of the target
@@ -73,6 +67,7 @@ public class Target implements Comparable<Target> {
 	public double				x, y, z;
 	
 
+
 	/**
 	 * These are the uncertainties of the x, y, and z positions of the target.
 	 * 
@@ -80,9 +75,10 @@ public class Target implements Comparable<Target> {
 	 * 
 	 * Again, these are in inches.
 	 */
-	public double				x_uncertainty, y_uncertainty, z_uncertainty;
+	public double				xUncertainty, yUncertainty, zUncertainty;
 	
 	
+
 	/**
 	 * A blank constructor to easily make a Target
 	 */
@@ -91,6 +87,7 @@ public class Target implements Comparable<Target> {
 	}
 	
 	
+
 	/**
 	 * @param x
 	 * @param y
@@ -105,27 +102,31 @@ public class Target implements Comparable<Target> {
 	}
 	
 	
+
 	/**
 	 * @param x
 	 * @param y
 	 * @param z
-	 * @param x_uncertainty
-	 * @param y_uncertainty
-	 * @param z_uncertainty
+	 * @param xUncertainty
+	 * @param yUncertainty
+	 * @param zUncertainty
 	 * @param angle
-	 * @param angle_uncertainty
+	 * @param angleUncertainty
 	 */
-	public Target(double x, double y, double z, double x_uncertainty, double y_uncertainty, double z_uncertainty, double angle, double angle_uncertainty) {
+	public Target(double x, double y, double z, double xUncertainty, double yUncertainty, double zUncertainty,
+			double angle, double angleUncertainty) {
 		this.x = x;
 		this.y = y;
 		this.z = z;
-		this.x_uncertainty = x_uncertainty;
-		this.y_uncertainty = y_uncertainty;
-		this.z_uncertainty = z_uncertainty;
+		this.xUncertainty = xUncertainty;
+		this.yUncertainty = yUncertainty;
+		this.zUncertainty = zUncertainty;
 		this.angle = angle;
-		this.angle_uncertainty = angle_uncertainty;
+		this.angleUncertainty = angleUncertainty;
 	}
 	
+	
+
 	/**
 	 * @param point
 	 * @param angle
@@ -134,6 +135,40 @@ public class Target implements Comparable<Target> {
 		this(point.x, point.y, point.z, angle);
 	}
 	
+	
+
+	/* (non-Javadoc)
+	 * @see java.lang.Comparable#compareTo(java.lang.Object)
+	 */
+	@Override
+	public int compareTo(Target that) {
+		if (y < that.y)
+			return -1;
+		else if (y > that.y)
+			return 1;
+		return 0;
+	}
+	
+	
+
+	/**
+	 * @return the angle
+	 */
+	public double getAngle() {
+		return angle;
+	}
+	
+	
+
+	/**
+	 * @return the angleUncertainty
+	 */
+	public double getAngleUncertainty() {
+		return angleUncertainty;
+	}
+	
+	
+
 	/**
 	 * @return the position of the hoop accounting for the fact that the center of the hoop is not at the center of the
 	 *         target
@@ -142,6 +177,8 @@ public class Target implements Comparable<Target> {
 		return new Point3d(x + Math.sin(angle) * RelHoopZ, y + RelHoopY, z + Math.cos(angle) * RelHoopZ);
 	}
 	
+	
+
 	/**
 	 * @return the reflected position of the hoop accounting for the fact that the center of the hoop is not at the
 	 *         center of the target. This is useful bounces
@@ -150,6 +187,8 @@ public class Target implements Comparable<Target> {
 		return getReflectedHoopPosition(1);
 	}
 	
+	
+
 	/**
 	 * @param bounceFactor a number that scales the changes in the x and z distances due to correction for hoop
 	 *        position. In a idealized collision, this is equal to the inverse of its coefficient of restitution.
@@ -158,25 +197,134 @@ public class Target implements Comparable<Target> {
 	 *         center of the target. This is useful bounces
 	 */
 	public Point3d getReflectedHoopPosition(double bounceFactor) {
-		return new Point3d(x - Math.sin(angle) * RelHoopZ * bounceFactor, y + RelHoopY, z - Math.cos(angle) * RelHoopZ * bounceFactor);
+		return new Point3d(x - Math.sin(angle) * RelHoopZ * bounceFactor, y + RelHoopY, z - Math.cos(angle) * RelHoopZ
+				* bounceFactor);
 	}
+	
+	
+
+	/**
+	 * @return the x
+	 */
+	public double getX() {
+		return x;
+	}
+	
+	
+
+	/**
+	 * @return the xUncertainty
+	 */
+	public double getXUncertainty() {
+		return xUncertainty;
+	}
+	
+	
+	/**
+	 * @return the y
+	 */
+	public double getY() {
+		return y;
+	}
+	
+	
+	/**
+	 * @return the yUncertainty
+	 */
+	public double getYUncertainty() {
+		return yUncertainty;
+	}
+	
+	
+	/**
+	 * @return the z
+	 */
+	public double getZ() {
+		return z;
+	}
+	
+	
+	/**
+	 * @return the zUncertainty
+	 */
+	public double getZUncertainty() {
+		return zUncertainty;
+	}
+	
+	
+	/**
+	 * @param angle the angle to set
+	 */
+	public void setAngle(double angle) {
+		this.angle = angle;
+	}
+	
+	
+	/**
+	 * @param angleUncertainty the angleUncertainty to set
+	 */
+	public void setAngleUncertainty(double angleUncertainty) {
+		this.angleUncertainty = angleUncertainty;
+	}
+	
+	
+	/**
+	 * @param point - the point to set the center of this target
+	 */
+	public void setPoint(Point3d point) {
+		x = point.x;
+		y = point.y;
+		z = point.z;
+	}
+	
+	/**
+	 * @param x the x to set
+	 */
+	public void setX(double x) {
+		this.x = x;
+	}
+	
+	/**
+	 * @param xUncertainty the xUncertainty to set
+	 */
+	public void setXUncertainty(double xUncertainty) {
+		this.xUncertainty = xUncertainty;
+	}
+	
+	/**
+	 * @param y the y to set
+	 */
+	public void setY(double y) {
+		this.y = y;
+	}
+	
+	/**
+	 * @param yUncertainty the yUncertainty to set
+	 */
+	public void setYUncertainty(double yUncertainty) {
+		this.yUncertainty = yUncertainty;
+	}
+	
+	/**
+	 * @param z the z to set
+	 */
+	public void setZ(double z) {
+		this.z = z;
+	}
+	
+	/**
+	 * @param zUncertainty the zUncertainty to set
+	 */
+	public void setZUncertainty(double zUncertainty) {
+		this.zUncertainty = zUncertainty;
+	}
+	
 	
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
+	@Override
 	public String toString() {
 		return "Target [x=" + x + ", y=" + y + ", z=" + z + ", angle=" + angle + "]";
-	}
-
-
-	/* (non-Javadoc)
-	 * @see java.lang.Comparable#compareTo(java.lang.Object)
-	 */
-	public int compareTo(Target that) {
-		if(this.y > that.y)
-			return -1;
-		else if(this.y < that.y)
-			return 1;
-		return 0;
 	}
 }
