@@ -78,8 +78,11 @@ public class VelocityController {
         this.leftWrapper = new DriveWrapper(robotDrive);
         this.rightWrapper = new DriveWrapper(robotDrive);
         
-        this.controllerLeft = new PIDController(p, i, d, encoderWrapperLeft = new EncoderWrapper(encoderLeft), null);
-        this.controllerRight = new PIDController(p, i, d, encoderWrapperRight = new EncoderWrapper(encoderRight), null);
+        this.controllerLeft = new PIDController(p, i, d, encoderWrapperLeft = new EncoderWrapper(encoderLeft), leftWrapper);
+        this.controllerRight = new PIDController(p, i, d, encoderWrapperRight = new EncoderWrapper(encoderRight), rightWrapper);
+        this.controllerLeft.setOutputRange(-1, 1);
+        this.controllerRight.setOutputRange(-1, 1);
+        
         this.gyro = gyro;
     }
     
