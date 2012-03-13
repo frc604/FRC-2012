@@ -1,6 +1,8 @@
 package com._604robotics.tcpcommunicator;
 
 import com._604robotics.robot2012.vision.*;
+
+import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -18,7 +20,8 @@ public class TcpCommunicator implements Runnable {
     private final boolean debug;
     
     private Socket conn = null;
-    private OutputStream out = null;
+    private BufferedOutputStream bufferedOut = null;
+    private OutputStream rawOut = null;
     
     private boolean enabled = false;
     private Thread thread;
@@ -138,7 +141,7 @@ public class TcpCommunicator implements Runnable {
     private void writeDouble (double val) throws IOException, NullPointerException {
         long process = Double.doubleToLongBits(val);
         
-        this.out.write(new byte[] {
+        this.bufferedOut.write(new byte[] {
             (byte)((process >> 56) & 0xff),
             (byte)((process >> 48) & 0xff),
             (byte)((process >> 40) & 0xff),
@@ -161,7 +164,7 @@ public class TcpCommunicator implements Runnable {
     private void writeFloat (float val) throws IOException, NullPointerException {
         int process = Float.floatToIntBits(val);
         
-        this.out.write(new byte[] {
+        this.bufferedOut.write(new byte[] {
             (byte)((process >> 24) & 0xff),
             (byte)((process >> 16) & 0xff),
             (byte)((process >> 8 ) & 0xff),
@@ -178,7 +181,7 @@ public class TcpCommunicator implements Runnable {
      * @param   points  An array of Targets to write.
      */
     public void writePoints (Target[] points) {
-        if (this.conn == null || this.out == null)
+        if (this.conn == null || this.bufferedOut == null)
             return;
         
         try {
@@ -186,7 +189,7 @@ public class TcpCommunicator implements Runnable {
             	if (points[i] == null)
             		continue;
             	
-                this.out.write((byte) 0);
+                this.bufferedOut.write((byte) 0);
 
                 this.writeDouble(points[i].x);
                 this.writeDouble(points[i].y);
@@ -197,11 +200,28 @@ public class TcpCommunicator implements Runnable {
                 this.writeDouble(points[i].yUncertainty);
                 this.writeDouble(points[i].zUncertainty);
                 this.writeDouble(points[i].angleUncertainty);
+                
+                final OutputStream flushable = bufferedOut;
 
-                this.out.flush();
+                Thread flusherThread = new Thread(new Runnable() {
+                	public void run() {
+                		try {
+							flushable.flush();
+						} catch (IOException ex) {
+							//ex.printStackTrace();
+							try {
+								flushable.close();
+							} catch (IOException ex1) {
+								//ex1.printStackTrace();
+							}
+						}
+                	}
+                });
+                
+                flusherThread.start();
             }
             
-            this.out.write((byte) 1);
+            this.bufferedOut.write((byte) 1);
         } catch (Exception ex) {
             
         }
@@ -228,7 +248,8 @@ public class TcpCommunicator implements Runnable {
                     this.conn = new Socket(this.ip, this.port);
 
                     try {
-                        this.out = this.conn.getOutputStream();
+                        this.rawOut = this.conn.getOutputStream();
+                        this.bufferedOut = new BufferedOutputStream(this.rawOut, 4096); // buffer size = 4 KB
                     } catch (Exception ex) {
                         try {
                             this.conn.close();
@@ -237,11 +258,11 @@ public class TcpCommunicator implements Runnable {
                         }
 
                         this.conn = null;
-                        this.out = null;
+                        this.bufferedOut = null;
 
                         try {
                             
-                            Thread.sleep(1000);
+                            Thread.sleep(250);
                         } catch (InterruptedException ex2) {
 
                         }
@@ -250,7 +271,7 @@ public class TcpCommunicator implements Runnable {
                     this.conn = null;
                     
                     try {
-                        Thread.sleep(1000);
+                        Thread.sleep(250);
                     } catch (InterruptedException ex2) {
                         
                     }
@@ -275,7 +296,7 @@ public class TcpCommunicator implements Runnable {
             in = null;
             
             try {
-                this.out.close();
+                this.bufferedOut.close();
             } catch (IOException ex) {
                 
             }
@@ -287,7 +308,7 @@ public class TcpCommunicator implements Runnable {
             }
             
             this.conn = null;
-            this.out = null;
+            this.bufferedOut = null;
             
             if(this.debug)
                 System.out.println("[TCP] Connection lost.");
