@@ -12,10 +12,15 @@ import edu.wpi.first.wpilibj.*;
  * @author  Kevin Parker <kevin.m.parker@gmail.com>
  */
 public class VelocityController {
-    private final Encoder encoder;
-    private final EncoderWrapper encoderWrapper;
-    private final PIDOutput output;
-    private final PIDController controller;
+    private final Encoder encoderLeft;
+    private final Encoder encoderRight;
+    private final EncoderWrapper encoderWrapperLeft;
+    private final EncoderWrapper encoderWrapperRight;
+    private final RobotDrive robotDrive;
+    private final PIDController controllerLeft;
+    private final PIDController controllerRight;
+    private final PIDOutput outputLeft;
+    private final PIDOutput outputRight;
     private final Gyro gyro;
     
     private double P, I, D;
@@ -40,6 +45,12 @@ public class VelocityController {
         }
     }
     
+    private class DriveWrapper implements PIDOutput {
+        public void pidWrite(double value) {
+            
+        }
+    }
+    
     /**
      * Initializes a new VelocityController.
      * 
@@ -50,10 +61,14 @@ public class VelocityController {
      * @param   output      The PIDOutput to control. Usually some sort of
      *                      motor.
      */
-    public VelocityController (double p, double i, double d, Encoder encoder, PIDOutput output, Gyro gyro) {
-        this.encoder = encoder;
-        this.output = output;
-        this.controller = new PIDController(p, i, d, encoderWrapper = new EncoderWrapper(encoder), output);
+    public VelocityController (double p, double i, double d, Encoder encoderLeft, Encoder encoderRight, RobotDrive robotDrive, Gyro gyro) {
+        this.encoderLeft = encoderLeft;
+        this.encoderRight = encoderRight;
+        this.robotDrive = robotDrive;
+        this.outputLeft = null;
+        this.outputRight = null;
+        this.controllerLeft = new PIDController(p, i, d, encoderWrapperLeft = new EncoderWrapper(encoderLeft), null);
+        this.controllerRight = new PIDController(p, i, d, encoderWrapperRight = new EncoderWrapper(encoderRight), null);
         this.gyro = gyro;
     }
     
@@ -63,7 +78,7 @@ public class VelocityController {
      * @return  The current target velocity.
      */
     public double getVelocity () {
-        return this.controller.getSetpoint();
+        return this.controllerRight.getSetpoint(); // TODO - fix
     }
     
     /**
@@ -72,7 +87,7 @@ public class VelocityController {
      * @return  The actual, current velocity.
      */
     public double getActualVelocity () {
-        return this.encoder.getRate();
+        return this.encoderLeft.getRate(); // TODO - fix
     }
     
     /**
@@ -81,7 +96,7 @@ public class VelocityController {
      * @param   velocity    The target velocity to set.
      */
     public void setVelocity (double velocity) {
-        this.controller.setSetpoint(velocity);
+        this.controllerLeft.setSetpoint(velocity); // TODO - fix
     }
     
     /**
@@ -119,7 +134,10 @@ public class VelocityController {
     private void updateGains() {
         double absAngle = Math.abs(gyro.getAngle());
         
-        this.controller.setPID(P*(1+absAngle*pAngleGain),
+        this.controllerLeft.setPID(P*(1+absAngle*pAngleGain),
+                                I*(1+absAngle*iAngleGain),
+                                D*(1+absAngle*dAngleGain));
+        this.controllerRight.setPID(P*(1+absAngle*pAngleGain),
                                 I*(1+absAngle*iAngleGain),
                                 D*(1+absAngle*dAngleGain));
     }
@@ -128,14 +146,16 @@ public class VelocityController {
      * Enables the VelocityController.
      */
     public void enable () {
-        this.controller.enable();
+        this.controllerLeft.enable();
+        this.controllerRight.enable();
     }
     
     /**
      * Disables the VelocityController.
      */
     public void disable () {
-        this.controller.disable();
+        this.controllerRight.disable();{
+        this.controllerRight.disable();
     }
     
     /**
@@ -144,6 +164,6 @@ public class VelocityController {
      * @return  Whether or not the VelocityController is currently enabled.
      */
     public boolean isEnabled () {
-        return this.controller.isEnable();
+        return this.controllerLeft.isEnable();
     }
 }
