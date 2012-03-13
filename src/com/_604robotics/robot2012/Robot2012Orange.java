@@ -334,7 +334,7 @@ public class Robot2012Orange extends SimpleRobot {
         controlTimer.start();
         
         encoderTurretRotation.setOffset(SensorConfiguration.TURRET_CALIBRATION_OFFSET);
-        turretMachine.setTurretSidewaysPosition(encoderTurretRotation.get());
+        turretMachine.setTurretSidewaysPosition(encoderTurretRotation.getDistance());
         
         long began = new Date().getTime();
         

@@ -15,7 +15,7 @@ public class TurretMachine implements StrangeMachine {
     private final RotationProvider provider;
     private final Encoder encoder;
     
-    private int turretSidewaysPosition = 0;
+    private double turretSidewaysPosition = 0;
     private boolean isAimed = false;
     
     public interface TurretState {
@@ -84,7 +84,7 @@ public class TurretMachine implements StrangeMachine {
         return this.test(state);
     }
     
-    public void setTurretSidewaysPosition (int turretSidewaysPosition) {
+    public void setTurretSidewaysPosition (double turretSidewaysPosition) {
         this.turretSidewaysPosition = turretSidewaysPosition;
     }
 }
