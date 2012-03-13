@@ -1,31 +1,34 @@
-/**
- ** com/charliemouse/cambozola/shared/StreamSplit.java
- **  Copyright (C) Andy Wilcock, 2001.
- **  Available from http://www.charliemouse.com
- **
- ** This file m_inputStream part of the CamViewer package (c) Andy Wilcock, 2001.
- ** Available from http://www.charliemouse.com
- **
- **  Cambozola m_inputStream free software; you can redistribute it and/or modify
- **  it under the terms of the GNU General Public License as published by
- **  the Free Software Foundation; either version 2 of the License, or
- **  (at your option) any later version.
- **
- **  Cambozola m_inputStream distributed in the hope that it will be useful,
- **  but WITHOUT ANY WARRANTY; without even the implied warranty of
- **  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- **  GNU General Public License for more details.
- **
- **  You should have received a copy of the GNU General Public License
- **  along with Cambozola; if not, write to the Free Software
- **  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- **/
 package com.charliemouse.cambozola.shared;
 
 import java.io.*;
 import java.util.Hashtable;
 import java.net.URLConnection;
 
+/**
+ ** com/charliemouse/cambozola/shared/CamStream.java </br> Copyright (C) Andy Wilcock, 2001. </br> Available from
+ * http://www.charliemouse.com </br> </br>
+ * 
+ * This file is part of the Cambozola package (c) Andy Wilcock, 2001. </br> Available from http://www.charliemouse.com
+ * </br> </br>
+ * 
+ * Cambozola is free software; you can redistribute it and/or modify it under the terms of the GNU General Public
+ * License as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later
+ * version. </br> </br>
+ * 
+ * Cambozola is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * </br> </br>
+ * 
+ * You should have received a copy of the GNU General Public License along with Cambozola; if not, write to the Free
+ * Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA </br>
+ * 
+ * </br> </br>
+ *
+ *
+ * @see CamStream CamStream for more information.
+ *
+ *
+ **/
 public class StreamSplit {
     public static final String BOUNDARY_MARKER_PREFIX  = "--";
     public static final String BOUNDARY_MARKER_TERM    = BOUNDARY_MARKER_PREFIX;
@@ -189,15 +192,11 @@ public class StreamSplit {
 						ex.printStackTrace();
 					}
 				} while (true);
-				//
-				
-				///System.out.println("Here");
 
 				try {
 					out.flush();
 					out.close();
 				} catch (IOException ex) {
-					// TODO Auto-generated catch block
 					ex.printStackTrace();
 				}
 				

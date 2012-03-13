@@ -1,7 +1,6 @@
 package com.charliemouse.cambozola.shared;
 
 import java.awt.Image;
-import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 import java.awt.image.ImageObserver;
 import java.io.BufferedInputStream;
@@ -12,7 +11,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.Vector;
+import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
 
@@ -47,10 +46,14 @@ import javax.imageio.ImageIO;
  * I (Kevin Parker) made the following changes. I made the JPEG data stream pipe directly into the parser, rather than
  * loading the whole image into a buffer before parsing. I made a couple of minor changes, one of which was reducing
  * some of the sleep lengths. I also did some minor code auto-cleanup. Finally, I added a few comments and javadocs.
- * (I also altered m_retryDelay and removed some unused member variables)
- * 
- * TODO - make the last statement *not* a lie
+ * (I also altered m_retryDelay and removed some unused member variables).
  * </p>
+ * <p>
+ * This is not the full version of the Cambozola code, and it has many modifications to make it better suit the needs
+ * of a fast-paced FRC tournament. I also changed or removed unneeded pieces of these files.
+ * </p>
+ * TODO - keep working on these
+ * TODO - We should release this under the same license
  **/
 public class CamStream extends Thread {
 	
@@ -70,18 +73,16 @@ public class CamStream extends Thread {
 	private int					m_imgidx				= 0;
 	private DataInputStream		m_inputStream			= null;
 	private boolean				m_isDefunct				= false;
-	private Vector				m_listeners;
-	private ExceptionReporter	m_reporter				= null;
 	private int					m_retryCount			= 1;
 	private int					m_retryDelay			= 200;
 	private long				m_startTime				= 0;
 	private URL					m_stream;
 	private String				m_userpassEncoded;
+	private Logger 				m_logger = null;
 	
 	
-	public CamStream(URL strm, String app, URL docBase, int retryCount, int retryDelay, ExceptionReporter reporter,
+	public CamStream(URL strm, String app, URL docBase, int retryCount, int retryDelay, Logger logger,
 			boolean debug) {
-		m_listeners = new Vector();
 		//
 		// Pull open stream - look for user/password.
 		//
@@ -95,7 +96,7 @@ public class CamStream extends Thread {
 			m_userpassEncoded = Base64.encode(userPass.getBytes());
 		}
 		m_appName = app;
-		m_reporter = reporter;
+		m_logger = logger;
 		m_isDefunct = false;
 		m_docBase = docBase;
 		m_retryCount = retryCount;
@@ -103,10 +104,6 @@ public class CamStream extends Thread {
 		m_debug = debug;
 	}
 	
-	
-	public void addImageChangeListener(ImageChangeListener cl) {
-		m_listeners.addElement(cl);
-	}
 	
 	
 	// public synchronized final byte[] getRawImage()
@@ -119,14 +116,6 @@ public class CamStream extends Thread {
 	public void finalize() throws Throwable {
 		unhook();
 		super.finalize();
-	}
-	
-	
-	private void fireImageChange() {
-		ImageChangeEvent ce = new ImageChangeEvent(this);
-		for (Enumeration e = m_listeners.elements(); e.hasMoreElements();) {
-			((ImageChangeListener) e.nextElement()).imageChanged(ce);
-		}
 	}
 	
 	
@@ -157,10 +146,6 @@ public class CamStream extends Thread {
 		return m_imageType;
 	}
 	
-	
-	public void removeImageChangeListener(ImageChangeListener cl) {
-		m_listeners.removeElement(cl);
-	}
 	
 	@Override
 	public void run() {
@@ -244,7 +229,7 @@ public class CamStream extends Thread {
 					if (m_debug) {
 						System.err.println("// Waiting for " + retryDelay + " ms");
 					}
-					m_reporter.reportFailure(connectionError);
+					m_logger.severe(connectionError);
 					sleep(retryDelay);
 				}
 			} while (tryIndex < retryCount);
@@ -350,12 +335,12 @@ public class CamStream extends Thread {
 			} while (!m_isDefunct);
 		} catch (Exception e) {
 			if (!m_collecting) {
-				if(m_reporter == null)
+				if(m_logger == null)
 					e.printStackTrace();
 				else
-					m_reporter.reportFailure(e.toString());
+					m_logger.severe(e.toString());
 			} else if (!m_isDefunct) {
-				m_reporter.reportError(e);
+				m_logger.severe(e.toString());
 			}
 		} finally {
 			unhook();
@@ -399,9 +384,6 @@ public class CamStream extends Thread {
 			@Override
 			public boolean imageUpdate(Image img, int infoflags, int x, int y, int width, int height) {
 				boolean fully = (infoflags & (ImageObserver.ALLBITS | ImageObserver.PROPERTIES)) != 0;
-				if (fully) {
-					fireImageChange();
-				}
 				return !fully;
 			}
 		});
