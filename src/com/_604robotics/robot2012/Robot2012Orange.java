@@ -232,7 +232,7 @@ public class Robot2012Orange extends SimpleRobot {
         SmartDashboard.putDouble("I_Vel", i_Vel = SmartDashboard.getDouble("I_Vel", 0));
         SmartDashboard.putDouble("D_Vel", d_Vel = SmartDashboard.getDouble("D_Vel", 0));
         
-        velocityController = new VelocityController(p_Vel, i_Vel, d_Vel, encoderLeftDrive, encoderRightDrive, driveTrain);
+        velocityController = new VelocityController(p_Vel, i_Vel, d_Vel, encoderLeftDrive, encoderRightDrive, driveTrain, gyroBalance);
         
         SmartDashboard.putInt("Confidence Threshold", 700);
         SmartDashboard.putInt("Target Timeout", 1500);
@@ -517,6 +517,12 @@ public class Robot2012Orange extends SimpleRobot {
              */
 
             if (driveController.getButton(ButtonConfiguration.Driver.AUTO_BALANCE)) {
+                
+                double p = SmartDashboard.getDouble("P_Vel", 0);
+                double i = SmartDashboard.getDouble("I_Vel", 0);
+                double d = SmartDashboard.getDouble("D_Vel", 0);
+                
+                velocityController.setAngleGains(p, i, d);
                 // TODO: Replace this with stuff from the balancing code, once it's hammered out.
                 
                 //accelPower = deadband(MathUtils.asin(accelBalance.getAcceleration()), 0.1745, -0.1745, 0D) / SensorConfiguration.ACCELEROMETER_UPPER_RADIANS * ActuatorConfiguration.ACCELEROMETER_DRIVE_POWER;
@@ -529,7 +535,7 @@ public class Robot2012Orange extends SimpleRobot {
                 //driveTrain.tankDrive(accelPower, accelPower);
                 
                 SmartDashboard.putString("Drive Mode", "Balancing");
-                SmartDashboard.putDouble("Accel Output", accelPower);
+                SmartDashboard.putDouble("DriveVel", driveVel);
             } else {
                 driveTrain.tankDrive(driveController.getAxis(Axis.LEFT_STICK_Y), driveController.getAxis(Axis.RIGHT_STICK_Y));
                 SmartDashboard.putString("Drive Mode", "Manual");
