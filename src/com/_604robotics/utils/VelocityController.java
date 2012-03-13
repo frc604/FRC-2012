@@ -19,9 +19,9 @@ public class VelocityController {
     private final RobotDrive robotDrive;
     private final PIDController controllerLeft;
     private final PIDController controllerRight;
-    private final PIDOutput outputLeft;
-    private final PIDOutput outputRight;
     private final Gyro gyro;
+    
+    private DriveWrapper leftWrapper, rightWrapper;
     
     private double P, I, D;
     private double pAngleGain, iAngleGain, dAngleGain; // gains based on balane gyro values
@@ -46,8 +46,17 @@ public class VelocityController {
     }
     
     private class DriveWrapper implements PIDOutput {
+        private RobotDrive drive;
+        private double sidePow;
+        
+        public DriveWrapper(RobotDrive drive) {
+            this.drive = drive;
+        }
+        
         public void pidWrite(double value) {
+            sidePow = value;
             
+            drive.tankDrive(leftWrapper.sidePow, rightWrapper.sidePow);
         }
     }
     
@@ -65,8 +74,10 @@ public class VelocityController {
         this.encoderLeft = encoderLeft;
         this.encoderRight = encoderRight;
         this.robotDrive = robotDrive;
-        this.outputLeft = null;
-        this.outputRight = null;
+        
+        this.leftWrapper = new DriveWrapper(robotDrive);
+        this.rightWrapper = new DriveWrapper(robotDrive);
+        
         this.controllerLeft = new PIDController(p, i, d, encoderWrapperLeft = new EncoderWrapper(encoderLeft), null);
         this.controllerRight = new PIDController(p, i, d, encoderWrapperRight = new EncoderWrapper(encoderRight), null);
         this.gyro = gyro;
@@ -154,7 +165,7 @@ public class VelocityController {
      * Disables the VelocityController.
      */
     public void disable () {
-        this.controllerRight.disable();{
+        this.controllerRight.disable();
         this.controllerRight.disable();
     }
     
