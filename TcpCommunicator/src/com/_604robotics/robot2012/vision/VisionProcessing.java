@@ -198,7 +198,7 @@ public class VisionProcessing {
 	 */
 	public VisionProcessing() {
 		if (conf.communicateToRobot) {
-			comm.up();
+			comm.up(); // TODO - live enable/disable when conf.communicateToRobot is set
 		}
 		if (conf.debug_SaveImagesToFiles) {
 			new File("target/").mkdir();

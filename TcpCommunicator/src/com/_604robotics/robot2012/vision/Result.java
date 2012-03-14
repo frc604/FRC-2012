@@ -6,6 +6,9 @@ package com._604robotics.robot2012.vision;
  * @author Kevin Parker <kevin.m.parker@gmail.com>
  */
 public abstract class Result {
+	static int sensitivity;
+	
+	
 	public boolean hasPlus() {
 		return false;
 	}
@@ -40,7 +43,7 @@ public abstract class Result {
 			return true;
 		}
 		public boolean plusAt(int x, int y) {
-			return dat[x + w*y] > VisionProcessing.defaultProcessing.conf.sensitivity;
+			return dat[x + w*y] > sensitivity;
 		}
 	
 	}

@@ -2,8 +2,6 @@ package com._604robotics.robot2012.vision;
 
 import static java.lang.Math.max;
 
-import com._604robotics.robot2012.vision.Result.AntiResult;
-import com._604robotics.robot2012.vision.Result.PlusResult;
 import com._604robotics.robot2012.vision.config.Config;
 
 /**
@@ -49,12 +47,29 @@ public class ResultImage {
 	}
 
 	public void computeResults(Img img) {
+		Config conf = VisionProcessing.defaultProcessing.conf;
+		
+		int sensitivity = conf.sensitivity;
+		Result.sensitivity = sensitivity;
+		boolean scanWholeTile = conf.scanWholeTile;
+		boolean checkCenter = conf.checkCenter;
+
+		color_targetR = conf.color_targetR;
+		color_targetG = conf.color_targetG;
+		color_targetB = conf.color_targetB;
+		
+		color_mulR = conf.color_mulR;
+		color_mulG = conf.color_mulG;
+		color_mulB = conf.color_mulB;
+		
+		
+		//iterate through all of the Result tiles and initialize them
 		for(int i = 0; i*tileW < imW; i++) {
 			for(int j = 0; j*tileH < imH; j++) {
 				int val = -128;
 				
-				boolean scanWholeTile = VisionProcessing.defaultProcessing.conf.scanWholeTile;
 				
+				//if not scanning the whole tile, check the corners and center
 				if(!scanWholeTile) {
 					int color = img.get(i*tileW, j*tileH);
 					val = getVal(color);
@@ -65,7 +80,7 @@ public class ResultImage {
 					color = img.get((i)*tileW, (j+1)*tileH-1);
 					val = max(getVal(color), val);
 					
-					if(VisionProcessing.defaultProcessing.conf.checkCenter) {
+					if(checkCenter) {
 						color = img.get((i)*tileW + tileW/2, (j+1)*tileH-1 + tileH/2);
 						val = max(getVal(color), val);
 					}
@@ -73,7 +88,8 @@ public class ResultImage {
 
 				Result result = null;
 
-				if(scanWholeTile || val > VisionProcessing.defaultProcessing.conf.sensitivity) {
+				//if there was a match in the corners/center of this tile, or if the whole tile is Config'd to scan
+				if(scanWholeTile || val > sensitivity) {
 					result = iterate(img, i, j);
 				} else {
 					result = new Result.AntiResult();
@@ -85,6 +101,14 @@ public class ResultImage {
 		}
 	}
 
+	/**
+	 * Scans an entire tile and returns the Result
+	 * 
+	 * @param img
+	 * @param i
+	 * @param j
+	 * @return
+	 */
 	private Result iterate(Img img, int i, int j) {
 		byte[] l_results = new byte[tileW*tileH];
 
@@ -98,7 +122,7 @@ public class ResultImage {
 				
 				l_results[l + m*tileW] = (byte) val;
 
-				if(val > VisionProcessing.defaultProcessing.conf.sensitivity) {
+				if(val > Result.sensitivity) {
 					hadMatch = true;
 				}
 			}
@@ -107,23 +131,22 @@ public class ResultImage {
 			return new Result.AntiResult();
 		return new Result.PlusResult(tileW, l_results);
 	}
-	
+
+	private double color_targetR, color_targetG, color_targetB;
+	private double color_mulR, color_mulG, color_mulB;
 
 	private byte getVal(int color) {
-		Config conf = VisionProcessing.defaultProcessing.conf;
-		
-		
 		int r = (color & 0xFF0000)	>>> 16;
 		int g = (color & 0xFF00)	>>> 8;
 		int b = (color & 0xFF);
 
 		//double val = b*.5 + .1*g - .8*r;//TODO - this may need moar tuning
 
-		double dr = r - conf.color_targetR;
-		double dg = g - conf.color_targetG;
-		double db = b - conf.color_targetB;
+		double dr = r - color_targetR;
+		double dg = g - color_targetG;
+		double db = b - color_targetB;
 		
-		double val = 127 - dr*dr*conf.color_mulR - dg*dg*conf.color_mulG - db*db*conf.color_mulB;
+		double val = 127 - dr*dr*color_mulR - dg*dg*color_mulG - db*db*color_mulB;
 		
 		if(val < -128)
 			return -128;

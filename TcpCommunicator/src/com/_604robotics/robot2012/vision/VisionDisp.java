@@ -88,6 +88,8 @@ public class VisionDisp extends JPanel {
 		
 		long timeStartRender = System.nanoTime();
 		
+		int tileSize = VisionProcessing.defaultProcessing.conf.tileSize;
+		
 		// make a shallow copy of all of the drawn instance variables
 		BufferedImage b = image;
 		ResultImage r = resultImage;
@@ -112,10 +114,10 @@ public class VisionDisp extends JPanel {
 				for (int j = 0; j < r.sH; j++) {
 					g.setColor(r.results[i + j * r.sW].hasPlus() ? yes : no);
 					
-					g.fillRect(i * VisionProcessing.defaultProcessing.conf.tileSize, j
-							* VisionProcessing.defaultProcessing.conf.tileSize,
-							VisionProcessing.defaultProcessing.conf.tileSize - 1,
-							VisionProcessing.defaultProcessing.conf.tileSize - 1);
+					g.fillRect(i * tileSize, j
+							* tileSize,
+							tileSize - 1,
+							tileSize - 1);
 				}
 			}
 		}
