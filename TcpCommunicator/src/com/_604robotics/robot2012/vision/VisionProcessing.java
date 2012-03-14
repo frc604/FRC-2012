@@ -28,6 +28,9 @@ import com.charliemouse.cambozola.shared.CamStream;
  */
 public class VisionProcessing {
 	
+	/**
+	 * The default VisionProcessing to use; this should be where the root of all of the vision processing is done
+	 */
 	public static final VisionProcessing defaultProcessing = new VisionProcessing();
 	
 	/**
@@ -35,6 +38,9 @@ public class VisionProcessing {
 	 */
 	public static final int			Side_Left				= 0, Side_Top = 1, Side_Right = 2, Side_Bottom = 3;
 	
+	/**
+	 * The Configuration file for this VisionProcessing
+	 */
 	public Config conf = Config.readDefaultConfig();
 	
 	/**
@@ -95,6 +101,15 @@ public class VisionProcessing {
 		}
 	}
 	
+	/**
+	 * Get a line that best fits the sides of a given target
+	 * 
+	 * @param ri - the ResultImage that indicates which pixels are contained in the target
+	 * @param side - an integer indicating which of the sides to pick
+	 * @param guess - a bounding box that surrounds all of the pixels to check
+	 * 
+	 * @return the line of best fit for the given side of the target lying in the AABB
+	 */
 	public RegressionResult getRegressionForSide(ResultImage ri, int side, AABB guess) {
 		int x1 = guess.x1 * conf.tileSize - 1, x2 = guess.x2 * conf.tileSize + conf.tileSize, y1 = guess.y1 * conf.tileSize - 1, y2 = guess.y2 * conf.tileSize
 		+ conf.tileSize;
@@ -124,6 +139,7 @@ public class VisionProcessing {
 			x[x.length - i - 1] = Double.NaN;
 		}
 		
+		//return the linear regression of the side
 		if (side == Side_Left || side == Side_Right)
 			return LinearRegression.getBackwardsRegression(x, y);
 		else
@@ -132,10 +148,11 @@ public class VisionProcessing {
 	}
 	
 	/**
-	 * Just a simple main() function for testing the target tracking
+	 * Just a simple main() function for running and testing the target tracking
 	 */
 	public static void main(String[] args) throws InterruptedException, IOException {
 		VisionProcessing vp = defaultProcessing;
+		vp.startWindow();
 		vp.loopAndProcessPics();
 		
 	}
@@ -176,6 +193,9 @@ public class VisionProcessing {
 	 */
 	public final VisionDisp						display			= new VisionDisp();
 	
+	/**
+	 * A constructor to create a new VisionProcessing
+	 */
 	public VisionProcessing() {
 		if (conf.communicateToRobot) {
 			comm.up();
@@ -183,15 +203,18 @@ public class VisionProcessing {
 		if (conf.debug_SaveImagesToFiles) {
 			new File("target/").mkdir();
 		}
-		if (conf.debug_ShowDisplay) {
-			JFrame displayWindow = new JFrame("604 - FRC 2012 Vision");
-			displayWindow.add(display);
-			
-			displayWindow.pack();
-			displayWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-			displayWindow.setVisible(true);
-			
-		}
+	}
+	
+	/**
+	 * A method to create a window for viewing the camera image (potentially with debug data drawn)
+	 */
+	private void startWindow() {
+		JFrame displayWindow = new JFrame("604 - FRC 2012 Vision");
+		displayWindow.add(display);
+		
+		displayWindow.pack();
+		displayWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		displayWindow.setVisible(true);
 	}
 	
 	/**
@@ -265,8 +288,16 @@ public class VisionProcessing {
 		}
 	}
 	
+	/**
+	 * A simple array used to buffer each image into
+	 */
 	int[] imageBuffer;
 	
+	/**
+	 * This processes the camera image and can send it to the robot (if enabled in the config file)
+	 * 
+	 * @param img - an image as received from the camera
+	 */
 	public void processImage(BufferedImage img) {
 		
 		double time_i = System.nanoTime();
@@ -325,7 +356,7 @@ public class VisionProcessing {
 			}
 		}
 		
-		// TODO - combine blobs with intersecting AABBs
+		// TODO - combine blobs with intersecting AABBs?
 		
 		LinearRegression.RegressionResult[] linearRegressions = new LinearRegression.RegressionResult[colors * 4];
 		

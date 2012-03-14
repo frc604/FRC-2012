@@ -55,6 +55,8 @@ public abstract class LinkedSlider extends Box implements ChangeListener {
 			slider.setValue((int) (max*Math.log10(val*9+1)/valMul));
 		}
 	}
+	
+	
 	public static class IntLinkedSlider extends LinkedSlider {
 
 		public IntLinkedSlider(String name, int min, int max, int val) {
