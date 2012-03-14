@@ -10,6 +10,27 @@ import com._604robotics.robot2012.aiming.Point2d;
  *
  */
 public class Physics {
+    
+    /**
+     * returns an approximation of the power the shooter should be spun at
+     * 
+     * @param vel - velocity, in inches/second
+     * @return the power to spin the shooter wheel at
+     */
+    public static double velToPow(double vel) {
+        //inverse of [] would work, but following is easier
+        double pow = 2.8344587e-6 *vel*vel +
+                2.78953798e-4 *vel +
+                .1479131112;
+        
+        if(pow < 0)
+            return 0;
+        if(pow > .4)
+            return 1;
+        
+        return pow;
+    }
+    
     /**
      * This untested function might determine the firing velocity for a given
      * distance (horizontally, and vertically) and the angle of the shooter.
