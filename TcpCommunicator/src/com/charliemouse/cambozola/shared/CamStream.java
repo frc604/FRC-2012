@@ -52,8 +52,6 @@ import javax.imageio.ImageIO;
  * This is not the full version of the Cambozola code, and it has many modifications to make it better suit the needs
  * of a fast-paced FRC tournament. I also changed or removed unneeded pieces of these files.
  * </p>
- * TODO - keep working on these
- * TODO - We should release this under the same license
  **/
 public class CamStream extends Thread {
 	
