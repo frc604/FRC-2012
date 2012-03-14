@@ -89,9 +89,9 @@ public class Target implements Comparable<Target> {
 	
 
 	/**
-	 * @param x
-	 * @param y
-	 * @param z
+	 * @param x - the X coordinate of the center of the vision target
+	 * @param y - the Y coordinate of the center of the vision target
+	 * @param z - the Z coordinate of the center of the vision target
 	 * @param angle
 	 */
 	public Target(double x, double y, double z, double angle) {
@@ -104,14 +104,14 @@ public class Target implements Comparable<Target> {
 	
 
 	/**
-	 * @param x
-	 * @param y
-	 * @param z
-	 * @param xUncertainty
-	 * @param yUncertainty
-	 * @param zUncertainty
-	 * @param angle
-	 * @param angleUncertainty
+	 * @param x - the X coordinate of the center of the vision target
+	 * @param y - the Y coordinate of the center of the vision target
+	 * @param z - the Z coordinate of the center of the vision target
+	 * @param xUncertainty - the X Uncertainty
+	 * @param yUncertainty - the Y Uncertainty
+	 * @param zUncertainty - the Z Uncertainty
+	 * @param angle - the Angle
+	 * @param angleUncertainty - the Angle Uncertainty
 	 */
 	public Target(double x, double y, double z, double xUncertainty, double yUncertainty, double zUncertainty,
 			double angle, double angleUncertainty) {
@@ -128,8 +128,8 @@ public class Target implements Comparable<Target> {
 	
 
 	/**
-	 * @param point
-	 * @param angle
+	 * @param point - the Point
+	 * @param angle - the Angle
 	 */
 	public Target(Point3d point, double angle) {
 		this(point.x, point.y, point.z, angle);
@@ -152,7 +152,7 @@ public class Target implements Comparable<Target> {
 	
 
 	/**
-	 * @return the angle
+	 * @return the angle that the vision target faces
 	 */
 	public double getAngle() {
 		return angle;
@@ -161,7 +161,7 @@ public class Target implements Comparable<Target> {
 	
 
 	/**
-	 * @return the angleUncertainty
+	 * @return the uncertainty of the Angle
 	 */
 	public double getAngleUncertainty() {
 		return angleUncertainty;
@@ -204,7 +204,7 @@ public class Target implements Comparable<Target> {
 	
 
 	/**
-	 * @return the x
+	 * @return the X coordinate of the center of the vision target
 	 */
 	public double getX() {
 		return x;
@@ -213,7 +213,7 @@ public class Target implements Comparable<Target> {
 	
 
 	/**
-	 * @return the xUncertainty
+	 * @return the Uncertainty of the X coordinate
 	 */
 	public double getXUncertainty() {
 		return xUncertainty;
@@ -221,7 +221,7 @@ public class Target implements Comparable<Target> {
 	
 	
 	/**
-	 * @return the y
+	 * @return the Y coordinate of the center of the vision target
 	 */
 	public double getY() {
 		return y;
@@ -229,7 +229,7 @@ public class Target implements Comparable<Target> {
 	
 	
 	/**
-	 * @return the yUncertainty
+	 * @return the Uncertainty of the Y coordinate
 	 */
 	public double getYUncertainty() {
 		return yUncertainty;
@@ -237,7 +237,7 @@ public class Target implements Comparable<Target> {
 	
 	
 	/**
-	 * @return the z
+	 * @return the Z coordinate of the center of the vision target
 	 */
 	public double getZ() {
 		return z;
@@ -245,7 +245,7 @@ public class Target implements Comparable<Target> {
 	
 	
 	/**
-	 * @return the zUncertainty
+	 * @return the Uncertainty of the Z coordinate of the vision target
 	 */
 	public double getZUncertainty() {
 		return zUncertainty;
@@ -253,7 +253,7 @@ public class Target implements Comparable<Target> {
 	
 	
 	/**
-	 * @param angle the angle to set
+	 * @param angle the Angle to set
 	 */
 	public void setAngle(double angle) {
 		this.angle = angle;
@@ -278,7 +278,7 @@ public class Target implements Comparable<Target> {
 	}
 	
 	/**
-	 * @param x the x to set
+	 * @param x the X to set
 	 */
 	public void setX(double x) {
 		this.x = x;
@@ -292,7 +292,7 @@ public class Target implements Comparable<Target> {
 	}
 	
 	/**
-	 * @param y the y to set
+	 * @param y the Y to set
 	 */
 	public void setY(double y) {
 		this.y = y;
@@ -306,7 +306,7 @@ public class Target implements Comparable<Target> {
 	}
 	
 	/**
-	 * @param z the z to set
+	 * @param z the Z to set
 	 */
 	public void setZ(double z) {
 		this.z = z;
