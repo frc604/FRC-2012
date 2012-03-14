@@ -111,8 +111,10 @@ public class VisionProcessing {
 	 * @return the line of best fit for the given side of the target lying in the AABB
 	 */
 	public RegressionResult getRegressionForSide(ResultImage ri, int side, AABB guess) {
-		int x1 = guess.x1 * conf.tileSize - 1, x2 = guess.x2 * conf.tileSize + conf.tileSize, y1 = guess.y1 * conf.tileSize - 1, y2 = guess.y2 * conf.tileSize
-		+ conf.tileSize;
+		int tileSize = conf.tileSize;
+		
+		int x1 = guess.x1 * tileSize - 1, x2 = guess.x2 * tileSize + tileSize, y1 = guess.y1 * tileSize - 1, y2 = guess.y2 * tileSize
+		+ tileSize;
 		
 		int lenMajor = 0;
 		int lenMinor = 0;
@@ -131,9 +133,9 @@ public class VisionProcessing {
 		
 		getDistsForSide(ri, x1, y1, x2, y2, side, lenMajor, lenMinor / 2, x, y);
 		
-		// trim off bottom and top 5%
+		// trim off bottom and top 10%
 		
-		int fewPercent = x.length / 15;// 6.7%
+		int fewPercent = x.length / 10;// +- 10%, rounded down
 		for (int i = 0; i < fewPercent; i++) {
 			x[i] = Double.NaN;
 			x[x.length - i - 1] = Double.NaN;
@@ -365,8 +367,9 @@ public class VisionProcessing {
 		Target[] targets = new Target[colors];
 		
 		Point2d[] pts = new Point2d[colors * 4];
+		int minBlobSize = conf.minBlobSize;
 		for (int i = 0; i < colors; i++) {
-			if (blobSize[i] >= conf.minBlobSize) {
+			if (blobSize[i] >= minBlobSize) {
 				
 				LinearRegression.RegressionResult top = getRegressionForSide(ri, Side_Top, rough[i]);
 				LinearRegression.RegressionResult bottom = getRegressionForSide(ri, Side_Bottom, rough[i]);
