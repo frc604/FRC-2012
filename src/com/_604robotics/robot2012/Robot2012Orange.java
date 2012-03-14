@@ -17,6 +17,7 @@ import com._604robotics.robot2012.rotation.SlowbroRotationProvider;
 import com._604robotics.utils.UpDownPIDController.Gains;
 import com._604robotics.utils.*;
 import com._604robotics.utils.XboxController.Axis;
+import com.sun.squawk.util.MathUtils;
 import edu.wpi.first.wpilibj.RobotDrive.MotorType;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -189,7 +190,7 @@ public class Robot2012Orange extends SimpleRobot {
          */
         
         pidElevator = new UpDownPIDController(new Gains(0.0085, 0D, 0.018), new Gains(0.0029, 0.000003, 0.007), encoderElevator, elevatorMotors);
-        pidTurretRotation = new ConvertingPIDController(-0.0022, -0.0008, -0.006, encoderTurretRotation, turretRotationMotor);
+        pidTurretRotation = new ConvertingPIDController(0.0022, 0.0008, 0.006, encoderTurretRotation, turretRotationMotor);
         
         pidElevator.setInputRange(0, 1550);
         pidElevator.setOutputRange(ActuatorConfiguration.ELEVATOR_POWER_MIN, ActuatorConfiguration.ELEVATOR_POWER_MAX);
@@ -345,6 +346,8 @@ public class Robot2012Orange extends SimpleRobot {
         encoderTurretRotation.setOffset(SensorConfiguration.TURRET_CALIBRATION_OFFSET);
         turretMachine.setTurretSidewaysPosition(encoderTurretRotation.getDistance());
         
+        elevatorMotors.set(0D);
+        
         long began = new Date().getTime();
         
         while (isAutonomous() && isEnabled()) {
@@ -352,7 +355,7 @@ public class Robot2012Orange extends SimpleRobot {
             
             if (step > 3 && !elevatorCalibrated) {
                 if (elevatorLimitSwitch.get()) {
-                    elevatorMotors.set(-0.4);
+                    elevatorMotors.set(-0.3);
                 } else {
                     elevatorMotors.set(0D);
                     encoderElevator.reset();
@@ -586,15 +589,15 @@ public class Robot2012Orange extends SimpleRobot {
             if ((pickupIn && upHigh) || pickupIn) {
                 if (elevatorMachine.test(ElevatorState.PICKUP_OKAY)) {
                     pickupMachine.crank(PickupState.IN);
-                    
-                    if (upHigh && !noFixedDirection)
-                        noFixedDirection = turretMachine.crank(turretDirection);
                 }
                 
+                if (upHigh && !noFixedDirection && elevatorMachine.test(ElevatorState.TURRET_OKAY))
+                    noFixedDirection = turretMachine.crank(turretDirection);
+
                 if (upHigh) {
                     if (elevatorMachine.crank(ElevatorState.HIGH)) {
                         SmartDashboard.putString("Ready to Shoot", "Yes");
-                        
+
                         /* Toggles the shooter angle. */
                         
                         if (manipulatorController.getToggle(ButtonConfiguration.Manipulator.TOGGLE_ANGLE)) {
@@ -613,7 +616,8 @@ public class Robot2012Orange extends SimpleRobot {
                         }
                     }
                 } else {
-                    elevatorMachine.crank(ElevatorState.MEDIUM);
+                    if (turretMachine.crank(TurretState.SIDEWAYS))
+                        elevatorMachine.crank(ElevatorState.MEDIUM);
                 }
             } else {
                 if (turretMachine.crank(TurretState.SIDEWAYS)) {

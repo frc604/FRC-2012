@@ -4,6 +4,7 @@ import com._604robotics.robot2012.configuration.ActuatorConfiguration;
 import com._604robotics.robot2012.rotation.RotationProvider;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.PIDController;
+import edu.wpi.first.wpilibj.Timer;
 
 /**
  * Machine to control the turret.
@@ -14,9 +15,12 @@ public class TurretMachine implements StrangeMachine {
     private final PIDController controller;
     private final RotationProvider provider;
     private final Encoder encoder;
+    private final Timer changeTimer = new Timer();
     
     private double turretSidewaysPosition = 0;
     private boolean isAimed = false;
+    
+    private int lastState = TurretState.SIDEWAYS;
     
     public interface TurretState {
         public static final int SIDEWAYS = 0;
@@ -30,16 +34,18 @@ public class TurretMachine implements StrangeMachine {
         this.controller = controller;
         this.provider = provider;
         this.encoder = encoder;
+        
+        this.changeTimer.start();
     }
     
     private boolean onTarget (double target) {
-        return Math.abs(target - this.encoder.get()) <= ActuatorConfiguration.TURRET_POSITION.TOLERANCE;
+        return Math.abs(target - this.encoder.getDistance()) <= ActuatorConfiguration.TURRET_POSITION.TOLERANCE;
     }
 
     public boolean test (int state) {
         switch (state) {
             case TurretState.SIDEWAYS:
-                return this.controller.getSetpoint() == this.turretSidewaysPosition && onTarget(this.turretSidewaysPosition);
+                return this.controller.getSetpoint() == this.turretSidewaysPosition && onTarget(this.turretSidewaysPosition) && this.changeTimer.get() >= 3;
             case TurretState.AIMED:
                 return this.isAimed;
             case TurretState.FORWARD:
@@ -54,6 +60,11 @@ public class TurretMachine implements StrangeMachine {
     }
     
     public boolean crank (int state) {
+        if (this.lastState != state) {
+            this.changeTimer.reset();
+            this.lastState = state;
+        }
+        
         switch (state) {
             case TurretState.SIDEWAYS:
                 this.controller.setSetpoint(this.turretSidewaysPosition);

@@ -135,19 +135,19 @@ public class XboxController {
     public boolean getButton (int button) {
         switch (button) {
             case Button.LT:
-                return this.joystick.getRawAxis(3) > 0D;
+                return this.joystick.getRawAxis(3) > 0.2;
             case Button.RT:
-                return this.joystick.getRawAxis(3) < 0D;
+                return this.joystick.getRawAxis(3) < -0.2;
             case Button.EitherTrigger:
-                return this.joystick.getRawAxis(3) != 0D;
+                return Math.abs(this.joystick.getRawAxis(3)) > 0.2;
             case Button.DPad.Up:
-                return this.joystick.getRawAxis(7) < 0D;
+                return this.joystick.getRawAxis(7) < -0.2;
             case Button.DPad.Down:
-                return this.joystick.getRawAxis(7) > 0D;
+                return this.joystick.getRawAxis(7) > 0.2;
             case Button.DPad.Left:
-                return this.joystick.getRawAxis(6) < 0D;
+                return this.joystick.getRawAxis(6) < -0.2;
             case Button.DPad.Right:
-                return this.joystick.getRawAxis(6) > 0D;
+                return this.joystick.getRawAxis(6) > 0.2;
             default:
                 return this.joystick.getRawButton(button);
         }

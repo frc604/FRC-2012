@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.Victor;
  */
 public class ShooterMachine implements StrangeMachine {
     private final Timer spinTimer = new Timer();
+    private final Timer sinceTimer = new Timer();
     
     private final DualVictor shooter;
     private final Victor hopper;
@@ -25,6 +26,7 @@ public class ShooterMachine implements StrangeMachine {
     public ShooterMachine (DualVictor shooter, Victor hopper) {
         this.shooter = shooter;
         this.hopper = hopper;
+        this.sinceTimer.start();
     }
     
     public void setShooterSpeed (double speed) {
@@ -43,19 +45,27 @@ public class ShooterMachine implements StrangeMachine {
     public boolean crank (int state) {
         switch (state) {
             case ShooterState.SHOOTING:
-                if (this.shooter.get() != this.speed) {
-                    this.shooter.set(this.speed);
+                this.shooter.set(this.speed);
+                
+                if (this.sinceTimer.get() >= 0.25) {
+                    System.out.println("RESETTING TIMER");
                     
                     this.spinTimer.reset();
                     this.spinTimer.start();
+                
+                    this.sinceTimer.reset();
                     
                     return false;
                 } else if (this.spinTimer.get() >= 0.5) {
-                    this.shooter.set(this.speed);
+                    System.out.println("SHOOTING NOW");
                     this.hopper.set(ActuatorConfiguration.HOPPER_POWER);
                 } else {
-                    this.shooter.set(this.speed);
+                    System.out.println("CHARGING UP");
                 }
+                
+                this.sinceTimer.reset();
+                
+                return true;
         }
         
         this.spinTimer.stop();

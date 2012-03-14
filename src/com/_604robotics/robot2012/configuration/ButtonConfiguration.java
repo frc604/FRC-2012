@@ -32,7 +32,5 @@ public interface ButtonConfiguration {
         
         public static final int TOGGLE_ANGLE = Button.LB;
         public static final int TOGGLE_LIGHT = Button.Back;
-        
-        
     }
 }
