@@ -14,8 +14,19 @@ public abstract class Result {
 	}
 	
 
+	/**
+	 * A result indicating that it is unlikely that the target lies in the indicated tile
+	 *
+	 * @author Kevin Parker <kevin.m.parker@gmail.com>
+	 */
 	public static class AntiResult extends Result {
 	}
+
+	/**
+	 * A result indicating that it is likely that the target lies in the indicated tile
+	 *
+	 * @author Kevin Parker <kevin.m.parker@gmail.com>
+	 */
 	public static class PlusResult extends Result {
 		int w;
 		byte[] dat;

@@ -60,15 +60,30 @@ public class Quad {
 	}
 	
 
+	/**
+	 * @return the minimum X value of this Quad
+	 */
 	public double getMinX() {
 		return Math.min(topLeft.x, bottomLeft.x);
 	}
+
+	/**
+	 * @return the maximum X value of this Quad
+	 */
 	public double getMaxX() {
 		return Math.max(topRight.x, bottomRight.x);
 	}
+
+	/**
+	 * @return the minimum Y value of this Quad
+	 */
 	public double getMinY() {
 		return Math.min(bottomLeft.y, bottomRight.y);
 	}
+
+	/**
+	 * @return the maximum Y value of this Quad
+	 */
 	public double getMaxY() {
 		return Math.max(topLeft.y, topRight.y);
 	}

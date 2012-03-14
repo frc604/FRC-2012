@@ -15,40 +15,58 @@ import com._604robotics.robot2012.vision.config.Config;
  */
 public class ResultImage {
 
+	/**
+	 * The size of the whole image, in pixels
+	 */
 	int imW, imH;
+	
+	/**
+	 * The size of the whole image, in tiles
+	 */
 	int sW, sH;
-	int stepW = VisionProcessing.defaultProcessing.conf.tileSize, stepH = VisionProcessing.defaultProcessing.conf.tileSize;
+	
+	
+	/**
+	 * The size of each tile
+	 */
+	int tileW = VisionProcessing.defaultProcessing.conf.tileSize, tileH = VisionProcessing.defaultProcessing.conf.tileSize;
 	public Result[] results;
 
+	/**
+	 * A constructor to create a new ResultImage. To actually initialize the returned ResultImage, use {@link ResultImage}
+	 * 
+	 * @param imW - the width of the image
+	 * @param imH - the height of the image
+	 */
 	public ResultImage(int imW, int imH) {
 		this.imW = imW;
 		this.imH = imH;
 
-		sW = (imW  - 1)/stepW +1;
-		sH = (imH  - 1)/stepH +1;
+		sW = (imW  - 1)/tileW +1;
+		sH = (imH  - 1)/tileH +1;
 
 		results = new Result[sW*sH];
 	}
 
 	public void computeResults(Img img) {
-		for(int i = 0; i*stepW < imW; i++) {
-			for(int j = 0; j*stepH < imH; j++) {
+		for(int i = 0; i*tileW < imW; i++) {
+			for(int j = 0; j*tileH < imH; j++) {
 				int val = -128;
 				
 				boolean scanWholeTile = VisionProcessing.defaultProcessing.conf.scanWholeTile;
 				
 				if(!scanWholeTile) {
-					int color = img.get(i*stepW, j*stepH);
+					int color = img.get(i*tileW, j*tileH);
 					val = getVal(color);
-					color = img.get((i+1)*stepW-1, (j)*stepH);
+					color = img.get((i+1)*tileW-1, (j)*tileH);
 					val = max(getVal(color), val);
-					color = img.get((i+1)*stepW, (j+1)*stepH-1);
+					color = img.get((i+1)*tileW, (j+1)*tileH-1);
 					val = max(getVal(color)-1, val);
-					color = img.get((i)*stepW, (j+1)*stepH-1);
+					color = img.get((i)*tileW, (j+1)*tileH-1);
 					val = max(getVal(color), val);
 					
 					if(VisionProcessing.defaultProcessing.conf.checkCenter) {
-						color = img.get((i)*stepW + stepW/2, (j+1)*stepH-1 + stepH/2);
+						color = img.get((i)*tileW + tileW/2, (j+1)*tileH-1 + tileH/2);
 						val = max(getVal(color), val);
 					}
 				}
@@ -68,17 +86,17 @@ public class ResultImage {
 	}
 
 	private Result iterate(Img img, int i, int j) {
-		byte[] l_results = new byte[stepW*stepH];
+		byte[] l_results = new byte[tileW*tileH];
 
 		boolean hadMatch = false;
 
-		for(int l = 0; l < stepW; l++) {
-			for(int m = 0; m < stepH; m++) {
-				int l_color = img.get(i*stepW + m,  j*stepH + l);
+		for(int l = 0; l < tileW; l++) {
+			for(int m = 0; m < tileH; m++) {
+				int l_color = img.get(i*tileW + m,  j*tileH + l);
 				
 				int val = getVal(l_color);
 				
-				l_results[l + m*stepW] = (byte) val;
+				l_results[l + m*tileW] = (byte) val;
 
 				if(val > VisionProcessing.defaultProcessing.conf.sensitivity) {
 					hadMatch = true;
@@ -87,7 +105,7 @@ public class ResultImage {
 		}
 		if(!hadMatch)
 			return new Result.AntiResult();
-		return new Result.PlusResult(stepW, l_results);
+		return new Result.PlusResult(tileW, l_results);
 	}
 	
 
@@ -145,11 +163,11 @@ public class ResultImage {
 		if(i < 0 || j < 0 || i >= imW || j >= imH)
 			return false;
 
-		int i_major = i/stepW;
-		int j_major = j/stepW;
+		int i_major = i/tileW;
+		int j_major = j/tileW;
 
-		int i_minor = i%stepW;
-		int j_minor = j%stepW;
+		int i_minor = i%tileW;
+		int j_minor = j%tileW;
 		
 		return results[i_major + j_major*sW].plusAt(i_minor, j_minor);
 	}
