@@ -8,15 +8,25 @@ import java.awt.image.Raster;
  * @author Kevin Parker <kevin.m.parker@gmail.com>
  */
 public class Img {
+	/**
+	 * The array of image data
+	 */
 	int[] dat;
+	
+	
+	/**
+	 * The size of the image
+	 */
 	int w, h;
 
 
 
 	/**
-	 * @param dat
-	 * @param w
-	 * @param h
+	 * A constructor to make an Img
+	 * 
+	 * @param dat - data array
+	 * @param w - width
+	 * @param h - height
 	 */
 	public Img(int[] dat, int w, int h) {
 		super();
@@ -25,6 +35,12 @@ public class Img {
 		this.h = h;
 	}
 
+	/**
+	 * A constructor to make an Img
+	 * 
+	 * @param raster - a raster storing original image data
+	 * @param buff - an array to store the image data into
+	 */
 	public Img(Raster raster, int[] buff) {
 		w = raster.getWidth();
 		h = raster.getHeight();
@@ -40,12 +56,21 @@ public class Img {
 			}
 		}
 	}
+	
+	
+	/**
+	 * A constructor to make an Img
+	 * 
+	 * @param raster - a raster storing original image data
+	 */
 	public Img(Raster raster) {
 		this(raster, new int[raster.getWidth()*raster.getHeight()]);
 		
 	}
 
 	/**
+	 * A constructor to make an Img
+	 * 
 	 * @param w
 	 * @param h
 	 */
@@ -53,6 +78,11 @@ public class Img {
 		this(new int[w*h], w, h);
 	}
 
+	/**
+	 * @param x - the X coordinate
+	 * @param y - the Y coordinate
+	 * @return an integer holding an RGB value
+	 */
 	public int get(int x, int y) {
 		if(x < 0 || y < 0 || x >= w || y >= h) {
 			return 0;
@@ -61,6 +91,12 @@ public class Img {
 		return dat[x + y*w];
 	}
 
+	/**
+	 * @param x - the X coordinate
+	 * @param y - the Y coordinate
+	 * @param k - an integer holding an RGB value
+	 * @return a boolean if the value was set or not
+	 */
 	public boolean set(int x, int y, int k) {
 		if(x < 0 || y < 0 || x >= w || y >= h) {
 			return false;

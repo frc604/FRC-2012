@@ -4,8 +4,7 @@ import java.net.Authenticator;
 import java.net.PasswordAuthentication;
 
 /**
- *
- * TODO - crap, who wrote this?
+ * From http://www.walking-productions.com/notslop/2010/04/20/motion-jpeg-in-flash-and-java/
  */
 class HTTPAuthenticator extends Authenticator {
 	private String username, password;

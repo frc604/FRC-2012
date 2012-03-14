@@ -30,7 +30,7 @@ public class Point2d {
 	
 	
 	/**
-	 * @return - the x value
+	 * @return - the X value
 	 */
 	public double getX() {
 		return x;
@@ -38,7 +38,7 @@ public class Point2d {
 	
 	
 	/**
-	 * @return - the y value
+	 * @return - the Y value
 	 */
 	public double getY() {
 		return y;
@@ -46,7 +46,9 @@ public class Point2d {
 	
 	
 	/**
-	 * @param x - the x value
+	 * Sets the X value of this Point
+	 * 
+	 * @param x - the X value
 	 */
 	public void setX(double x) {
 		this.x = x;
@@ -54,7 +56,9 @@ public class Point2d {
 	
 	
 	/**
-	 * @param y - the y value
+	 * Sets the Y value of this Point
+	 * 
+	 * @param y - the Y value
 	 */
 	public void setY(double y) {
 		this.y = y;
