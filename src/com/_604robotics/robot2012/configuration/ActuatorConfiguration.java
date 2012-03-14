@@ -19,8 +19,8 @@ public interface ActuatorConfiguration {
     public static final double ELEVATOR_POWER_MIN = -0.8;
     public static final double ELEVATOR_POWER_MAX = 0.8;
     
-    public static final double TURRET_ROTATION_POWER_MIN = -0.8;
-    public static final double TURRET_ROTATION_POWER_MAX = 0.8;
+    public static final double TURRET_ROTATION_POWER_MIN = -0.4;
+    public static final double TURRET_ROTATION_POWER_MAX = 0.4;
     
     public interface TURRET_POSITION {
         public static final double FORWARD = 0D;
@@ -37,21 +37,23 @@ public interface ActuatorConfiguration {
     
     public interface ELEVATOR {
         public static final int HIGH = 1540;
-        public static final int MEDIUM = 832;
+        public static final int MEDIUM = 663;
         public static final int LOW = 0;
+        
+        public static final int OKAY_TO_TURN = 1300;
         
         public interface TOLERANCE {
             public static final int HIGH = 1505;
-            public static final int MEDIUM_UPPER = 840;
-            public static final int MEDIUM_LOWER = 800;
-            public static final int LOW = 15;
+            public static final int MEDIUM_UPPER = 671; // +8
+            public static final int MEDIUM_LOWER = 631; // -32
+            public static final int LOW = 25;
         }
         
         public interface DEADBAND {
             public static final int HIGH = 1490;
-            public static final int MEDIUM_UPPER = 860;
-            public static final int MEDIUM_LOWER = 780;
-            public static final int LOW = 25;
+            public static final int MEDIUM_UPPER = 691; // +28
+            public static final int MEDIUM_LOWER = 611; // -52
+            public static final int LOW = 35;
         }
     }
     

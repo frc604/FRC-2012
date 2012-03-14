@@ -21,6 +21,7 @@ public class ElevatorMachine implements StrangeMachine {
         public static final int MEDIUM = 1;
         public static final int LOW = 2;
         public static final int PICKUP_OKAY = 3;
+        public static final int TURRET_OKAY = 4;
     }
     
     public ElevatorMachine (PIDController controller, Encoder encoder) {
@@ -44,6 +45,8 @@ public class ElevatorMachine implements StrangeMachine {
                 return this.lastState == ElevatorState.LOW && this.withinTolerance && this.encoder.get() <= ActuatorConfiguration.ELEVATOR.DEADBAND.LOW;
             case ElevatorState.PICKUP_OKAY:
                 return this.lastState != ElevatorState.LOW && this.encoder.get() >= ActuatorConfiguration.ELEVATOR.DEADBAND.MEDIUM_LOWER;
+            case ElevatorState.TURRET_OKAY:
+                return this.lastState == ElevatorState.HIGH && this.encoder.get() >= ActuatorConfiguration.ELEVATOR.OKAY_TO_TURN;
         }
         
         return false;
