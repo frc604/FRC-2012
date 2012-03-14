@@ -13,9 +13,7 @@ import javax.swing.event.ChangeListener;
 import com._604robotics.robot2012.vision.VisionProcessing;
 
 /**
- * TODO - comments, javadoc
- * 
- * TODO - make this whole mess less kludgy
+ * This class creates a window for
  * 
  * @author Kevin Parker <kevin.m.parker@gmail.com>
  */

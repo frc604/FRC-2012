@@ -89,9 +89,9 @@ public class Target implements Comparable<Target> {
 	
 
 	/**
-	 * @param x - the X coordinate of the center of the vision target
-	 * @param y - the Y coordinate of the center of the vision target
-	 * @param z - the Z coordinate of the center of the vision target
+	 * @param x the X coordinate of the center of the vision target
+	 * @param y the Y coordinate of the center of the vision target
+	 * @param z the Z coordinate of the center of the vision target
 	 * @param angle
 	 */
 	public Target(double x, double y, double z, double angle) {
@@ -104,14 +104,14 @@ public class Target implements Comparable<Target> {
 	
 
 	/**
-	 * @param x - the X coordinate of the center of the vision target
-	 * @param y - the Y coordinate of the center of the vision target
-	 * @param z - the Z coordinate of the center of the vision target
-	 * @param xUncertainty - the X Uncertainty
-	 * @param yUncertainty - the Y Uncertainty
-	 * @param zUncertainty - the Z Uncertainty
-	 * @param angle - the Angle
-	 * @param angleUncertainty - the Angle Uncertainty
+	 * @param x	the X coordinate of the center of the vision target
+	 * @param y	the Y coordinate of the center of the vision target
+	 * @param z	the Z coordinate of the center of the vision target
+	 * @param xUncertainty	the X Uncertainty
+	 * @param yUncertainty	the Y Uncertainty
+	 * @param zUncertainty	the Z Uncertainty
+	 * @param angle	the Angle
+	 * @param angleUncertainty	the Angle Uncertainty
 	 */
 	public Target(double x, double y, double z, double xUncertainty, double yUncertainty, double zUncertainty,
 			double angle, double angleUncertainty) {
@@ -128,8 +128,8 @@ public class Target implements Comparable<Target> {
 	
 
 	/**
-	 * @param point - the Point
-	 * @param angle - the Angle
+	 * @param point	the Point
+	 * @param angle	the Angle
 	 */
 	public Target(Point3d point, double angle) {
 		this(point.x, point.y, point.z, angle);
@@ -269,7 +269,7 @@ public class Target implements Comparable<Target> {
 	
 	
 	/**
-	 * @param point - the point to set the center of this target
+	 * @param point the point to set the center of this target
 	 */
 	public void setPoint(Point3d point) {
 		x = point.x;

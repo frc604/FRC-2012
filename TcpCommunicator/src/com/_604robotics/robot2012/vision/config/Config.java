@@ -10,7 +10,6 @@ import java.util.Scanner;
 /**
  * The configuration of the Team 604 FRCVision
  * 
- * TODO - make less kludgy
  *
  * @author Kevin Parker <kevin.m.parker@gmail.com>
  */
@@ -209,8 +208,15 @@ public class Config implements Cloneable {
 	 */
 	public boolean	debug_Print				= false;
 	
+	/**
+	 * Should camera images be stored onto disk, for debug purposes?
+	 */
 	public boolean	debug_SaveImagesToFiles	= false;
 	
+	/**
+	 * Should the fancy display be shown, with green and red tiles indicating matching and non-matching
+	 * tiles, with blue lines and dots indicating target sides and corners?
+	 */
 	public boolean	debug_ShowDisplay		= true;
 	
 	
@@ -240,12 +246,14 @@ public class Config implements Cloneable {
 	 */
 	public int		tileSize				= 5;
 	
-	public int color_targetR = 5;
-	public int color_targetG = 140;
-	public int color_targetB = 255;
+	/**
+	 * The color of the vision target when the light is shining on it
+	 */
+	public int color_targetR = 5, color_targetG = 140, color_targetB = 255;
 	
-	public double color_mulR = .2;
-	public double color_mulG = .0005;
-	public double color_mulB = .025;
+	/**
+	 * How much to multiply the square of the errors per color channel by
+	 */
+	public double color_mulR = .2, color_mulG = .0005, color_mulB = .025;
 	
 }

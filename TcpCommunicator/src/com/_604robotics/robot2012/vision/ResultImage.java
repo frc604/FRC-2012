@@ -5,9 +5,10 @@ import static java.lang.Math.max;
 import com._604robotics.robot2012.vision.config.Config;
 
 /**
- * A result image; it is treated like a giant boolean array externally, but internally, it is split up into small tiles.
+ * A result image that holds an image of how well pixels match the expected color of the vision target.
+ * It is treated like a giant boolean array externally, but internally it is split up into small tiles.
  * 
- * TODO - explain more gooder.
+ * @see Result
  *
  * @author Kevin Parker <kevin.m.parker@gmail.com>
  */
@@ -33,8 +34,8 @@ public class ResultImage {
 	/**
 	 * A constructor to create a new ResultImage. To actually initialize the returned ResultImage, use {@link ResultImage}
 	 * 
-	 * @param imW - the width of the image
-	 * @param imH - the height of the image
+	 * @param imW	the width of the image
+	 * @param imH	the height of the image
 	 */
 	public ResultImage(int imW, int imH) {
 		this.imW = imW;
@@ -46,6 +47,12 @@ public class ResultImage {
 		results = new Result[sW*sH];
 	}
 
+	/**
+	 * This method goes through an {@link Img} and finds which pixels appear to match the color of the
+	 * vision target.
+	 * 
+	 * @param img	the image to process and find matching Target-colored pixels
+	 */
 	public void computeResults(Img img) {
 		Config conf = VisionProcessing.defaultProcessing.conf;
 		
@@ -102,21 +109,21 @@ public class ResultImage {
 	}
 
 	/**
-	 * Scans an entire tile and returns the Result
+	 * Scans an entire tile and returns the {@link Result}
 	 * 
-	 * @param img
-	 * @param i
-	 * @param j
-	 * @return
+	 * @param img	the image to scan
+	 * @param x	the tile X coordinate
+	 * @param y	the tile Y coordinate
+	 * @return the {@link Result}
 	 */
-	private Result iterate(Img img, int i, int j) {
+	private Result iterate(Img img, int x, int y) {
 		byte[] l_results = new byte[tileW*tileH];
 
 		boolean hadMatch = false;
 
 		for(int l = 0; l < tileW; l++) {
 			for(int m = 0; m < tileH; m++) {
-				int l_color = img.get(i*tileW + m,  j*tileH + l);
+				int l_color = img.get(x*tileW + m,  y*tileH + l);
 				
 				int val = getVal(l_color);
 				
@@ -132,7 +139,15 @@ public class ResultImage {
 		return new Result.PlusResult(tileW, l_results);
 	}
 
+	/**
+	 * The expected color of the target
+	 */
 	private double color_targetR, color_targetG, color_targetB;
+	
+	
+	/**
+	 * How much to multiply the square of the errors per color channel by
+	 */
 	private double color_mulR, color_mulG, color_mulB;
 
 	private byte getVal(int color) {
@@ -172,8 +187,8 @@ public class ResultImage {
 	 * 
 	 * This is currently unused; in the future, it might be used in the getVal() function.
 	 * 
-	 * @param a - number
-	 * @param exp - exponent
+	 * @param a	number
+	 * @param exp	exponent
 	 * @return a rapid approximation of a^exp
 	 */
 	private static double fastPow(double a, double exp) {
@@ -182,15 +197,20 @@ public class ResultImage {
 	    return Double.longBitsToDouble(tmp2);
 	}
 
-	public boolean isTarget(int i, int j) {
-		if(i < 0 || j < 0 || i >= imW || j >= imH)
+	/**
+	 * @param x	The X coordinate, in pixels
+	 * @param y	The Y coordinate, in pixels
+	 * @return	
+	 */
+	public boolean isTarget(int x, int y) {
+		if(x < 0 || y < 0 || x >= imW || y >= imH)
 			return false;
 
-		int i_major = i/tileW;
-		int j_major = j/tileW;
+		int i_major = x/tileW;
+		int j_major = y/tileW;
 
-		int i_minor = i%tileW;
-		int j_minor = j%tileW;
+		int i_minor = x%tileW;
+		int j_minor = y%tileW;
 		
 		return results[i_major + j_major*sW].plusAt(i_minor, j_minor);
 	}
