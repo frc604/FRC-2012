@@ -86,7 +86,7 @@ public class VisionDisp extends JPanel {
 	@Override
 	public void paint(Graphics g) {
 		
-		long t_i = System.nanoTime();
+		long timeStartRender = System.nanoTime();
 		
 		// make a shallow copy of all of the drawn instance variables
 		BufferedImage b = image;
@@ -147,7 +147,7 @@ public class VisionDisp extends JPanel {
 			}
 		}
 		
-		System.out.println("Render time = "+(System.nanoTime() - t_i)/1.0e6);
+		System.out.println("Render time = "+(System.nanoTime() - timeStartRender)/1.0e6);
 		
 		// done painting
 		hasPainted = true;

@@ -1,8 +1,5 @@
 package com._604robotics.robot2012.vision;
 
-import static java.lang.Math.cos;
-import static java.lang.Math.sin;
-
 /**
  * This code does the 2D-to-3D calculations
  * 
@@ -11,32 +8,20 @@ import static java.lang.Math.sin;
 public class DistanceCalculations {
 	
 	
+	/**
+	 * The size of the Axis camera, in pixels
+	 */
 	public static final double	cameraPixelHeight	= 480, cameraPixelWidth = 640;
 	
 	/**
-	 * A simple main() function added for debugging
-	 * 
-	 * TODO - delete this
-	 * 
-	 * @param args
+	 * The untransformed corners of the image
 	 */
-	public static void main(String[] args) {
-		// about 46 in
-		// Quad [topLeft=Point2d [x=194.8762734332836, y=230.03676794085487], topRight=Point2d [x=555.0300833785902,
-		// y=249.79778560385398],
-		// bottomLeft=Point2d [x=215.42447837542025, y=434.28831770391776], bottomRight=Point2d [x=533.6907841935421,
-		// y=443.64852472363634]]
-		Quad q = new Quad(new Point2d(194.9, 230), new Point2d(555, 249.8), new Point2d(215.4, 434.3), new Point2d(
-				553.7, 443.6));
-		
-		DistanceCalculations dc = new DistanceCalculations();
-		
-		System.out.println(dc.getApproximationOfTarget(q));
-	}
-	
 	private Point2d	cameraCorner_0_0	= new Point2d(0, 0), cameraCorner_640_480 = new Point2d(cameraPixelWidth,
 												cameraPixelHeight);
 	
+	/**
+	 * The transformed corners of the image
+	 */
 	private Point2d	cameraCorner_topLeft	= transformPoint(cameraCorner_0_0),
 			cameraCorner_bottomRight = transformPoint(cameraCorner_640_480);
 	// 320 / (tan(47 / 2 degrees));
@@ -167,7 +152,7 @@ public class DistanceCalculations {
 	}
 	
 	/**
-	 * Credit goes to Colin Aitkens <TODO - email> for figuring out the equations for nX and nY
+	 * Credit goes to Colin Aitken <cacolinerd@gmail.com> for figuring out the equations for nX and nY
 	 * 
 	 * @param p - the Point2d to transform
 	 * @return the transformed point (based on camera coords and rotUpDown into values indicating x/z and y/z)
@@ -175,8 +160,8 @@ public class DistanceCalculations {
 	private Point2d transformPoint(Point2d p) {
 		double x = (p.x - cameraPixelWidth / 2) / kx, y = (cameraPixelHeight / 2 - p.y) / ky;
 		
-		double cos = cos(rotUpDown);
-		double sin = sin(rotUpDown);
+		double cos = Math.cos(rotUpDown);
+		double sin = Math.sin(rotUpDown);
 		
 		double nX = x / (cos - y * sin);
 		double nY = (y * cos + sin) / (cos - y * sin);
