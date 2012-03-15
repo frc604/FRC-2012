@@ -246,6 +246,14 @@ public class Robot2012Orange extends SimpleRobot {
         SmartDashboard.putInt("Steady Threshold", 500);
         SmartDashboard.putInt("Unsteady Threshold", 1000);
         
+        SmartDashboard.putDouble("Auton: Step 5", AutonomousConfiguration.STEP_5_FORWARD_TIME);
+        SmartDashboard.putDouble("Auton: Step 5 Sides", AutonomousConfiguration.STEP_5_FORWARD_TIME_SIDES);
+        SmartDashboard.putDouble("Auton: Step 1", AutonomousConfiguration.STEP_1_FORWARD_TIME);
+        SmartDashboard.putDouble("Auton: Step 2", AutonomousConfiguration.STEP_2_WAIT_TIME);
+        SmartDashboard.putDouble("Auton: Step 3", AutonomousConfiguration.STEP_3_BACKWARD_TIME);
+        SmartDashboard.putDouble("Auton: Step 4", AutonomousConfiguration.STEP_4_TURN_TIME);
+        SmartDashboard.putDouble("Auton: Step 10", AutonomousConfiguration.STEP_10_SHOOTING_TIME);
+        
         /* Because we can. */
         
         System.out.println("Hello, ninja h4X0r.");
@@ -323,7 +331,7 @@ public class Robot2012Orange extends SimpleRobot {
         double drivePower;
         double gyroAngle;
         
-        double forwardTime = AutonomousConfiguration.STEP_5_FORWARD_TIME_SIDES;
+        double forwardTime = SmartDashboard.getDouble("Auton: Step 5", AutonomousConfiguration.STEP_5_FORWARD_TIME_SIDES);
         
         boolean turnedAround = false;
         boolean pickupIsIn = false;
@@ -335,7 +343,7 @@ public class Robot2012Orange extends SimpleRobot {
         
         if (((String) inTheMiddle.getSelected()).equals("Yes")) {
             step = 4;
-            forwardTime = AutonomousConfiguration.STEP_5_FORWARD_TIME_SIDES;
+            forwardTime = SmartDashboard.getDouble("Auton: Step 5 Sides", AutonomousConfiguration.STEP_5_FORWARD_TIME_SIDES);
         }
 
         Timer controlTimer = new Timer();
@@ -387,7 +395,7 @@ public class Robot2012Orange extends SimpleRobot {
                     /* Drive forward and stop, then smash down the bridge. */
                     
                     if (controlTimer.get() <= AutonomousConfiguration.STEP_1_FORWARD_TIME) {
-                        drivePower = Math.max(0.2, 1 - controlTimer.get() / AutonomousConfiguration.STEP_1_FORWARD_TIME);
+                        drivePower = Math.max(0.2, 1 - controlTimer.get() / SmartDashboard.getDouble("Auton: Step 1", AutonomousConfiguration.STEP_1_FORWARD_TIME));
                         driveTrain.tankDrive(drivePower, drivePower);
                     } else {
                         driveTrain.tankDrive(0D, 0D);
@@ -403,7 +411,7 @@ public class Robot2012Orange extends SimpleRobot {
                     
                     driveTrain.tankDrive(0D, 0D);
                     
-                    if (controlTimer.get() >= AutonomousConfiguration.STEP_2_WAIT_TIME) 
+                    if (controlTimer.get() >= SmartDashboard.getDouble("Auton: Step 2", AutonomousConfiguration.STEP_2_WAIT_TIME)) 
                         step++;
                     
                     break;
@@ -411,7 +419,7 @@ public class Robot2012Orange extends SimpleRobot {
                     /* Drive backward. */
                         
                     if (controlTimer.get() <= AutonomousConfiguration.STEP_3_BACKWARD_TIME) {
-                        drivePower = Math.max(0.2, 1 - controlTimer.get() / AutonomousConfiguration.STEP_3_BACKWARD_TIME);
+                        drivePower = Math.max(0.2, 1 - controlTimer.get() / SmartDashboard.getDouble("Auton: Step 3", AutonomousConfiguration.STEP_3_BACKWARD_TIME));
                         driveTrain.tankDrive(drivePower, drivePower);
                     } else {
                         driveTrain.tankDrive(0D, 0D);
@@ -431,7 +439,7 @@ public class Robot2012Orange extends SimpleRobot {
                     
                     solenoidPickup.set(ActuatorConfiguration.SOLENOID_PICKUP.OUT);
                     
-                    if (controlTimer.get() <= AutonomousConfiguration.STEP_4_TURN_TIME) {
+                    if (controlTimer.get() <= SmartDashboard.getDouble("Auton: Step 4", AutonomousConfiguration.STEP_4_TURN_TIME)) {
                         gyroAngle = gyroHeading.getAngle();
                         
                         if (turnedAround || (gyroAngle > 179 && gyroAngle < 181)) {
@@ -458,8 +466,8 @@ public class Robot2012Orange extends SimpleRobot {
                     
                     solenoidPickup.set(ActuatorConfiguration.SOLENOID_PICKUP.OUT);
                     
-                    if (controlTimer.get() <= AutonomousConfiguration.STEP_5_FORWARD_TIME) {
-                        drivePower = Math.max(0.2, 1 - controlTimer.get() / AutonomousConfiguration.STEP_5_FORWARD_TIME);
+                    if (controlTimer.get() <= forwardTime) {
+                        drivePower = Math.max(0.2, 1 - controlTimer.get() / forwardTime);
                         driveTrain.tankDrive(drivePower, drivePower);
                     } else {
                         driveTrain.tankDrive(0D, 0D);
@@ -519,7 +527,7 @@ public class Robot2012Orange extends SimpleRobot {
                     
                     driveTrain.tankDrive(0D, 0D);
                     
-                    if (controlTimer.get() < AutonomousConfiguration.STEP_10_SHOOTING_TIME)
+                    if (controlTimer.get() < SmartDashboard.getDouble("Auton: Step 10", AutonomousConfiguration.STEP_10_SHOOTING_TIME))
                         shooterMachine.crank(ShooterState.SHOOTING);
                     
                     break;
