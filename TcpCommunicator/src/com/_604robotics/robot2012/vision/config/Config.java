@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Scanner;
 
+import javax.swing.Icon;
+
 
 /**
  * The configuration of the Team 604 FRCVision
@@ -131,46 +133,11 @@ public class Config {
 				
 				String value = strs[1].trim();
 				
-				String[] keys = new String[]{"checkCenter", "communicateToRobot", "debug_SaveImagesToFiles", "debug_Print",
-						"debug_Print", "debug_ShowDisplay", "scanWholeTile", "minBlobSize", "sensitivity", "tileSize",
-						"color_targetR", "color_targetG", "color_targetB", "color_mulR", "color_mulG", "color_mulB"};
-				
-				conf.setValue(key, value);
-				
-				if (key.equals("checkCenter")) {
-					conf.checkCenter = parseBoolean(value, conf.checkCenter);
-				} else if (key.equals("communicateToRobot")) {
-					conf.communicateToRobot = parseBoolean(value, conf.communicateToRobot);
-				} else if (key.equals("debug_SaveImagesToFiles")) {
-					conf.debug_SaveImagesToFiles = parseBoolean(value, conf.debug_SaveImagesToFiles);
-				} else if (key.equals("debug_Print")) {
-					conf.debug_Print = parseBoolean(value, conf.debug_Print);
-				} else if (key.equals("debug_ShowDisplay")) {
-					conf.debug_ShowDisplay = parseBoolean(value, conf.debug_ShowDisplay);
-				} else if (key.equals("scanWholeTile")) {
-					conf.scanWholeTile = parseBoolean(value, conf.scanWholeTile);
-				} else if (key.equals("minBlobSize")) {
-					conf.minBlobSize = parseInt(value, conf.minBlobSize);
-				} else if (key.equals("sensitivity")) {
-					conf.sensitivity = parseByte(value, (byte) conf.sensitivity);
-				} else if (key.equals("tileSize")) {
-					conf.tileSize = parseInt(value, conf.tileSize);
-
-				} else if (key.equals("color_targetR")) {
-					conf.color_targetR = parseInt(value, conf.color_targetR);
-				} else if (key.equals("color_targetG")) {
-					conf.color_targetG = parseInt(value, conf.color_targetG);
-				} else if (key.equals("color_targetB")) {
-					conf.color_targetB = parseInt(value, conf.color_targetB);
-
-				} else if (key.equals("color_mulR")) {
-					conf.color_mulR = parseDouble(value, conf.color_mulR);
-				} else if (key.equals("color_mulG")) {
-					conf.color_mulG = parseDouble(value, conf.color_mulG);
-				} else if (key.equals("color_mulB")) {
-					conf.color_mulB = parseDouble(value, conf.color_mulB);
-				} else {
-					System.out.println("Didn't find key '"+key+ "' for value: "+value);
+				try {
+					conf.setValue(key, value);
+				} catch(Exception ex) {
+					System.err.println("Had error with key '"+key+ "' for value: "+value);
+					ex.printStackTrace();
 				}
 			}
 		} catch(Exception ex) {
@@ -179,8 +146,12 @@ public class Config {
 		
 		return conf;
 	}
-	
-	private void setValue(String key, String value) throws NumberFormatException {
+
+	void setValue(String key, Object value) throws NumberFormatException {
+		setValue(key, value.toString()); // TODO - make better
+	}
+
+	void setValue(String key, String value) throws NumberFormatException {
 		DataValue dv = getDataValue(key);
 		
 		Class<?> type = dv.getType();
@@ -392,6 +363,20 @@ public class Config {
 		addKeyValuePair("color_mulR", 0.022347725382064434);
 		addKeyValuePair("color_mulG", 0.00927123096675047);
 		addKeyValuePair("color_mulB", 0.019325228797194463);
+	}
+
+
+	public Object get(String key) {
+		return this.getDataValue(key).value;
+	}
+	public boolean getBoolean(String key) {
+		return this.getDataValue(key).getBoolean();
+	}
+	public int getInt(String key) {
+		return this.getDataValue(key).getInt();
+	}
+	public double getDouble(String key) {
+		return this.getDataValue(key).getDouble();
 	}
 	
 }

@@ -193,10 +193,10 @@ public class Configger {
 	 * @param conf	The Config to configure
 	 */
 	private void setupDebugTab(Config conf) {
-		communicate = new JCheckBox("Communicate to Robot", conf.communicateToRobot);
-		saveImgs = new JCheckBox("Save Images", conf.debug_SaveImagesToFiles);
-		showDebugCam = new JCheckBox("Show Debug Cam", conf.debug_ShowDisplay);
-		printDebug = new JCheckBox("Print Debug", conf.debug_Print);
+		communicate = new JCheckBox("Communicate to Robot", conf.getBoolean("communicateToRobot"));
+		saveImgs = new JCheckBox("Save Images", conf.getBoolean("debug_SaveImagesToFiles"));
+		showDebugCam = new JCheckBox("Show Debug Cam", conf.getBoolean("debug_ShowDisplay"));
+		printDebug = new JCheckBox("Print Debug", conf.getBoolean("debug_Print"));
 		debugTab.add(communicate);
 		debugTab.add(saveImgs);
 		debugTab.add(showDebugCam);
@@ -214,11 +214,11 @@ public class Configger {
 	 * @param conf	The Config to configure
 	 */
 	private void setupTileTuner(Config conf) {
-		centerCheck = new JCheckBox("Check Center", conf.checkCenter);
-		scanWholeTile = new JCheckBox("Scan Whole Tile", conf.scanWholeTile);
+		centerCheck = new JCheckBox("Check Center", conf.getBoolean("checkCenter"));
+		scanWholeTile = new JCheckBox("Scan Whole Tile", conf.getBoolean("scanWholeTile"));
 		
-		minBlobSize = new LinkedSlider.IntLinkedSlider("Min. Blob Size", 1, 100, conf.minBlobSize);
-		tileSize = new LinkedSlider.IntLinkedSlider("Tile Size", 1, 12, conf.tileSize);
+		minBlobSize = new LinkedSlider.IntLinkedSlider("Min. Blob Size", 1, 100, conf.getInt("minBlobSize"));
+		tileSize = new LinkedSlider.IntLinkedSlider("Tile Size", 1, 12, conf.getInt("tileSize"));
 		
 		
 		tileTunerTab.add(centerCheck);
@@ -284,25 +284,26 @@ public class Configger {
 		 */
 		private void refresh() {
 			Config conf = VisionProcessing.defaultProcessing.conf;
-			conf.color_targetR = rTarget.getIntValue();
-			conf.color_targetG = gTarget.getIntValue();
-			conf.color_targetB = bTarget.getIntValue();
+			conf.setValue("color_targetR", rTarget.getIntValue());
+			conf.setValue("color_targetG", gTarget.getIntValue());
+			conf.setValue("color_targetB", bTarget.getIntValue());
+
+			conf.setValue("color_mulR", rSlider.getValue());
+			conf.setValue("color_mulG", gSlider.getValue());
+			conf.setValue("color_mulB", bSlider.getValue());
+
+			conf.setValue("sensitivity", sensSlider.getIntValue());
+			conf.setValue("minBlobSize", minBlobSize.getIntValue());
+			conf.setValue("tileSize", tileSize.getIntValue());
 			
-			conf.color_mulR = rSlider.getValue();
-			conf.color_mulG = gSlider.getValue();
-			conf.color_mulB = bSlider.getValue();
-			
-			conf.sensitivity = (byte)sensSlider.getIntValue();
-			conf.minBlobSize = minBlobSize.getIntValue();
-			conf.tileSize = tileSize.getIntValue();
-			
-			
-			conf.checkCenter = centerCheck.isSelected();
-			conf.scanWholeTile = scanWholeTile.isSelected();
-			conf.communicateToRobot = communicate.isSelected();
-			conf.debug_SaveImagesToFiles = saveImgs.isSelected();
-			conf.debug_ShowDisplay = showDebugCam.isSelected();
-			conf.debug_Print = printDebug.isSelected();
+
+			conf.setValue("checkCenter", centerCheck.isSelected());
+			conf.setValue("scanWholeTile", scanWholeTile.isSelected());
+			conf.setValue("communicateToRobot", communicate.isSelected());
+			conf.setValue("debug_SaveImagesToFiles", saveImgs.isSelected());
+			conf.setValue("debug_SaveImagesToFiles", saveImgs.isSelected());
+			conf.setValue("debug_ShowDisplay", showDebugCam.isSelected());
+			conf.setValue("debug_Print", printDebug.isSelected());
 			
 			//tabbedPane.repaint();
 		}
