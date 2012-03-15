@@ -190,7 +190,6 @@ public class Config {
 	}
 	
 	/**
-<<<<<<< HEAD
 	 *
 	 * A class for storing Config values
 	 *
@@ -250,13 +249,12 @@ public class Config {
 		}
 	}
 	
-=======
+	/**
 	 * Saves this Config to a given file
 	 * 
 	 * @param file	The file to save to
 	 * @throws IOException	If an error occurs
 	 */
->>>>>>> f32dda9452b6723e27859ff9360ec239113fac58
 	public void save(File file) throws IOException {
 		if(!file.exists())
 			file.createNewFile();
