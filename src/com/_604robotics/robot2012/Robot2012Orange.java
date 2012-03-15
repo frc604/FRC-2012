@@ -25,7 +25,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.util.Date;
 
 /**
- * Main class for the 2012 robot code.
+ * Main class for the 2012 robot code codenamed Orange.
  * 
  * @author  Michael Smith <mdsmtp@gmail.com>
  * @author  Kevin Parker <kevin.m.parker@gmail.com>
