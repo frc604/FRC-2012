@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Scanner;
 
 
@@ -19,6 +21,8 @@ public class Config {
 	 * The default Config file
 	 */
 	private static final File	defaultConfigFile	= new File("vision.conf");
+	
+	private final HashMap<String, DataValue> dataMap = new HashMap<String, DataValue>();
 	
 	
 	/* CheckCenter, CommunicateToRobot, Debug_SaveImagesToFiles, Debug_ShowDisplay,
@@ -47,21 +51,6 @@ public class Config {
 	static boolean parseBoolean(String str, boolean def) {
 		try {
 			return Boolean.parseBoolean(str);
-		} catch (Exception ex) {
-			return def;
-		}
-	}
-
-	/**
-	 * Parses a byte
-	 * 
-	 * @param str	The string to parse
-	 * @param def	The default value
-	 * @return	a byte
-	 */
-	static byte parseByte(String str, byte def) {
-		try {
-			return Byte.parseByte(str);
 		} catch (Exception ex) {
 			return def;
 		}
@@ -146,6 +135,8 @@ public class Config {
 						"debug_Print", "debug_ShowDisplay", "scanWholeTile", "minBlobSize", "sensitivity", "tileSize",
 						"color_targetR", "color_targetG", "color_targetB", "color_mulR", "color_mulG", "color_mulB"};
 				
+				conf.setValue(key, value);
+				
 				if (key.equals("checkCenter")) {
 					conf.checkCenter = parseBoolean(value, conf.checkCenter);
 				} else if (key.equals("communicateToRobot")) {
@@ -189,6 +180,24 @@ public class Config {
 		return conf;
 	}
 	
+	private void setValue(String key, String value) throws NumberFormatException {
+		DataValue dv = getDataValue(key);
+		
+		Class<?> type = dv.getType();
+		
+		if(type.equals(Boolean.class)) {
+			dv.value = Boolean.parseBoolean(value);
+		} else if(type.equals(Double.class)) {
+			dv.value = Double.parseDouble(value);
+		} else if(type.equals(Integer.class)) {
+			dv.value = Integer.parseInt(value);
+		}
+	}
+	
+	private DataValue getDataValue(String key) {
+		return dataMap.get(key.toLowerCase());
+	}
+
 	/**
 	 *
 	 * A class for storing Config values
@@ -214,6 +223,10 @@ public class Config {
 		
 		public String getKey() {
 			return key;
+		}
+		
+		public Class<?> getType() {
+			return defValue.getClass();
 		}
 		
 		public void set(Object val) {
@@ -260,24 +273,10 @@ public class Config {
 			file.createNewFile();
 		
 		FileWriter fw = new FileWriter(file);
-		
-		fw.write(getOutString("checkCenter", checkCenter));
-		fw.write(getOutString("communicateToRobot", communicateToRobot));
-		fw.write(getOutString("debug_SaveImagesToFiles", debug_SaveImagesToFiles));
-		fw.write(getOutString("debug_Print", debug_Print));
-		fw.write(getOutString("debug_ShowDisplay", debug_ShowDisplay));
-		fw.write(getOutString("scanWholeTile", scanWholeTile));
-		fw.write(getOutString("minBlobSize", minBlobSize));
-		fw.write(getOutString("sensitivity", sensitivity));
-		fw.write(getOutString("tileSize", tileSize));
 
-		fw.write(getOutString("color_targetR", color_targetR));
-		fw.write(getOutString("color_targetG", color_targetG));
-		fw.write(getOutString("color_targetB", color_targetB));
-
-		fw.write(getOutString("color_mulR", color_mulR));
-		fw.write(getOutString("color_mulG", color_mulG));
-		fw.write(getOutString("color_mulB", color_mulB));
+		for(DataValue dv: dataMap.values()) {
+			fw.write(getOutString(dv.key, dv.value));
+		}
 		
 		fw.flush();
 		fw.close();
@@ -289,12 +288,21 @@ public class Config {
 	 * @see java.lang.Object#toString()
 	 */
 	public String toString() {
+		String ret = "";
+		
+		for(DataValue dv: dataMap.values()) {
+			ret += "[" + dv.key + " = " + dv.value + "] ";
+		}
+		
+		return ret;
+		/*
 		return "Config [checkCenter=" + checkCenter + ", communicateToRobot=" + communicateToRobot + ", debug_Print="
 				+ debug_Print + ", debug_SaveImagesToFiles=" + debug_SaveImagesToFiles + ", debug_ShowDisplay="
 				+ debug_ShowDisplay + ", minBlobSize=" + minBlobSize + ", scanWholeTile=" + scanWholeTile
 				+ ", sensitivity=" + sensitivity + ", tileSize=" + tileSize + ", color_targetR=" + color_targetR
 				+ ", color_targetG=" + color_targetG + ", color_targetB=" + color_targetB + ", color_mulR="
 				+ color_mulR + ", color_mulG=" + color_mulG + ", color_mulB=" + color_mulB + "]";
+				*/
 	}
 
 	/**
@@ -308,70 +316,82 @@ public class Config {
 		return key + " = " + value + "\n";
 	}
 	
-	/**
-	 * Should the tiling algorithm check the center of the tile, as well as the corners to determine if it should be
-	 * considered for being in the target?
-	 */
-	public boolean	checkCenter				= true;
+	private final void addKeyValuePair(String key, Object defValue) {
+		DataValue dv = new DataValue(key, defValue, defValue);
+		
+		dataMap.put(key.toLowerCase(), dv);
+	}
 	
-	/**
-	 * Should this program attempt to communicate to the robot?
-	 */
-	public boolean	communicateToRobot		= true;
-	
-	/**
-	 * Should debug info be shown?
-	 * 
-	 * This includes time per frame, number of visible targets, and estimated position of visible targets.
-	 */
-	public boolean	debug_Print				= false;
-	
-	/**
-	 * Should camera images be stored onto disk, for debug purposes?
-	 */
-	public boolean	debug_SaveImagesToFiles	= false;
-	
-	/**
-	 * Should the fancy display be shown, with green and red tiles indicating matching and non-matching
-	 * tiles, with blue lines and dots indicating target sides and corners?
-	 */
-	public boolean	debug_ShowDisplay		= true;
-	
-	
-	/**
-	 * A calibration constant indicating the minimum size for a potential target to be considered. This number is given
-	 * in square "tiles", with {@link #tileSize} pixels side lengths
-	 */
-	public int		minBlobSize				= 25;
-	
-	/**
-	 * Should all pixels be scanned in every tile be scanned, or just the corners (and possibly center)
-	 */
-	public boolean	scanWholeTile			= false;
-	
-	/**
-	 * A constant between -128 to +127 indicating how sensitive the color acceptance of the target should be. Lower
-	 * numbers will allow more pixels, while higher numbers will eliminate more.
-	 * 
-	 * </br> This number needs to be chosen high enough to reduce or eliminate false positives, but it needs to be low
-	 * enough to not generate false negatives.
-	 */
-	public byte		sensitivity				= -127;		// higher numbers means more rejected pixels
-	
-	/**
-	 * The size of each tile in the vision processing. This is represented in pixels. It should be a number chosen large
-	 * enough to have a good speed, but small enough to not miss a target in the image.
-	 */
-	public int		tileSize				= 5;
-	
-	/**
-	 * The color of the vision target when the light is shining on it
-	 */
-	public int color_targetR = 5, color_targetG = 140, color_targetB = 255;
-	
-	/**
-	 * How much to multiply the square of the errors per color channel by
-	 */
-	public double color_mulR = .2, color_mulG = .0005, color_mulB = .025;
+	public Config() {
+		/**
+		 * Should the tiling algorithm check the center of the tile, as well as the corners to determine if it should be
+		 * considered for being in the target?
+		 */
+		addKeyValuePair("checkCenter", true);
+		
+		/**
+		 * Should this program attempt to communicate to the robot?
+		 */
+		addKeyValuePair("communicateToRobot", true);
+		
+		/**
+		 * Should debug info be shown?
+		 * 
+		 * This includes time per frame, number of visible targets, and estimated position of visible targets.
+		 */
+		addKeyValuePair("debug_Print", false);
+		
+		/**
+		 * Should camera images be stored onto disk, for debug purposes?
+		 */
+		addKeyValuePair("debug_SaveImagesToFiles", false);
+		
+		/**
+		 * Should the fancy display be shown, with green and red tiles indicating matching and non-matching
+		 * tiles, with blue lines and dots indicating target sides and corners?
+		 */
+		addKeyValuePair("debug_ShowDisplay", false);
+		
+		
+		/**
+		 * A calibration constant indicating the minimum size for a potential target to be considered. This number is given
+		 * in square "tiles", with {@link #tileSize} pixels side lengths
+		 */
+		addKeyValuePair("minBlobSize", 25);
+		
+		/**
+		 * Should all pixels be scanned in every tile be scanned, or just the corners (and possibly center)
+		 */
+		addKeyValuePair("scanWholeTile", false);
+		
+		/**
+		 * A constant between -128 to +127 indicating how sensitive the color acceptance of the target should be. Lower
+		 * numbers will allow more pixels, while higher numbers will eliminate more.
+		 * 
+		 * </br> This number needs to be chosen high enough to reduce or eliminate false positives, but it needs to be low
+		 * enough to not generate false negatives.
+		 */
+		addKeyValuePair("sensitivity", -75);		// higher numbers means more rejected pixels
+		
+		/**
+		 * The size of each tile in the vision processing. This is represented in pixels. It should be a number chosen large
+		 * enough to have a good speed, but small enough to not miss a target in the image.
+		 */
+		addKeyValuePair("tileSize", 7);
+		
+		/**
+		 * The color of the vision target when the light is shining on it
+		 */
+		addKeyValuePair("color_targetR", 28);
+		addKeyValuePair("color_targetG", 168);
+		addKeyValuePair("color_targetB", 255);
+		
+		/**
+		 * How much to multiply the square of the errors per color channel by
+		 */
+		addKeyValuePair("color_mulR", 0.022347725382064434);
+		addKeyValuePair("color_mulG", 0.00927123096675047);
+		addKeyValuePair("color_mulB", 0.019325228797194463);
+	}
 	
 }

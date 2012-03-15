@@ -156,7 +156,8 @@ public class VisionProcessing {
 	public static void main(String[] args) throws InterruptedException, IOException {
 		VisionProcessing vp = defaultProcessing;
 		vp.startWindow();
-		vp.loopAndProcessPics();
+		//vp.loopAndProcessPics();
+		vp.loopAndProcessPreSavedPics();
 		
 	}
 	
@@ -444,6 +445,7 @@ public class VisionProcessing {
 			display.targetSides = linearRegressions;
 			display.resultImage = ri;
 			display.hasPainted = false;
+			display.targetCorners = pts;
 			
 			
 			/* Uncomment out the following lines to only compute after rendering is finished
