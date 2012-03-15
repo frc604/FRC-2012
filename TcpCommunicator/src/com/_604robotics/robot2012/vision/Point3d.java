@@ -23,9 +23,9 @@ public class Point3d {
 	public double z;
 
 	/**
-	 * @param x	The x value
-	 * @param y	The y value
-	 * @param z	The z value
+	 * @param x	The X value
+	 * @param y	The Y value
+	 * @param z	The Z value
 	 */
 	public Point3d(double x, double y, double z) {
 		super();

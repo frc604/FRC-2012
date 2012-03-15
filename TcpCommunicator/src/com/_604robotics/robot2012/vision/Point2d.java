@@ -9,12 +9,12 @@ package com._604robotics.robot2012.vision;
 public class Point2d {
 	
 	/**
-	 * The x value
+	 * The X value
 	 */
 	public double	x;
 	
 	/**
-	 * The y value
+	 * The Y value
 	 */
 	public double	y;
 	

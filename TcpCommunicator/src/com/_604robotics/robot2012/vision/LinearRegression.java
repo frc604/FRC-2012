@@ -89,8 +89,8 @@ public class LinearRegression {
 	 * introcs.cs.princeton.edu/java/97data/LinearRegression.java.html</a>
 	 * </p>
 	 * 
-	 * @param x
-	 * @param y
+	 * @param x	An array of X values
+	 * @param y	An array of Y values
 	 * @author Robert Sedgewick <http://www.cs.princeton.edu/~rs>
 	 * @author Kevin Wayne <http://www.cs.princeton.edu/~wayne>
 	 * @return
