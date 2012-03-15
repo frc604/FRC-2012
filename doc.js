@@ -2,7 +2,7 @@ var child_process = require('child_process')
   , fs = require('fs')
   , path = require('path');
 
-child_process.exec('find | grep ".html"', function (stderr, stdout) {
+child_process.exec('find ' + process.argv[process.argv.length - 1] + ' | grep ".html"', function (stderr, stdout) {
   if (stdout)
     console.log(stdout);
   if (stderr)
