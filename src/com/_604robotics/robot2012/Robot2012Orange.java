@@ -555,8 +555,7 @@ public class Robot2012Orange extends SimpleRobot {
                 if (turretMachine.crank(TurretState.SIDEWAYS) && pickupMachine.crank(PickupState.OUT) && elevatorMachine.crank(ElevatorState.LOW))
                     break;
                 
-                
-    public static final double STEP_5_FORWARD_TIME = 1D;driveTrain.tankDrive(0D, 0D);
+                driveTrain.tankDrive(0D, 0D);
                 
                 elevatorMotors.reload();
                 shooterMotors.reload();
