@@ -36,4 +36,12 @@ public interface ButtonConfiguration {
         public static final int TOGGLE_ANGLE = Button.LB;
         public static final int TOGGLE_LIGHT = Button.Back;
     }
+    
+    public interface Kinect {
+        public static final int ENABLE = 0;
+        public static final int ABORT = 1;
+        public static final int DRIVE_ENABLED = 2;
+        public static final int PICKUP_IN = 3;
+        public static final int SUCK = 4;
+    }
 }

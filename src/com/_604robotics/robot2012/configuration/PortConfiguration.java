@@ -13,6 +13,11 @@ public interface PortConfiguration {
         public static final int MANIPULATOR = 2;
     }
     
+    public interface Kinect {
+        public static final int LEFT = 1;
+        public static final int RIGHT = 2;
+    }
+    
     public interface Motors {
         public static final int LEFT_DRIVE = 1;
         public static final int RIGHT_DRIVE = 9;

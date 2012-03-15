@@ -37,6 +37,9 @@ public class Robot2012Orange extends SimpleRobot {
     XboxController driveController;
     XboxController manipulatorController;
     
+    KinectStick leftKinect;
+    KinectStick rightKinect;
+    
     RobotDrive driveTrain;
     
     DualVictor elevatorMotors;
@@ -112,6 +115,9 @@ public class Robot2012Orange extends SimpleRobot {
         
         driveController = new XboxController(PortConfiguration.Controllers.DRIVE);
         manipulatorController = new XboxController(PortConfiguration.Controllers.MANIPULATOR);
+        
+        leftKinect = new KinectStick(PortConfiguration.Kinect.LEFT);
+        rightKinect = new KinectStick(PortConfiguration.Kinect.RIGHT);
         
         manipulatorController.setDeadband(Axis.RIGHT_STICK_X, -0.2, 0.2);
         manipulatorController.setDeadband(Axis.RIGHT_STICK_Y, -0.2, 0.2);
@@ -311,37 +317,23 @@ public class Robot2012Orange extends SimpleRobot {
         
         compressorPump.start();
         
-        int step = 0;
-        double backwardDistance = AutonomousConfiguration.BACKWARD_DISTANCE;
-        
         boolean elevatorCalibrated = false;
+        int step = 1;
         
-        /*
-         * If we're not in the middle, skip over the bridge stuff, and change
-         * the backward distance.
-         */
+        double drivePower;
+        double gyroAngle;
         
-        if (((String) inTheMiddle.getSelected()).equals("Yes")) {
-            step = 3;
-            backwardDistance = AutonomousConfiguration.BACKWARD_DISTANCE_SIDES;
-        }
+        boolean turnedAround = false;
+        boolean pickupIsIn = false;
+        
+        boolean kinect = false;
+        boolean abort = false;
+        
+        /* If we're not in the middle, skip over the bridge stuff. */
+        
+        if (((String) inTheMiddle.getSelected()).equals("Yes"))
+            step = 4;
 
-        // TODO: Move some more stuff over to the configuration file. I really don't feel like doing ot right now.
-        
-        /* Set up the PID controllers. */
-        
-        PIDController pidDriveStraight = new PIDController(0D, 0D, 0D, new PIDDriveEncoderDifference(encoderLeftDrive, encoderRightDrive), new PIDDriveEncoderOutput(driveTrain));
-        PIDController pidDriveBackwards = new PIDController(0D, 0D, 0D, new PIDDriveEncoderDifference(encoderLeftDrive, encoderRightDrive), new PIDDriveEncoderOutput(driveTrain, true));
-        PIDController pidTurnAround = new PIDController(0D, 0D, 0D, gyroHeading, new PIDDriveGyro(driveTrain));
-        
-        pidDriveStraight.setOutputRange(-0.5D, 0.5D);
-        pidDriveStraight.setOutputRange(-0.5D, 0.5D);
-        pidDriveStraight.setOutputRange(-0.5D, 0.5D);
-        
-        pidDriveStraight.setSetpoint(0D);
-        pidDriveBackwards.setSetpoint(0D);
-        pidTurnAround.setSetpoint(180D);
-        
         Timer controlTimer = new Timer();
         controlTimer.start();
         
@@ -350,12 +342,20 @@ public class Robot2012Orange extends SimpleRobot {
         
         elevatorMotors.set(0D);
         
+        gyroHeading.reset();
+        
         long began = new Date().getTime();
         
         while (isAutonomous() && isEnabled()) {
+            kinect = leftKinect.getRawButton(ButtonConfiguration.Kinect.ENABLE);
+            abort = leftKinect.getRawButton(ButtonConfiguration.Kinect.ABORT);
+            
+            if (kinect || abort)
+                break;
+            
             /* Calibrate the elevator while everything else is going on. */
             
-            if (step > 3 && !elevatorCalibrated) {
+            if (step > 4 && !elevatorCalibrated) {
                 if (elevatorLimitSwitch.get()) {
                     elevatorMotors.set(-0.3);
                 } else {
@@ -370,32 +370,24 @@ public class Robot2012Orange extends SimpleRobot {
             
             System.out.println("---------------------------");
             
-            solenoidPickup.set(ActuatorConfiguration.SOLENOID_PICKUP.OUT);
-            
             if (new Date().getTime() - began > 1500)
-                step = 4;
+                step = 5;
             
-            if (1 == 1) continue;
+            if (step > AutonomousConfiguration.MAX_STEP)
+                continue;
             
             /* Handle the main logic. */
             
             switch (step) {
-                case 0:
-                    /* Drive straight. */
-                    
-                    pidDriveStraight.enable();
-                    
-                    step++;
-                    
-                    break;
                 case 1:
-                    /* One we're there, stop and smash down the bridge. */
+                    /* Drive forward and stop, then smash down the bridge. */
                     
-                    if (controlTimer.get() >= 6 || (encoderLeftDrive.getDistance() >= AutonomousConfiguration.FORWARD_DISTANCE && encoderRightDrive.getDistance() >= AutonomousConfiguration.FORWARD_DISTANCE)) {
-                        pidDriveStraight.disable();
+                    if (controlTimer.get() <= AutonomousConfiguration.STEP_1_FORWARD_TIME) {
+                        drivePower = Math.max(0.2, 1 - controlTimer.get() / AutonomousConfiguration.STEP_1_FORWARD_TIME);
+                        driveTrain.tankDrive(drivePower, drivePower);
+                    } else {
                         driveTrain.tankDrive(0D, 0D);
-                        
-                        solenoidPickup.set(ActuatorConfiguration.SOLENOID_PICKUP.OUT);
+                        pickupMachine.crank(PickupState.OUT);
                         
                         controlTimer.reset();
                         step++;
@@ -403,82 +395,211 @@ public class Robot2012Orange extends SimpleRobot {
                     
                     break;
                 case 2:
-                    /* Wait a second. */
+                    /* Wait a bit. */
                     
                     driveTrain.tankDrive(0D, 0D);
                     
-                    if (controlTimer.get() >= 1) 
+                    if (controlTimer.get() >= AutonomousConfiguration.STEP_2_WAIT_TIME) 
                         step++;
                     
                     break;
                 case 3:
-                    /* Make sure the pickup is down, and drive backward. */
+                    /* Drive backward. */
                         
-                    solenoidPickup.set(ActuatorConfiguration.SOLENOID_PICKUP.OUT);
-                    
-                    encoderLeftDrive.reset();
-                    encoderRightDrive.reset();
-
-                    pidDriveBackwards.enable();
-
-                    step++;
+                    if (controlTimer.get() <= AutonomousConfiguration.STEP_3_BACKWARD_TIME) {
+                        drivePower = Math.max(0.2, 1 - controlTimer.get() / AutonomousConfiguration.STEP_3_BACKWARD_TIME);
+                        driveTrain.tankDrive(drivePower, drivePower);
+                    } else {
+                        driveTrain.tankDrive(0D, 0D);
+                        
+                        gyroHeading.reset();
+                        
+                        controlTimer.reset();
+                        step++;
+                    }
                     
                     break;
                 case 4:
-                    /* Once we're there, stop. */
+                    /*
+                     * Make sure the pickup is down. Turn around, and face the
+                     * nets.
+                     */
                     
-                    if (controlTimer.get() >= 6 || (encoderLeftDrive.getDistance() <= backwardDistance && encoderRightDrive.getDistance() >= backwardDistance)) {
-                        pidDriveBackwards.disable();
+                    solenoidPickup.set(ActuatorConfiguration.SOLENOID_PICKUP.OUT);
+                    
+                    if (controlTimer.get() <= AutonomousConfiguration.STEP_4_TURN_TIME) {
+                        gyroAngle = gyroHeading.getAngle();
+                        
+                        if (turnedAround || (gyroAngle > 179 && gyroAngle < 181)) {
+                            turnedAround = true;
+                            driveTrain.tankDrive(0D, 0D);
+                        } else {
+                            drivePower = Math.max(0.2, 1 - gyroAngle / 180);
+                            driveTrain.tankDrive(drivePower, drivePower * -1);
+                        }
+                    } else {
                         driveTrain.tankDrive(0D, 0D);
                         
                         controlTimer.reset();
-                        
                         step++;
                     }
                     
                     break;
                 case 5:
-                    /* Turn around, bright eyes! */
+                    /*
+                     * Keep the pickup down, just in case. Drive forward toward
+                     * the nets. The elevator should be calibrating while this
+                     * is going on.
+                     */
                     
-                    pidTurnAround.enable();
-                    controlTimer.reset();
+                    solenoidPickup.set(ActuatorConfiguration.SOLENOID_PICKUP.OUT);
                     
-                    step++;
+                    if (controlTimer.get() <= AutonomousConfiguration.STEP_5_FORWARD_TIME) {
+                        drivePower = Math.max(0.2, 1 - controlTimer.get() / AutonomousConfiguration.STEP_5_FORWARD_TIME);
+                        driveTrain.tankDrive(drivePower, drivePower);
+                    } else {
+                        driveTrain.tankDrive(0D, 0D);
+                        controlTimer.reset();
+                        step++;
+                    }
                     
                     break;
                 case 6:
-                    /* Stop turning around once we've done a 180. */
-                    
-                    if (controlTimer.get() >= 2 || pidTurnAround.onTarget()) {
-                        pidTurnAround.disable();
-                        controlTimer.stop();
-                        
-                        driveTrain.tankDrive(0D, 0D);
-                        
-                        step++;
-                        
-                        break;
-                    }
-                case 7:
-                    /* Block until the elevator is finished being calibrated. */
+                    /* Block until the elevator is calibrated. */
                     
                     driveTrain.tankDrive(0D, 0D);
                     
                     if (elevatorCalibrated)
                         step++;
-                case 8:
-                    // TODO: Aim and shoot. Maybe we could have a single "Shoot" function, that could be called in both Autonomous and Teleop modes? Same goes for aiming.
+                    
+                    break;
+                case 7:
+                    /* Put the elevator up and the pickup in. */
                     
                     driveTrain.tankDrive(0D, 0D);
                     
+                    if (elevatorMachine.test(ElevatorState.PICKUP_OKAY))
+                        pickupIsIn = pickupMachine.crank(PickupState.IN);
+                    else
+                        pickupIsIn = false;
+                    
+                    if (elevatorMachine.test(ElevatorState.TURRET_OKAY))
+                        turretMachine.crank(TurretState.FORWARD);
+                    
+                    if (elevatorMachine.crank(ElevatorState.HIGH) && pickupIsIn)
+                        step++;
+                    
+                    break;
+                case 8:
+                    /* Put the turret forward. */
+                    
+                    driveTrain.tankDrive(0D, 0D);
+                    
+                    if (turretMachine.crank(TurretState.FORWARD))
+                        step++;
+                    
+                    break;
+                case 9:
+                    /* Aim... */
+                    
+                    driveTrain.tankDrive(0D, 0D);
+                    
+                    if (turretMachine.crank(TurretState.AIMED)) {
+                        controlTimer.reset();
+                        step++;
+                    }
+                    
+                    break;
+                case 10:
+                    /* ...and shoot! */
+                    
+                    driveTrain.tankDrive(0D, 0D);
+                    
+                    if (controlTimer.get() < AutonomousConfiguration.STEP_10_SHOOTING_TIME)
+                        shooterMachine.crank(ShooterState.SHOOTING);
+                    
                     break;
             }
+            
+            elevatorMotors.reload();
+            shooterMotors.reload();
+            hopperMotor.reload();
+            turretRotationMotor.reload();
+            ringLight.reload();
         }
         
-        pidDriveStraight.disable();
-        pidDriveBackwards.disable();
-        pidTurnAround.disable();
+        while (isAutonomous() && isEnabled() && !abort && !kinect) {
+            kinect = leftKinect.getRawButton(ButtonConfiguration.Kinect.ENABLE);
+            abort = leftKinect.getRawButton(ButtonConfiguration.Kinect.ABORT);
+            
+            driveTrain.tankDrive(0D, 0D);
 
+            elevatorMotors.reload();
+            shooterMotors.reload();
+            hopperMotor.reload();
+            turretRotationMotor.reload();
+            ringLight.reload();
+        }
+        
+        if (kinect && elevatorCalibrated) {
+            while (isAutonomous() && isEnabled() && !abort) {
+                abort = leftKinect.getRawButton(ButtonConfiguration.Kinect.ABORT);
+                
+                if (abort)
+                    break;
+                
+                if (turretMachine.crank(TurretState.SIDEWAYS) && pickupMachine.crank(PickupState.OUT) && elevatorMachine.crank(ElevatorState.LOW))
+                    break;
+                
+                driveTrain.tankDrive(0D, 0D);
+                
+                elevatorMotors.reload();
+                shooterMotors.reload();
+                hopperMotor.reload();
+                turretRotationMotor.reload();
+            }
+            
+            while (isAutonomous() && isEnabled() && !abort) {
+                abort = leftKinect.getRawButton(ButtonConfiguration.Kinect.ABORT);
+
+                if (abort)
+                    break;
+                
+                if (leftKinect.getRawButton(ButtonConfiguration.Kinect.DRIVE_ENABLED))
+                    driveTrain.tankDrive(leftKinect.getRawAxis(1) * 0.8, rightKinect.getRawAxis(1) * 0.8);
+                else
+                    driveTrain.tankDrive(0D, 0D);
+
+                if (leftKinect.getRawButton(ButtonConfiguration.Kinect.PICKUP_IN))
+                    pickupMachine.crank(PickupState.IN);
+                else
+                    pickupMachine.crank(PickupState.OUT);
+
+                if (leftKinect.getRawButton(ButtonConfiguration.Kinect.SUCK) && pickupMachine.test(PickupState.OUT)) {
+                    pickupMotor.set(ActuatorConfiguration.PICKUP_POWER);
+                    hopperMotor.set(ActuatorConfiguration.HOPPER_POWER);
+                } else {
+                    pickupMotor.set(0D);
+                    hopperMotor.set(0D);
+                }
+
+                elevatorMotors.reload();
+                shooterMotors.reload();
+                hopperMotor.reload();
+                turretRotationMotor.reload();
+                ringLight.reload();
+            }
+        }
+
+        pickupMotor.set(0D);
+        hopperMotor.set(0D);
+        
+        elevatorMotors.reload();
+        shooterMotors.reload();
+        hopperMotor.reload();
+        turretRotationMotor.reload();
+        ringLight.reload();
+        
         compressorPump.stop();
     }
 
@@ -493,8 +614,6 @@ public class Robot2012Orange extends SimpleRobot {
     public void operatorControl() {
         driveTrain.setSafetyEnabled(true);
         compressorPump.start();
-
-        double accelPower;
         
         int settleState = 2;
         Timer settleTimer = new Timer();

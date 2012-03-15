@@ -7,13 +7,12 @@ package com._604robotics.robot2012.configuration;
  * @author  Michael Smith <mdsmtp@gmail.com>
  */
 public interface AutonomousConfiguration {
-    public static final double FORWARD_DISTANCE = 1000D;
-        // TODO: Calibrate this.
-    public static final double BACKWARD_DISTANCE = -1000D;
-        // TODO: Calibrate this.
-    public static final double BACKWARD_DISTANCE_SIDES = -500D;
-        // TODO: Calibrate this.
+    public static final int MAX_STEP = 0;
     
-    public static final double FORWARD_DRIVE_POWER = 0.5;
-    public static final double BACKWARD_DRIVE_POWER = -0.5;
+    public static final double STEP_1_FORWARD_TIME = 1D;
+    public static final double STEP_2_WAIT_TIME = 1D;
+    public static final double STEP_3_BACKWARD_TIME = 1D;
+    public static final double STEP_4_TURN_TIME = 1D;
+    public static final double STEP_5_FORWARD_TIME = 1D;
+    public static final double STEP_10_SHOOTING_TIME = 1D;
 }

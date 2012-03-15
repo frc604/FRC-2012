@@ -43,6 +43,6 @@ public class PIDDriveEncoderOutput implements PIDOutput {
      * @param   output  The output of the PID controller.
      */
     public void pidWrite(double output) {
-        driveTrain.arcadeDrive((inversion) ? AutonomousConfiguration.BACKWARD_DRIVE_POWER : AutonomousConfiguration.FORWARD_DRIVE_POWER, output);
+        //driveTrain.arcadeDrive((inversion) ? AutonomousConfiguration.BACKWARD_DRIVE_POWER : AutonomousConfiguration.FORWARD_DRIVE_POWER, output);
     }
 }
