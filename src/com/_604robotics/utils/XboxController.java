@@ -77,6 +77,7 @@ public class XboxController {
         public static final int LT = 11;
         public static final int RT = 12;
         public static final int EitherTrigger = 13;
+        public static final int EitherStick = 18;
         
         public interface DPad {
             public static int Up = 14;
@@ -148,6 +149,8 @@ public class XboxController {
                 return this.joystick.getRawAxis(6) < -0.2;
             case Button.DPad.Right:
                 return this.joystick.getRawAxis(6) > 0.2;
+            case Button.EitherStick:
+                return this.getButton(Button.LeftStick) || this.getButton(Button.RightStick);
             default:
                 return this.joystick.getRawButton(button);
         }

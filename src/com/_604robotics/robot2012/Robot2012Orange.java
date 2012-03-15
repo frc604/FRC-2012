@@ -541,6 +541,15 @@ public class Robot2012Orange extends SimpleRobot {
                 
                 SmartDashboard.putString("Drive Mode", "Balancing");
                 SmartDashboard.putDouble("DriveVel", driveVel);
+            } else if (driveController.getButton(ButtonConfiguration.Driver.TINY_FORWARD)) {
+                driveTrain.tankDrive(ActuatorConfiguration.TINY_FORWARD_SPEED, ActuatorConfiguration.TINY_FORWARD_SPEED);
+                SmartDashboard.putString("Drive Mode", "Tiny (Forward)");
+            } else if (driveController.getButton(ButtonConfiguration.Driver.TINY_REVERSE)) {
+                driveTrain.tankDrive(ActuatorConfiguration.TINY_REVERSE_SPEED, ActuatorConfiguration.TINY_REVERSE_SPEED);
+                SmartDashboard.putString("Drive Mode", "Tiny (Reverse)");
+            } else if (driveController.getButton(ButtonConfiguration.Driver.SLOW_BUTTON)) {
+                driveTrain.tankDrive(driveController.getAxis(Axis.LEFT_STICK_Y) * ActuatorConfiguration.MAX_SLOW_SPEED, driveController.getAxis(Axis.RIGHT_STICK_Y) * ActuatorConfiguration.MAX_SLOW_SPEED);
+                SmartDashboard.putString("Drive Mode", "Manual (Slow)");
             } else {
                 driveTrain.tankDrive(driveController.getAxis(Axis.LEFT_STICK_Y), driveController.getAxis(Axis.RIGHT_STICK_Y));
                 SmartDashboard.putString("Drive Mode", "Manual");

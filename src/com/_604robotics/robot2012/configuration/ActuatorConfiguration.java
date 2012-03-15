@@ -22,6 +22,11 @@ public interface ActuatorConfiguration {
     public static final double TURRET_ROTATION_POWER_MIN = -0.4;
     public static final double TURRET_ROTATION_POWER_MAX = 0.4;
     
+    public static final double MAX_SLOW_SPEED = 0.6;
+    
+    public static final double TINY_FORWARD_SPEED = 0.2;
+    public static final double TINY_REVERSE_SPEED = 0.2;
+    
     public interface TURRET_POSITION {
         public static final double FORWARD = 0D;
         public static final double LEFT = -45D;
