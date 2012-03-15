@@ -105,6 +105,10 @@ public class Config implements Cloneable {
 				
 				String value = strs[1].trim();
 				
+				String[] keys = new String[]{"checkCenter", "communicateToRobot", "debug_SaveImagesToFiles", "debug_Print",
+						"debug_Print", "debug_ShowDisplay", "scanWholeTile", "minBlobSize", "sensitivity", "tileSize",
+						"color_targetR", "color_targetG", "color_targetB", "color_mulR", "color_mulG", "color_mulB"};
+				
 				if (key.equals("checkCenter")) {
 					conf.checkCenter = parseBoolean(value, conf.checkCenter);
 				} else if (key.equals("communicateToRobot")) {
@@ -146,6 +150,66 @@ public class Config implements Cloneable {
 		}
 		
 		return conf;
+	}
+	
+	/**
+	 *
+	 * A class for storing Config values
+	 *
+	 * @author Kevin Parker <kevin.m.parker@gmail.com>
+	 */
+	public static class DataValue {
+		private String key;
+		private Object value;
+		private Object defValue;
+		
+		public DataValue(String k, Object v, Object def) {
+			key = k;
+			
+			defValue = def;
+			
+			if(def == null) {
+				throw new NullPointerException("The default value cannot be null.");
+			}
+			
+			set(v);
+		}
+		
+		public String getKey() {
+			return key;
+		}
+		
+		public void set(Object val) {
+			if(val==null) {
+				value = defValue;
+				return;
+			}
+			
+			if(!defValue.getClass().equals(val.getClass())) {
+				throw new RuntimeException("The Value and default values were of different classes");
+			}
+			
+			value = val;
+		}
+		
+		public boolean getBoolean() {
+			if(!(defValue instanceof Boolean))
+				throw new RuntimeException("The value could not be parsed as a boolean.");
+			
+			return (Boolean) value;
+		}
+		public int getInt() {
+			if(!(defValue instanceof Integer))
+				throw new RuntimeException("The value could not be parsed as an int.");
+			
+			return (Integer) value;
+		}
+		public double getDouble() {
+			if(!(defValue instanceof Double))
+				throw new RuntimeException("The value could not be parsed as a double.");
+			
+			return (Double) value;
+		}
 	}
 	
 	public void save(File file) throws IOException {
