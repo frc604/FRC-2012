@@ -8,24 +8,24 @@ package com._604robotics.robot2012.vision;
  */
 public class Point3d {
 	/**
-	 * the x value
+	 * The X value
 	 */
 	public double x;
 	
 	/**
-	 * the y value
+	 * The Y value
 	 */
 	public double y;
 	
 	/**
-	 * the z value
+	 * The Z value
 	 */
 	public double z;
 
 	/**
-	 * @param x - the x value
-	 * @param y - the y value
-	 * @param z - the z value
+	 * @param x	The X value
+	 * @param y	The Y value
+	 * @param z	The Z value
 	 */
 	public Point3d(double x, double y, double z) {
 		super();
@@ -36,7 +36,7 @@ public class Point3d {
 
 	
 	/**
-	 * @return - the X value
+	 * @return	The X value
 	 */
 	public double getX() {
 		return x;
@@ -46,7 +46,7 @@ public class Point3d {
 	/**
 	 * Sets the X value of this Point
 	 * 
-	 * @param x - the X value
+	 * @param x	The X value
 	 */
 	public void setX(double x) {
 		this.x = x;
@@ -54,7 +54,7 @@ public class Point3d {
 
 	
 	/**
-	 * @return - the Y value
+	 * @return	The Y value
 	 */
 	public double getY() {
 		return y;
@@ -64,7 +64,7 @@ public class Point3d {
 	/**
 	 * Sets the Y value of this Point
 	 * 
-	 * @param y - the Y value
+	 * @param y	The Y value
 	 */
 	public void setY(double y) {
 		this.y = y;
@@ -72,7 +72,7 @@ public class Point3d {
 
 	
 	/**
-	 * @return - the Z value
+	 * @return	The Z value
 	 */
 	public double getZ() {
 		return z;
@@ -82,7 +82,7 @@ public class Point3d {
 	/**
 	 * Sets the Z value of this Point
 	 * 
-	 * @param z - the Z value
+	 * @param z	The Z value
 	 */
 	public void setZ(double z) {
 		this.z = z;

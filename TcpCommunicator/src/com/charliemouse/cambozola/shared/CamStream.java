@@ -43,17 +43,18 @@ import javax.imageio.ImageIO;
  * </p>
  * 
  * <p>
- * I (Kevin Parker) made the following changes. I made the JPEG data stream pipe directly into the parser, rather than
- * loading the whole image into a buffer before parsing. I made a couple of minor changes, one of which was reducing
- * some of the sleep lengths. I also did some minor code auto-cleanup. Finally, I added a few comments and javadocs.
+ * I (Kevin Parker) made several changes to the following code. These include the following. I made the JPEG data stream
+ * pipe directly into the parser, rather than loading the whole image into a buffer before parsing. I made a couple of
+ * minor changes, one of which was reducing some of the sleep lengths. I also did some minor code auto-cleanup. Finally,
+ * I added several comments and javadocs.
  * (I also altered m_retryDelay and removed some unused member variables).
  * </p>
  * <p>
+ * <b>
  * This is not the full version of the Cambozola code, and it has many modifications to make it better suit the needs
  * of a fast-paced FRC tournament. I also changed or removed unneeded pieces of these files.
+ * </b>
  * </p>
- * TODO - keep working on these
- * TODO - We should release this under the same license
  **/
 public class CamStream extends Thread {
 	

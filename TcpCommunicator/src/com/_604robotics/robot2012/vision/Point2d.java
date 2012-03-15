@@ -9,18 +9,18 @@ package com._604robotics.robot2012.vision;
 public class Point2d {
 	
 	/**
-	 * The x value
+	 * The X value
 	 */
 	public double	x;
 	
 	/**
-	 * The y value
+	 * The Y value
 	 */
 	public double	y;
 	
 	/**
-	 * @param x - the x value
-	 * @param y - the y value
+	 * @param x	the X value
+	 * @param y	the Y value
 	 */
 	public Point2d(double x, double y) {
 		super();
@@ -30,7 +30,7 @@ public class Point2d {
 	
 	
 	/**
-	 * @return - the X value
+	 * @return	the X value
 	 */
 	public double getX() {
 		return x;
@@ -38,7 +38,7 @@ public class Point2d {
 	
 	
 	/**
-	 * @return - the Y value
+	 * @return	the Y value
 	 */
 	public double getY() {
 		return y;
@@ -48,7 +48,7 @@ public class Point2d {
 	/**
 	 * Sets the X value of this Point
 	 * 
-	 * @param x - the X value
+	 * @param x	the X value
 	 */
 	public void setX(double x) {
 		this.x = x;
@@ -58,7 +58,7 @@ public class Point2d {
 	/**
 	 * Sets the Y value of this Point
 	 * 
-	 * @param y - the Y value
+	 * @param y	the Y value
 	 */
 	public void setY(double y) {
 		this.y = y;

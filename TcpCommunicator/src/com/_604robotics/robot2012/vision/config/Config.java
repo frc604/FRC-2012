@@ -10,24 +10,16 @@ import java.util.Scanner;
 /**
  * The configuration of the Team 604 FRCVision
  * 
- * TODO - make less kludgy
  *
  * @author Kevin Parker <kevin.m.parker@gmail.com>
  */
-public class Config implements Cloneable {
+public class Config {
 	
-	public Config clone() {
-		try {
-			return (Config) super.clone();
-		} catch (CloneNotSupportedException ex) {
-			ex.printStackTrace();
-			return null;
-		}
-	}
-
+	/**
+	 * The default Config file
+	 */
 	private static final File	defaultConfigFile	= new File("vision.conf");
 	
-	public static Config conf;
 	
 	/* CheckCenter, CommunicateToRobot, Debug_SaveImagesToFiles, Debug_ShowDisplay,
 		MegaScan, MinBlobSize, Sensitivity, Step, ShowDebugInfo,  */
@@ -45,6 +37,13 @@ public class Config implements Cloneable {
 		}
 	} */
 	
+	/**
+	 * Parses a boolean
+	 * 
+	 * @param str	The string to parse
+	 * @param def	The default value
+	 * @return	a boolean
+	 */
 	static boolean parseBoolean(String str, boolean def) {
 		try {
 			return Boolean.parseBoolean(str);
@@ -52,7 +51,14 @@ public class Config implements Cloneable {
 			return def;
 		}
 	}
-	
+
+	/**
+	 * Parses a byte
+	 * 
+	 * @param str	The string to parse
+	 * @param def	The default value
+	 * @return	a byte
+	 */
 	static byte parseByte(String str, byte def) {
 		try {
 			return Byte.parseByte(str);
@@ -60,7 +66,14 @@ public class Config implements Cloneable {
 			return def;
 		}
 	}
-	
+
+	/**
+	 * Parses a double
+	 * 
+	 * @param str	The string to parse
+	 * @param def	The default value
+	 * @return	a double
+	 */
 	static double parseDouble(String str, double def) {
 		try {
 			return Double.parseDouble(str);
@@ -68,7 +81,14 @@ public class Config implements Cloneable {
 			return def;
 		}
 	}
-	
+
+	/**
+	 * Parses an int
+	 * 
+	 * @param str	The string to parse
+	 * @param def	The default value
+	 * @return	an int
+	 */
 	static int parseInt(String str, int def) {
 		try {
 			return Integer.parseInt(str);
@@ -77,13 +97,30 @@ public class Config implements Cloneable {
 		}
 	}
 
+	/**
+	 * Reads the default Config file
+	 * 
+	 * @return the Config, as read from vision.conf
+	 */
 	public static Config readDefaultConfig() {
 		return readConfig(defaultConfigFile);
 	}
+	
+	/**
+	 * Saves this Config to the default file
+	 * 
+	 * @throws IOException	If an error occurs
+	 */
 	public void saveDefaultConfig() throws IOException {
 		save(defaultConfigFile);
 	}
 	
+	/**
+	 * Read a Config from a file
+	 * 
+	 * @param file	the file to read it from
+	 * @return	the Config read from the file
+	 */
 	public static Config readConfig(File file) /*throws FileNotFoundException*/ {
 		Config conf = new Config();
 		
@@ -153,6 +190,7 @@ public class Config implements Cloneable {
 	}
 	
 	/**
+<<<<<<< HEAD
 	 *
 	 * A class for storing Config values
 	 *
@@ -212,6 +250,13 @@ public class Config implements Cloneable {
 		}
 	}
 	
+=======
+	 * Saves this Config to a given file
+	 * 
+	 * @param file	The file to save to
+	 * @throws IOException	If an error occurs
+	 */
+>>>>>>> f32dda9452b6723e27859ff9360ec239113fac58
 	public void save(File file) throws IOException {
 		if(!file.exists())
 			file.createNewFile();
@@ -242,6 +287,9 @@ public class Config implements Cloneable {
 	
 	
 	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
 	public String toString() {
 		return "Config [checkCenter=" + checkCenter + ", communicateToRobot=" + communicateToRobot + ", debug_Print="
 				+ debug_Print + ", debug_SaveImagesToFiles=" + debug_SaveImagesToFiles + ", debug_ShowDisplay="
@@ -251,6 +299,13 @@ public class Config implements Cloneable {
 				+ color_mulR + ", color_mulG=" + color_mulG + ", color_mulB=" + color_mulB + "]";
 	}
 
+	/**
+	 * Turn a key-value pair into a string
+	 * 
+	 * @param key	The key
+	 * @param value	The value
+	 * @return	A string
+	 */
 	private String getOutString(String key, Object value) {
 		return key + " = " + value + "\n";
 	}
@@ -273,8 +328,15 @@ public class Config implements Cloneable {
 	 */
 	public boolean	debug_Print				= false;
 	
+	/**
+	 * Should camera images be stored onto disk, for debug purposes?
+	 */
 	public boolean	debug_SaveImagesToFiles	= false;
 	
+	/**
+	 * Should the fancy display be shown, with green and red tiles indicating matching and non-matching
+	 * tiles, with blue lines and dots indicating target sides and corners?
+	 */
 	public boolean	debug_ShowDisplay		= true;
 	
 	
@@ -304,12 +366,14 @@ public class Config implements Cloneable {
 	 */
 	public int		tileSize				= 5;
 	
-	public int color_targetR = 5;
-	public int color_targetG = 140;
-	public int color_targetB = 255;
+	/**
+	 * The color of the vision target when the light is shining on it
+	 */
+	public int color_targetR = 5, color_targetG = 140, color_targetB = 255;
 	
-	public double color_mulR = .2;
-	public double color_mulG = .0005;
-	public double color_mulB = .025;
+	/**
+	 * How much to multiply the square of the errors per color channel by
+	 */
+	public double color_mulR = .2, color_mulG = .0005, color_mulB = .025;
 	
 }

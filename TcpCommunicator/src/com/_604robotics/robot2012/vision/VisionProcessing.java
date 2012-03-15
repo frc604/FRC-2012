@@ -21,10 +21,11 @@ import com.charliemouse.cambozola.shared.CamStream;
 
 
 /**
- * TODO-document this class better
- * 
- * @author Kevin Parker
- * 
+ * The main class for processing camera vision on our 2012 robot. This software takes in camera images from the
+ * robot's camera, parses them, searches for pixels that look like shiny blue vision targets, blobs those pixels
+ * together, (if they are connected), and then treats it as a quadrilateral and finds the corners.
+ *
+ * @author Kevin Parker <kevin.m.parker@gmail.com>
  */
 public class VisionProcessing {
 	
@@ -47,16 +48,16 @@ public class VisionProcessing {
 	 * This function determines the distances from a side to the points on the target, in a direction perpendicular to
 	 * the side in question.
 	 * 
-	 * @param ri - the ResultImage to process
-	 * @param x1 - the lowest X value to check
-	 * @param y1 - the lowest Y value to check
-	 * @param x2 - the highest X value to check
-	 * @param y2 - the highest Y value to check
-	 * @param side - which side to check. This uses the constants such as {@link #Side_Left}.
-	 * @param lenMajor - the length of the side in question
-	 * @param lenMinor - the length to check perpendicular to the side in question
-	 * @param xVals - the returned array of X values on the target nearest the given side.
-	 * @param yVals - the returned array of Y values on the target nearest the given side.
+	 * @param ri	the ResultImage to process
+	 * @param x1	the lowest X value to check
+	 * @param y1	the lowest Y value to check
+	 * @param x2	the highest X value to check
+	 * @param y2	the highest Y value to check
+	 * @param side	which side to check. This uses the constants such as {@link #Side_Left}.
+	 * @param lenMajor	the length of the side in question
+	 * @param lenMinor	the length to check perpendicular to the side in question
+	 * @param xVals	the returned array of X values on the target nearest the given side.
+	 * @param yVals	the returned array of Y values on the target nearest the given side.
 	 */
 	private static void getDistsForSide(ResultImage ri, int x1, int y1, int x2, int y2, int side, int lenMajor,
 			int lenMinor, double[] xVals, double[] yVals) {
@@ -104,9 +105,9 @@ public class VisionProcessing {
 	/**
 	 * Get a line that best fits the sides of a given target
 	 * 
-	 * @param ri - the ResultImage that indicates which pixels are contained in the target
-	 * @param side - an integer indicating which of the sides to pick
-	 * @param guess - a bounding box that surrounds all of the pixels to check
+	 * @param ri	the ResultImage that indicates which pixels are contained in the target
+	 * @param side	an integer indicating which of the sides to pick
+	 * @param guess	a bounding box that surrounds all of the pixels to check
 	 * 
 	 * @return the line of best fit for the given side of the target lying in the AABB
 	 */
@@ -160,10 +161,10 @@ public class VisionProcessing {
 	}
 	
 	/**
-	 * @param results - the Img to store returned data in
-	 * @param i - the X coordinate
-	 * @param j - the Y coordinate
-	 * @param color - the blob's color
+	 * @param results	the Img to store returned data in
+	 * @param i	the X coordinate
+	 * @param j	the Y coordinate
+	 * @param color	the blob's color
 	 */
 	public static void recursiveTraceBlobs(Img results, int i, int j, int color) {
 		results.set(i, j, color);
@@ -228,7 +229,7 @@ public class VisionProcessing {
 	public void loopAndProcessPics() throws MalformedURLException {
 		
 		// Set the username and password used to access the camera
-		Authenticator.setDefault(new HTTPAuthenticator("FRC", "FRC"));
+		Authenticator.setDefault(new com.mobvcasting.mjpegparser.HTTPAuthenticator("FRC", "FRC"));
 		
 		// Start streaming images from the camera
 		URL url = new URL("http://10.6.4.11/mjpg/video.mjpg");
@@ -298,7 +299,7 @@ public class VisionProcessing {
 	/**
 	 * This processes the camera image and can send it to the robot (if enabled in the config file)
 	 * 
-	 * @param img - an image as received from the camera
+	 * @param img	an image as received from the camera
 	 */
 	public void processImage(BufferedImage img) {
 		

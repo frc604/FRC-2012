@@ -25,18 +25,37 @@ public class DistanceCalculations {
 	private Point2d	cameraCorner_topLeft	= transformPoint(cameraCorner_0_0),
 			cameraCorner_bottomRight = transformPoint(cameraCorner_640_480);
 	// 320 / (tan(47 / 2 degrees));
-	double			FOV						= 47;								// degrees
 																				
-	double			kx						= 700;								// was 736, then 605; then excel said
-	// 695-705
-	double			ky						= 530;								// was 736, then 605; then excel said
+	/**
+	 * How many horizontal pixels away from center a line is that goes out at the same rate it goes right
+	 */
+	double			kx						= 700;								// was 736, then 605; then 695-705
+	
+	/**
+	 * How many vertical pixels away from center a line is that goes out at the same rate it goes up
+	 */
+	double			ky						= 530;								// was 736, then 605; then 514
+	
+	/**
+	 * If a target corner is estimated to be less than 5 pixels away from the edge, the target is reported
+	 * as unreliable
+	 */
 	private double	nearSideTolerance		= 5 / kx;
-	// 514
+	
+	/**
+	 * How far the camera is pointing down, in radians
+	 */
 	double			rotUpDown				= Math.toRadians(-28.5);			// -26
 																				
-	double			targetHeight			= 24;								// inches
+	/**
+	 * The height of the vision target, in inches
+	 */
+	double			targetHeight			= 18;								// inches
 																				
-	double			targetWidth				= 18;								// inches
+	/**
+	 * The width of the vision target, in inches
+	 */
+	double			targetWidth				= 24;								// inches
 																				
 	/**
 	 * This function gets the direction the target is facing, relative to the camera. It is imperfect, and half-assumes
@@ -74,7 +93,9 @@ public class DistanceCalculations {
 	}
 	
 	/**
-	 * @param quad - a quadrilateral with corners indicating the corners of the target
+	 * A method that tries to find the most likely location for the vision target to lie in 3D space
+	 * 
+	 * @param quad	a quadrilateral with corners indicating the corners of the target
 	 * @return a Target as an estimation of
 	 */
 	public Target getApproximationOfTarget(Quad quad) {
@@ -154,7 +175,7 @@ public class DistanceCalculations {
 	/**
 	 * Credit goes to Colin Aitken <cacolinerd@gmail.com> for figuring out the equations for nX and nY
 	 * 
-	 * @param p - the Point2d to transform
+	 * @param p	the Point2d to transform
 	 * @return the transformed point (based on camera coords and rotUpDown into values indicating x/z and y/z)
 	 */
 	private Point2d transformPoint(Point2d p) {
