@@ -27,6 +27,7 @@ child_process.exec('find | grep ".html"', function (stderr, stdout) {
             if (stderr)
               console.warn(stderr);
             
+            child_process.exec('google-chrome pdfs/all-docs.pdf');
             console.log(' ----- DONE ----- ');
           });
         }
