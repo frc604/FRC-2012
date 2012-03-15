@@ -14,5 +14,6 @@ public interface AutonomousConfiguration {
     public static final double STEP_3_BACKWARD_TIME = 1D;
     public static final double STEP_4_TURN_TIME = 1D;
     public static final double STEP_5_FORWARD_TIME = 1D;
+    public static final double STEP_5_FORWARD_TIME_SIDES = 1D;
     public static final double STEP_10_SHOOTING_TIME = 1D;
 }

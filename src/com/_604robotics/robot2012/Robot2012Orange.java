@@ -323,6 +323,8 @@ public class Robot2012Orange extends SimpleRobot {
         double drivePower;
         double gyroAngle;
         
+        double forwardTime = AutonomousConfiguration.STEP_5_FORWARD_TIME_SIDES;
+        
         boolean turnedAround = false;
         boolean pickupIsIn = false;
         
@@ -331,8 +333,10 @@ public class Robot2012Orange extends SimpleRobot {
         
         /* If we're not in the middle, skip over the bridge stuff. */
         
-        if (((String) inTheMiddle.getSelected()).equals("Yes"))
+        if (((String) inTheMiddle.getSelected()).equals("Yes")) {
             step = 4;
+            forwardTime = AutonomousConfiguration.STEP_5_FORWARD_TIME_SIDES;
+        }
 
         Timer controlTimer = new Timer();
         controlTimer.start();
@@ -551,7 +555,8 @@ public class Robot2012Orange extends SimpleRobot {
                 if (turretMachine.crank(TurretState.SIDEWAYS) && pickupMachine.crank(PickupState.OUT) && elevatorMachine.crank(ElevatorState.LOW))
                     break;
                 
-                driveTrain.tankDrive(0D, 0D);
+                
+    public static final double STEP_5_FORWARD_TIME = 1D;driveTrain.tankDrive(0D, 0D);
                 
                 elevatorMotors.reload();
                 shooterMotors.reload();
