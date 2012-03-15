@@ -317,21 +317,17 @@ public class Configger {
 	private void revertToConf() {
 		Config conf = Config.readDefaultConfig();
 
-		rTarget.setValue(conf.color_targetR);
-		gTarget.setValue(conf.color_targetG);
-		bTarget.setValue(conf.color_targetB);
+		rTarget.setValue(conf.getInt("color_targetR"));
+		gTarget.setValue(conf.getInt("color_targetG"));
+		bTarget.setValue(conf.getInt("color_targetB"));
 
-		rSlider.setValue(0);
-		gSlider.setValue(0);
-		bSlider.setValue(0);
-		tabbedPane.repaint();
-		rSlider.setValue(conf.color_mulR);
-		gSlider.setValue(conf.color_mulG);
-		bSlider.setValue(conf.color_mulB);
+		rSlider.setValue(conf.getDouble("color_mulR"));
+		gSlider.setValue(conf.getDouble("color_mulG"));
+		bSlider.setValue(conf.getDouble("color_mulB"));
 
-		sensSlider.setValue(conf.sensitivity);
-		minBlobSize.setValue(conf.minBlobSize);
-		tileSize.setValue(conf.tileSize);
+		sensSlider.setValue(conf.getInt("sensitivity"));
+		minBlobSize.setValue(conf.getInt("minBlobSize"));
+		tileSize.setValue(conf.getInt("tileSize"));
 		
 		/*
 		for(int i = 0; i < sliders.length; i++) {
@@ -339,12 +335,12 @@ public class Configger {
 		}
 		*/
 
-		centerCheck.setSelected(conf.checkCenter);
-		scanWholeTile.setSelected(conf.scanWholeTile);
-		communicate.setSelected(conf.communicateToRobot);
-		saveImgs.setSelected(conf.debug_SaveImagesToFiles);
-		showDebugCam.setSelected(conf.debug_ShowDisplay);
-		printDebug.setSelected(conf.debug_Print);
+		centerCheck.setSelected(conf.getBoolean("checkCenter"));
+		scanWholeTile.setSelected(conf.getBoolean("scanWholeTile"));
+		communicate.setSelected(conf.getBoolean("communicateToRobot"));
+		saveImgs.setSelected(conf.getBoolean("debug_SaveImagesToFiles"));
+		showDebugCam.setSelected(conf.getBoolean("debug_ShowDisplay"));
+		printDebug.setSelected(conf.getBoolean("debug_Print"));
 
 		VisionProcessing.defaultProcessing.conf = conf;
 		
@@ -359,15 +355,15 @@ public class Configger {
 	 * @param conf	The Config
 	 */
 	private void setupColorTuner(Config conf) {
-		rSlider = new LinkedSlider.ExponentialLinkedSlider("Red Multiplier",   conf.color_mulR);
-		gSlider = new LinkedSlider.ExponentialLinkedSlider("Green Multiplier", conf.color_mulG);
-		bSlider = new LinkedSlider.ExponentialLinkedSlider("Blue Multiplier",  conf.color_mulB);
+		rSlider = new LinkedSlider.ExponentialLinkedSlider("Red Multiplier",   conf.getDouble("color_mulR"));
+		gSlider = new LinkedSlider.ExponentialLinkedSlider("Green Multiplier", conf.getDouble("color_mulG"));
+		bSlider = new LinkedSlider.ExponentialLinkedSlider("Blue Multiplier",  conf.getDouble("color_mulB"));
 		
-		rTarget = new LinkedSlider.IntLinkedSlider("Red Target",   0, 255, conf.color_targetR);
-		gTarget = new LinkedSlider.IntLinkedSlider("Green Target", 0, 255, conf.color_targetG);
-		bTarget = new LinkedSlider.IntLinkedSlider("Blue Target",  0, 255, conf.color_targetB);
+		rTarget = new LinkedSlider.IntLinkedSlider("Red Target",   0, 255, conf.getInt("color_targetR"));
+		gTarget = new LinkedSlider.IntLinkedSlider("Green Target", 0, 255, conf.getInt("color_targetG"));
+		bTarget = new LinkedSlider.IntLinkedSlider("Blue Target",  0, 255, conf.getInt("color_targetB"));
 		
-		sensSlider = new LinkedSlider.IntLinkedSlider("Sensitivity", -128, 127, conf.sensitivity);
+		sensSlider = new LinkedSlider.IntLinkedSlider("Sensitivity", -128, 127, conf.getInt("sensitivity"));
 		
 		
 		colorTunerTab.add(rSlider);

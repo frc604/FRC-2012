@@ -85,7 +85,7 @@ public class DistanceCalculations {
 		if (wRatio > 1) {
 			wRatio = 1;
 		}
-		if (VisionProcessing.defaultProcessing.conf.debug_Print) {
+		if (VisionProcessing.defaultProcessing.conf.getBoolean("debug_Print")) {
 			System.out.println(wRatio);
 		}
 		

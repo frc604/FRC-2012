@@ -112,7 +112,7 @@ public class VisionProcessing {
 	 * @return the line of best fit for the given side of the target lying in the AABB
 	 */
 	public RegressionResult getRegressionForSide(ResultImage ri, int side, AABB guess) {
-		int tileSize = conf.tileSize;
+		int tileSize = conf.getInt("tileSize");
 		
 		int x1 = guess.x1 * tileSize - 1, x2 = guess.x2 * tileSize + tileSize, y1 = guess.y1 * tileSize - 1, y2 = guess.y2 * tileSize
 		+ tileSize;
@@ -201,10 +201,10 @@ public class VisionProcessing {
 	 * A constructor to create a new VisionProcessing
 	 */
 	public VisionProcessing() {
-		if (conf.communicateToRobot) {
+		if (conf.getBoolean("communicateToRobot")) {
 			comm.up(); // TODO - live enable/disable when conf.communicateToRobot is set
 		}
-		if (conf.debug_SaveImagesToFiles) {
+		if (conf.getBoolean("debug_SaveImagesToFiles")) {
 			new File("target/").mkdir();
 		}
 	}
@@ -266,7 +266,7 @@ public class VisionProcessing {
 			
 			currentFrame++;
 			
-			if (conf.debug_SaveImagesToFiles) {
+			if (conf.getBoolean("debug_SaveImagesToFiles")) {
 				try {
 					ImageIO.write(img, "jpeg", new File("target/" + currentFrame + ".jpeg"));
 				} catch (IOException ex) {
@@ -369,7 +369,7 @@ public class VisionProcessing {
 		Target[] targets = new Target[colors];
 		
 		Point2d[] pts = new Point2d[colors * 4];
-		int minBlobSize = conf.minBlobSize;
+		int minBlobSize = conf.getInt("minBlobSize");
 		for (int i = 0; i < colors; i++) {
 			if (blobSize[i] >= minBlobSize) {
 				
@@ -391,9 +391,9 @@ public class VisionProcessing {
 				Quad q = new com._604robotics.robot2012.vision.Quad(topLeft, topRight, bottomLeft, bottomRight);
 				
 				targets[i] = new DistanceCalculations().getApproximationOfTarget(q);
-				if(conf.debug_Print)
+				if(conf.getBoolean("debug_Print"))
 					System.out.println(targets[i]);
-				if(conf.debug_Print)
+				if(conf.getBoolean("debug_Print"))
 					System.out.println(q);
 				
 				targetQuads[i] = q;
@@ -425,15 +425,15 @@ public class VisionProcessing {
 		//sort based on height...
 		Arrays.sort(targets);
 		
-		if(conf.debug_Print)
+		if(conf.getBoolean("debug_Print"))
 			System.out.println(Arrays.toString(targets));
 		
-		if (conf.communicateToRobot) {
+		if (conf.getBoolean("communicateToRobot")) {
 			comm.writePoints(targets);
 		}
 		
 		
-		if(conf.debug_Print) {
+		if(conf.getBoolean("debug_Print")) {
 			System.out.println("Time = " + (System.nanoTime() - time_i) / 1000000000);
 			
 			System.out.println("--");
@@ -441,7 +441,7 @@ public class VisionProcessing {
 
 		display.image = img;
 		
-		if (conf.debug_ShowDisplay) {
+		if (conf.getBoolean("debug_ShowDisplay")) {
 			display.targetSides = linearRegressions;
 			display.resultImage = ri;
 			display.hasPainted = false;

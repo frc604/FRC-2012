@@ -28,7 +28,7 @@ public class ResultImage {
 	/**
 	 * The size of each tile
 	 */
-	int tileW = VisionProcessing.defaultProcessing.conf.tileSize, tileH = VisionProcessing.defaultProcessing.conf.tileSize;
+	int tileSize = VisionProcessing.defaultProcessing.conf.getInt("tileSize");
 	public Result[] results;
 
 	/**
@@ -41,8 +41,8 @@ public class ResultImage {
 		this.imW = imW;
 		this.imH = imH;
 
-		sW = (imW  - 1)/tileW +1;
-		sH = (imH  - 1)/tileH +1;
+		sW = (imW  - 1)/tileSize +1;
+		sH = (imH  - 1)/tileSize +1;
 
 		results = new Result[sW*sH];
 	}
@@ -56,39 +56,39 @@ public class ResultImage {
 	public void computeResults(Img img) {
 		Config conf = VisionProcessing.defaultProcessing.conf;
 		
-		int sensitivity = conf.sensitivity;
+		int sensitivity = conf.getInt("sensitivity");
 		Result.sensitivity = sensitivity;
-		boolean scanWholeTile = conf.scanWholeTile;
-		boolean checkCenter = conf.checkCenter;
+		boolean scanWholeTile = conf.getBoolean("scanWholeTile");
+		boolean checkCenter = conf.getBoolean("checkCenter");
 
-		color_targetR = conf.color_targetR;
-		color_targetG = conf.color_targetG;
-		color_targetB = conf.color_targetB;
+		color_targetR = conf.getInt("color_targetR");
+		color_targetG = conf.getInt("color_targetG");
+		color_targetB = conf.getInt("color_targetB");
 		
-		color_mulR = conf.color_mulR;
-		color_mulG = conf.color_mulG;
-		color_mulB = conf.color_mulB;
+		color_mulR = conf.getInt("color_mulR");
+		color_mulG = conf.getInt("color_mulG");
+		color_mulB = conf.getInt("color_mulB");
 		
 		
 		//iterate through all of the Result tiles and initialize them
-		for(int i = 0; i*tileW < imW; i++) {
-			for(int j = 0; j*tileH < imH; j++) {
+		for(int i = 0; i*tileSize < imW; i++) {
+			for(int j = 0; j*tileSize < imH; j++) {
 				int val = -128;
 				
 				
 				//if not scanning the whole tile, check the corners and center
 				if(!scanWholeTile) {
-					int color = img.get(i*tileW, j*tileH);
+					int color = img.get(i*tileSize, j*tileSize);
 					val = getVal(color);
-					color = img.get((i+1)*tileW-1, (j)*tileH);
+					color = img.get((i+1)*tileSize-1, (j)*tileSize);
 					val = max(getVal(color), val);
-					color = img.get((i+1)*tileW, (j+1)*tileH-1);
+					color = img.get((i+1)*tileSize, (j+1)*tileSize-1);
 					val = max(getVal(color)-1, val);
-					color = img.get((i)*tileW, (j+1)*tileH-1);
+					color = img.get((i)*tileSize, (j+1)*tileSize-1);
 					val = max(getVal(color), val);
 					
 					if(checkCenter) {
-						color = img.get((i)*tileW + tileW/2, (j+1)*tileH-1 + tileH/2);
+						color = img.get((i)*tileSize + tileSize/2, (j+1)*tileSize-1 + tileSize/2);
 						val = max(getVal(color), val);
 					}
 				}
@@ -117,17 +117,17 @@ public class ResultImage {
 	 * @return the {@link Result}
 	 */
 	private Result iterate(Img img, int x, int y) {
-		byte[] l_results = new byte[tileW*tileH];
+		byte[] l_results = new byte[tileSize*tileSize];
 
 		boolean hadMatch = false;
 
-		for(int l = 0; l < tileW; l++) {
-			for(int m = 0; m < tileH; m++) {
-				int l_color = img.get(x*tileW + m,  y*tileH + l);
+		for(int l = 0; l < tileSize; l++) {
+			for(int m = 0; m < tileSize; m++) {
+				int l_color = img.get(x*tileSize + m,  y*tileSize + l);
 				
 				int val = getVal(l_color);
 				
-				l_results[l + m*tileW] = (byte) val;
+				l_results[l + m*tileSize] = (byte) val;
 
 				if(val > Result.sensitivity) {
 					hadMatch = true;
@@ -136,7 +136,7 @@ public class ResultImage {
 		}
 		if(!hadMatch)
 			return new Result.AntiResult();
-		return new Result.PlusResult(tileW, l_results);
+		return new Result.PlusResult(tileSize, l_results);
 	}
 
 	/**
@@ -206,11 +206,11 @@ public class ResultImage {
 		if(x < 0 || y < 0 || x >= imW || y >= imH)
 			return false;
 
-		int i_major = x/tileW;
-		int j_major = y/tileW;
+		int i_major = x/tileSize;
+		int j_major = y/tileSize;
 
-		int i_minor = x%tileW;
-		int j_minor = y%tileW;
+		int i_minor = x%tileSize;
+		int j_minor = y%tileSize;
 		
 		return results[i_major + j_major*sW].plusAt(i_minor, j_minor);
 	}

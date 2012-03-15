@@ -88,7 +88,7 @@ public class VisionDisp extends JPanel {
 		
 		long timeStartRender = System.nanoTime();
 		
-		int tileSize = VisionProcessing.defaultProcessing.conf.tileSize;
+		int tileSize = VisionProcessing.defaultProcessing.conf.getInt("tileSize");
 		
 		// make a shallow copy of all of the drawn instance variables
 		BufferedImage b = image;
