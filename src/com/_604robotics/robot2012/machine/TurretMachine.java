@@ -22,6 +22,9 @@ public class TurretMachine implements StrangeMachine {
     
     private int lastState = TurretState.SIDEWAYS;
     
+    /**
+     * The possible states the turret could be in.
+     */
     public interface TurretState {
         public static final int SIDEWAYS = 0;
         public static final int AIMED = 1;
@@ -30,6 +33,14 @@ public class TurretMachine implements StrangeMachine {
         public static final int RIGHT = 4;
     }
     
+    /**
+     * Initializes a new TurretMachine.
+     * 
+     * @param   controller      The PIDController to control.
+     * @param   provider        The RotationProvider to draw aiming data from.
+     * @param   encoder         The encoder measuring the horizontal position
+     *                          of the turret.
+     */
     public TurretMachine (PIDController controller, RotationProvider provider, Encoder encoder) {
         this.controller = controller;
         this.provider = provider;
@@ -38,6 +49,13 @@ public class TurretMachine implements StrangeMachine {
         this.changeTimer.start();
     }
     
+    /**
+     * Internal function to test whether or not we're relatively on target.
+     * 
+     * @param   target  The target position.
+     * 
+     * @return  Whether or not we're relatively on target.
+     */
     private boolean onTarget (double target) {
         return Math.abs(target - this.encoder.getDistance()) <= ActuatorConfiguration.TURRET_POSITION.TOLERANCE;
     }
@@ -95,6 +113,12 @@ public class TurretMachine implements StrangeMachine {
         return this.test(state);
     }
     
+    /**
+     * Sets the position to use as "SIDEWAYS".
+     * 
+     * @param   turretSidewaysPosition  The position to use as "SIDEWAYS", in
+     *                                  degrees.
+     */
     public void setTurretSidewaysPosition (double turretSidewaysPosition) {
         this.turretSidewaysPosition = turretSidewaysPosition;
     }

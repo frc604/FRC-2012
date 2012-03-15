@@ -1,13 +1,13 @@
-/**
- * Actuator polarity and power configuration.
- * 
- * @author  Michael Smith <mdsmtp@gmail.com>
- */
 package com._604robotics.robot2012.configuration;
 
 import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Relay.Value;
 
+/**
+ * Actuator polarity and power configuration.
+ * 
+ * @author  Michael Smith <mdsmtp@gmail.com>
+ */
 public interface ActuatorConfiguration {
     public static final double ACCELEROMETER_DRIVE_POWER = 0.5;
         // TODO: Configure this.

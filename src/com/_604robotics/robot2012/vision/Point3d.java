@@ -1,6 +1,11 @@
 package com._604robotics.robot2012.vision;
 
 
+/**
+ * This represents a point in 3d space
+ *
+ * @author Kevin Parker <kevin.m.parker@gmail.com>
+ */
 public class Point3d {
 	/**
 	 * the x value
@@ -31,7 +36,7 @@ public class Point3d {
 
 	
 	/**
-	 * @return - the x value
+	 * @return - the X value
 	 */
 	public double getX() {
 		return x;
@@ -39,7 +44,9 @@ public class Point3d {
 
 	
 	/**
-	 * @param x - the x value
+	 * Sets the X value of this Point
+	 * 
+	 * @param x - the X value
 	 */
 	public void setX(double x) {
 		this.x = x;
@@ -47,7 +54,7 @@ public class Point3d {
 
 	
 	/**
-	 * @return - the y value
+	 * @return - the Y value
 	 */
 	public double getY() {
 		return y;
@@ -55,7 +62,9 @@ public class Point3d {
 
 	
 	/**
-	 * @param y - the y value
+	 * Sets the Y value of this Point
+	 * 
+	 * @param y - the Y value
 	 */
 	public void setY(double y) {
 		this.y = y;
@@ -63,7 +72,7 @@ public class Point3d {
 
 	
 	/**
-	 * @return - the y value
+	 * @return - the Z value
 	 */
 	public double getZ() {
 		return z;
@@ -71,7 +80,9 @@ public class Point3d {
 
 	
 	/**
-	 * @param z - the y value
+	 * Sets the Z value of this Point
+	 * 
+	 * @param z - the Z value
 	 */
 	public void setZ(double z) {
 		this.z = z;

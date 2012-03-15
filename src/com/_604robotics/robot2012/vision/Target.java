@@ -1,7 +1,7 @@
 package com._604robotics.robot2012.vision;
 
 /**
- * 
+ * Represents a target.
  * 
  * @author Kevin Parker <kevin.m.parker@gmail.com>
  */

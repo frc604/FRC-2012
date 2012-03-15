@@ -13,11 +13,19 @@ public class PickupMachine implements StrangeMachine {
     private final DoubleSolenoid pickup;
     private final Timer switchTimer = new Timer();
     
+    /**
+     * Possible states the pickup could be in.
+     */
     public interface PickupState {
         public static final int OUT = 0;
         public static final int IN = 1;
     }
     
+    /**
+     * Initializes a new PickupMachine.
+     * 
+     * @param   pickup  The solenoid of the pickup to control.
+     */
     public PickupMachine (DoubleSolenoid pickup) {
         this.pickup = pickup;
         this.switchTimer.start();

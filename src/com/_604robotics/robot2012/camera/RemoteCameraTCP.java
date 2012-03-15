@@ -22,6 +22,9 @@ public class RemoteCameraTCP implements CameraInterface {
     private RemoteCameraServer server = new RemoteCameraServer();
     private Thread thread;
     
+    /**
+     * Initializes communication.
+     */
     public void begin() {
         this.server.enabled = true;
         
@@ -29,10 +32,18 @@ public class RemoteCameraTCP implements CameraInterface {
         this.thread.start();
     }
 
+    /**
+     * Ends communication.
+     */
     public void end() {
         this.server.enabled = false;
     }
 
+    /**
+     * Returns the last targets acquired from the remote software.
+     * 
+     * @return  The last targets acquired from the remote software.
+     */
     public Target[] getTargets () {
         return this.server.targets;
     }

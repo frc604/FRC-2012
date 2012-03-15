@@ -5,16 +5,10 @@ import frc.vision.Target;
 
 
 /**
- * TODO: Test, and make stuff better.
+ * Utility class for various aiming functions and such.
  * 
- * What should go here?
- * ====================
- *  - Distance calculation code.
- *  - Angle calculation code.
- *  - Aiming code.
- * 
+ * @author  Kevin Parker <kevin.m.parker@gmail.com>
  */
-
 public class Aiming {
 	
 	public final static Aiming defaultAiming = new Aiming();

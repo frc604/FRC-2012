@@ -15,7 +15,10 @@ public class ElevatorMachine implements StrangeMachine {
     
     private int lastState = ElevatorState.MEDIUM;
     private boolean withinTolerance = false;
-    
+
+    /**
+     * Various possible states the elevator can be in.
+     */
     public interface ElevatorState {
         public static final int HIGH = 0;
         public static final int MEDIUM = 1;
@@ -24,11 +27,18 @@ public class ElevatorMachine implements StrangeMachine {
         public static final int TURRET_OKAY = 4;
     }
     
+    /**
+     * Initializes a new ElevatorMachine.
+     * 
+     * @param   controller  A PIDController to control.
+     * @param   encoder     The encoder monitoring the elevator's vertical
+     *                      position.
+     */
     public ElevatorMachine (PIDController controller, Encoder encoder) {
         this.controller = controller;
         this.encoder = encoder;
     }
-
+    
     public boolean test (int state) {
         switch (state) {
             case ElevatorState.HIGH:

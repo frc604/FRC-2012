@@ -9,6 +9,11 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.util.Vector;
 
+/**
+ * Implements a slow-er-ish, but more robust-ish, RotationProvider.
+ * 
+ * @author  Michael Smith <mdsmtp@gmail.com>
+ */
 public class SlowbroRotationProvider implements RotationProvider {
     private final ConvertingPIDController controller;
     private final CameraInterface cameraInterface;
@@ -20,6 +25,13 @@ public class SlowbroRotationProvider implements RotationProvider {
     private final Timer lastTimer = new Timer();
     private final Timer steadyTimer = new Timer();
     
+    /**
+     * Initializes a new SlowbroRotationProvider.
+     * 
+     * @param   controller      The PIDController to control.
+     * @param   cameraInterface The CameraInterface to read data from.
+     * @param   encoderTurret   The turret encoder to read data from. 
+     */
     public SlowbroRotationProvider (ConvertingPIDController controller, CameraInterface cameraInterface, Encoder encoderTurret) {
         this.controller = controller;
         this.cameraInterface = cameraInterface;

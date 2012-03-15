@@ -6,6 +6,12 @@ import com.sun.squawk.util.MathUtils;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.PIDController;
 
+/**
+ * A slightly smarter implementation of a rotation provider, which tries to 
+ * account for network delay, etc.
+ * 
+ * @author  Michael Smith <mdsmtp@gmail.com>
+ */
 public class SlightlySmarterRotationProvider implements RotationProvider {
     private final PIDController controller;
     private final CameraInterface cameraInterface;
@@ -13,6 +19,13 @@ public class SlightlySmarterRotationProvider implements RotationProvider {
     
     private double defaultPosition = 0D;
     
+    /**
+     * Initializes a new SlightlySmarterRotationProvider.
+     * 
+     * @param   controller      The PIDController to control.
+     * @param   cameraInterface The CameraInterface to read data from.
+     * @param   encoderTurret   The turret encoder to read data from.
+     */
     public SlightlySmarterRotationProvider (PIDController controller, CameraInterface cameraInterface/* , Gyro360 gyroHeading*/, Encoder encoderTurret) {
         this.controller = controller;
         this.cameraInterface = cameraInterface;

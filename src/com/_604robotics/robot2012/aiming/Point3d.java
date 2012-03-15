@@ -1,16 +1,26 @@
 package com._604robotics.robot2012.aiming;
 
+/**
+ * Represents a single point in 3D space.
+ * 
+ * @author  Kevin Parker <kevin.m.parker@gmail.com>
+ */
 public class Point3d {
 	public double x, y, z;
         
+        /**
+         * Initializes a new Point3d.
+         */
         public Point3d() {
             
         }
 
 	/**
-	 * @param x
-	 * @param y
-	 * @param z
+         * Initializes a new Point3d.
+         * 
+	 * @param   x   The x-coordinate of the point.
+	 * @param   y   The y-coordinate of the point.
+	 * @param   z   The z-coordinate of the point.
 	 */
 	public Point3d(double x, double y, double z) {
 		super();

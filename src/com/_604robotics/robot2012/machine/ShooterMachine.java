@@ -19,16 +19,30 @@ public class ShooterMachine implements StrangeMachine {
     
     private double speed = 0D;
     
+    /**
+     * The possible states the shooter could be in.
+     */
     public interface ShooterState {
         public static final int SHOOTING = 0;
     }
     
+    /**
+     * Initializes a new ShooterMachine.
+     * 
+     * @param   shooter     The motors of the shooter to control.
+     * @param   hopper      The motor of the hopper to control.
+     */
     public ShooterMachine (DualVictor shooter, Victor hopper) {
         this.shooter = shooter;
         this.hopper = hopper;
         this.sinceTimer.start();
     }
     
+    /**
+     * Sets the shooter speed to use when, well, shooting.
+     * 
+     * @param   speed   The shooter speed to use when, well, shooting.
+     */
     public void setShooterSpeed (double speed) {
         this.speed = speed;
     }

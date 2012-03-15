@@ -302,7 +302,9 @@ public class Robot2012Orange extends SimpleRobot {
     /**
      * Automated drive for autonomous mode.
      * 
-     * It's not done yet.
+     * If in middle, drive forward, knock down bridge, turn around.
+     * 
+     * Else, or then, go ahead and try to score.
      */
     public void autonomous() {
         // TODO: Calibrate encoders.

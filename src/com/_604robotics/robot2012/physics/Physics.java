@@ -3,16 +3,15 @@ package com._604robotics.robot2012.physics;
 import com._604robotics.robot2012.aiming.Point2d;
 
 /**
- * Physics.java
- *
- * Used for determining launch velocities of the ball It gives velocity as a
- * function of displacement and final vertical velocity
- *
+ * Used for determining launch velocities of the ball.
+ * 
+ * It gives velocity as a function of displacement and final vertical velocity
+ * 
+ * @author  Kevin Parker <kevin.m.parker@gmail.com>
  */
 public class Physics {
-    
     /**
-     * returns an approximation of the power the shooter should be spun at
+     * Returns an approximation of the power the shooter should be spun at
      * 
      * @param vel - velocity, in inches/second
      * @return the power to spin the shooter wheel at
@@ -35,15 +34,13 @@ public class Physics {
      * This untested function might determine the firing velocity for a given
      * distance (horizontally, and vertically) and the angle of the shooter.
      *
+     * @param   distH	Horizontal distance the ball must travel.
+     * @param   distV   Vertical distance the ball must travel.
+     * @param   slope   What slope the launcher is at.
      *
-     * double distH	horizontal distance the ball must travel double distV
-     * vertical distance the ball must travel double slope	what slope the
-     * launcher is at
-     *
-     * @return the firing velocity
-     *
+     * @return  The firing velocity
      */
-    public double getCrappyFiringVelocity(double distH, double distV, double slope) {
+    public double getSubparFiringVelocity(double distH, double distV, double slope) {
         double g = -386;//inches per second squared
 
         return (Math.sqrt(2) * Math.sqrt(g * slope * slope + g)
@@ -57,11 +54,12 @@ public class Physics {
      * the ball should enter the hoop.
      *
      *
-     * double distH	horizontal distance the ball must travel double distV
-     * vertical distance the ball must travel double verticalVel	velocity at
-     * which the ball should enter the hoop
+     * @param   distH           Horizontal distance the ball must travel.
+     * @param   distV           Vertical distance the ball must travel.
+     * @param   verticalVel	Velocity at which the ball should enter the
+     *                          hoop.
      *
-     * @return a Point2d with the x and y velocities does not return the time.
+     * @return  A Point2d with the x and y velocities does not return the time.
      *
      */
     public Point2d betterVersionOfgetFiringVelocity(double distH, double distV, double verticalVel) {
@@ -92,13 +90,10 @@ public class Physics {
      * determines the firing velocities (and time) for a given distance
      * (horizontally, and vertically).
      *
+     * @param   distH   Horizontal distance the ball must travel.
+     * @param   distV   Vertical distance the ball must travel.
      *
-     * double distH	horizontal distance the ball must travel double distV
-     * vertical distance the ball must travel
-     *
-     *
-     * @return a Point2d with the x and y velocities does not return the time.
-     *
+     * @return  A Point2d with the x and y velocities does not return the time.
      */
     public Point2d betterVersionOfgetFiringVelocity(double distH, double distV) {
 
@@ -112,18 +107,14 @@ public class Physics {
      * This function will determine how to fire the ball if the shooter only has
      * 2 vertical angles.
      *
-     * double*	ballVel	pointer to the returned ball velocity ShooterAnglePick*
-     * anglePick	pointer to the selected angle (use ShooterAnglePickTop and
-     * ShooterAnglePickBottom) double*	horizAngle	pointer to the returned
-     * horizontal angle. (given in radians)
+     * @param   xDist       Left-right distance of the target.
+     * @param   yDist       Vertical distance of the target.
+     * @param   zDist       Depth distance of the target.
+     * @param   robotVelX   Current velocity (x axis) of the robot.
+     * @param   robotVelZ   Current velocity (z axis) of the robot
      *
-     * double	xDist	left-right distance of the target double	yDist	vertical
-     * distance of the target double	zDist	depth distance of the target double
-     * robotVelX	current velocity (x axis) of the robot double	robotVelZ	current
-     * velocity (z axis) of the robot
-     *
-     * @return a BallFireInfo with the velocity, angle, and horizontalAngle to
-     * fire the ball at (eventually)
+     * @return  A BallFireInfo with the velocity, angle, and horizontalAngle to
+     *          fire the ball at (eventually)
      */
     public BallFireInfo GetBallFiringInfo(double xDist, double yDist, double zDist, double robotVelX, double robotVelZ) {
         //TODO - needz moar math

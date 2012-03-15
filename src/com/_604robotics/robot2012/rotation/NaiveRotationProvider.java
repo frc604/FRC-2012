@@ -8,8 +8,7 @@ import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.PIDController;
 
 /**
- * A naive implementation of a RotationProvider, taking a CameraInteface and a
- * Gyro360 as inputs to process.
+ * A naive implementation of a RotationProvider,
  * 
  * @author  Michael Smith <mdsmtp@gmail.com>
  */
@@ -29,7 +28,7 @@ public class NaiveRotationProvider implements RotationProvider {
      * 
      * @param   controller      The PIDController to control.
      * @param   cameraInterface The CameraInterface to read data from.
-     * @param   gyroHeading     The (heading) Gyro360 to read data from.
+     * @param   encoderTurret   The turret encoder to read data from.
      */
     public NaiveRotationProvider (PIDController controller, CameraInterface cameraInterface/* , Gyro360 gyroHeading*/, Encoder encoderTurret) {
         this.controller = controller;

@@ -1,11 +1,18 @@
 package com._604robotics.robot2012.aiming;
 
+/**
+ * Represents a single point on the 2D plane.
+ * 
+ * @author  Kevin parker <kevin.m.parker@gmail.com>
+ */
 public class Point2d {
 	double x, y;
 
 	/**
-	 * @param x
-	 * @param y
+         * Intializes a new Point2d.
+         * 
+	 * @param   x   The x-coordinate of the point.
+	 * @param   y   The y-coordinate of the point.
 	 */
 	public Point2d(double x, double y) {
 		super();
