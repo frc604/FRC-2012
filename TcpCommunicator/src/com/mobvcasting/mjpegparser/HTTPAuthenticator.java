@@ -1,4 +1,4 @@
-package com._604robotics.robot2012.vision;
+package com.mobvcasting.mjpegparser;
 
 import java.net.Authenticator;
 import java.net.PasswordAuthentication;
@@ -6,7 +6,7 @@ import java.net.PasswordAuthentication;
 /**
  * From http://www.walking-productions.com/notslop/2010/04/20/motion-jpeg-in-flash-and-java/
  */
-class HTTPAuthenticator extends Authenticator {
+public class HTTPAuthenticator extends Authenticator {
 	private String username, password;
 
 	public HTTPAuthenticator(String user, String pass) {

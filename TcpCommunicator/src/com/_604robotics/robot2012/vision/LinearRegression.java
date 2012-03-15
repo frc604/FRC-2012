@@ -50,9 +50,9 @@ public class LinearRegression {
 		double R2;
 		
 		/**
-		 * @param m - The slope of the regression line
-		 * @param b - The y-intercept of the regression line
-		 * @param r2 - A number indicating how good of a fit this line is
+		 * @param m	The slope of the regression line
+		 * @param b	The y-intercept of the regression line
+		 * @param r2	A number indicating how good of a fit this line is
 		 */
 		public RegressionResult(double m, double b, double r2) {
 			this.m = m;
@@ -70,8 +70,8 @@ public class LinearRegression {
 	/**
 	 * This returns a regression result that, instead of having y as a function of x has x as a function of y.
 	 * 
-	 * @param y - the list of y values
-	 * @param x - the list of x values
+	 * @param y	the list of Y values
+	 * @param x	the list of X values
 	 * @return
 	 */
 	public static BackwardsRegressionResult getBackwardsRegression(double[] y, double[] x) {
@@ -147,9 +147,9 @@ public class LinearRegression {
 	/**
 	 * Computes the intersection of two RegressionResults
 	 * 
-	 * @param a - a RegressionResult
-	 * @param b - a RegressionResult
-	 * @return the intersection
+	 * @param a	A RegressionResult
+	 * @param b	A RegressionResult
+	 * @return The intersection
 	 */
 	public static Point2d solve(RegressionResult a, RegressionResult b) {
 		boolean bA = a instanceof BackwardsRegressionResult;

@@ -25,7 +25,6 @@ public class DistanceCalculations {
 	private Point2d	cameraCorner_topLeft	= transformPoint(cameraCorner_0_0),
 			cameraCorner_bottomRight = transformPoint(cameraCorner_640_480);
 	// 320 / (tan(47 / 2 degrees));
-	double			FOV						= 47;								// degrees
 																				
 	/**
 	 * How many horizontal pixels away from center a line is that goes out at the same rate it goes right
@@ -94,7 +93,9 @@ public class DistanceCalculations {
 	}
 	
 	/**
-	 * @param quad - a quadrilateral with corners indicating the corners of the target
+	 * A method that tries to find the most likely location for the vision target to lie in 3D space
+	 * 
+	 * @param quad	a quadrilateral with corners indicating the corners of the target
 	 * @return a Target as an estimation of
 	 */
 	public Target getApproximationOfTarget(Quad quad) {
@@ -174,7 +175,7 @@ public class DistanceCalculations {
 	/**
 	 * Credit goes to Colin Aitken <cacolinerd@gmail.com> for figuring out the equations for nX and nY
 	 * 
-	 * @param p - the Point2d to transform
+	 * @param p	the Point2d to transform
 	 * @return the transformed point (based on camera coords and rotUpDown into values indicating x/z and y/z)
 	 */
 	private Point2d transformPoint(Point2d p) {

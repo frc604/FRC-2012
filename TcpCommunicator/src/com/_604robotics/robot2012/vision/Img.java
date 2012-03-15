@@ -24,9 +24,9 @@ public class Img {
 	/**
 	 * A constructor to make an Img
 	 * 
-	 * @param dat - data array
-	 * @param w - width
-	 * @param h - height
+	 * @param dat	data array
+	 * @param w	width
+	 * @param h	height
 	 */
 	public Img(int[] dat, int w, int h) {
 		super();
@@ -38,8 +38,8 @@ public class Img {
 	/**
 	 * A constructor to make an Img
 	 * 
-	 * @param raster - a raster storing original image data
-	 * @param buff - an array to store the image data into
+	 * @param raster	a raster storing original image data
+	 * @param buff	an array to store the image data into
 	 */
 	public Img(Raster raster, int[] buff) {
 		w = raster.getWidth();
@@ -61,7 +61,7 @@ public class Img {
 	/**
 	 * A constructor to make an Img
 	 * 
-	 * @param raster - a raster storing original image data
+	 * @param raster	a raster storing original image data
 	 */
 	public Img(Raster raster) {
 		this(raster, new int[raster.getWidth()*raster.getHeight()]);
@@ -79,8 +79,8 @@ public class Img {
 	}
 
 	/**
-	 * @param x - the X coordinate
-	 * @param y - the Y coordinate
+	 * @param x	the X coordinate
+	 * @param y	the Y coordinate
 	 * @return an integer holding an RGB value
 	 */
 	public int get(int x, int y) {
@@ -92,9 +92,9 @@ public class Img {
 	}
 
 	/**
-	 * @param x - the X coordinate
-	 * @param y - the Y coordinate
-	 * @param k - an integer holding an RGB value
+	 * @param x	the X coordinate
+	 * @param y	the Y coordinate
+	 * @param k	an integer holding an RGB value
 	 * @return a boolean if the value was set or not
 	 */
 	public boolean set(int x, int y, int k) {

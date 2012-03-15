@@ -229,7 +229,7 @@ public class VisionProcessing {
 	public void loopAndProcessPics() throws MalformedURLException {
 		
 		// Set the username and password used to access the camera
-		Authenticator.setDefault(new HTTPAuthenticator("FRC", "FRC"));
+		Authenticator.setDefault(new com.mobvcasting.mjpegparser.HTTPAuthenticator("FRC", "FRC"));
 		
 		// Start streaming images from the camera
 		URL url = new URL("http://10.6.4.11/mjpg/video.mjpg");
