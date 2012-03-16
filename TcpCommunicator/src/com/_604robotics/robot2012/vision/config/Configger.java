@@ -152,9 +152,9 @@ public class Configger {
 		Runnable r = new Runnable() {
 			public void run() {
 				try {
-					//vp.loopAndProcessPreSavedPics();
-					vp.loopAndProcessPics();
-				} catch (IOException ex) {
+					vp.loopAndProcessPreSavedPics();
+					//vp.loopAndProcessPics();
+				} catch (Exception ex) {
 					ex.printStackTrace();
 				}
 			}

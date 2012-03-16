@@ -179,7 +179,7 @@ public abstract class LinkedSlider extends Box implements ChangeListener {
 		/**
 		 * The underlying resolution of the slider
 		 */
-		private static final int MAX = 65536;
+		private static final int MAX = 1<<24;
 		
 		/**
 		 * A constructor for a DoubleLinkedSlider

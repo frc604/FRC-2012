@@ -156,8 +156,8 @@ public class VisionProcessing {
 	public static void main(String[] args) throws InterruptedException, IOException {
 		VisionProcessing vp = defaultProcessing;
 		vp.startWindow();
-		//vp.loopAndProcessPics();
-		vp.loopAndProcessPreSavedPics();
+		vp.loopAndProcessPics();
+		//vp.loopAndProcessPreSavedPics();
 		
 	}
 	
@@ -268,6 +268,7 @@ public class VisionProcessing {
 			
 			if (conf.getBoolean("debug_SaveImagesToFiles")) {
 				try {
+					System.out.println("here");
 					ImageIO.write(img, "jpeg", new File("target/" + currentFrame + ".jpeg"));
 				} catch (IOException ex) {
 					ex.printStackTrace();
@@ -281,13 +282,17 @@ public class VisionProcessing {
 	 * loop of 50 pictures saved as target/[number].jpeg
 	 */
 	public void loopAndProcessPreSavedPics() throws IOException {
-		for (int i = 0; true; i++) {
+		for (int i = 1; true; i++) {
 			
-			if (i >= 50) {
-				i -= 50;
+			if (i >= 577) {
+				i -= 577;
 			}
 			
-			processImage(ImageIO.read(new File("target/" + i + ".jpeg")));
+			try {
+				processImage(ImageIO.read(new File("target/" + i + ".jpeg")));
+
+				Thread.sleep(100);
+			} catch (Exception ex) {}
 			
 		}
 	}

@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Scanner;
@@ -175,7 +177,7 @@ public class Config {
 	 *
 	 * @author Kevin Parker <kevin.m.parker@gmail.com>
 	 */
-	public static class DataValue {
+	public static class DataValue implements Comparable<DataValue> {
 		private String key;
 		private Object value;
 		private Object defValue;
@@ -231,6 +233,10 @@ public class Config {
 			
 			return (Double) value;
 		}
+
+		public int compareTo(DataValue dv) {
+			return key.compareTo(dv.key);
+		}
 	}
 	
 	/**
@@ -244,8 +250,12 @@ public class Config {
 			file.createNewFile();
 		
 		FileWriter fw = new FileWriter(file);
+		
+		ArrayList<DataValue> sorted = new ArrayList<DataValue>();
+		sorted.addAll(dataMap.values());
+		Collections.sort(sorted);
 
-		for(DataValue dv: dataMap.values()) {
+		for(DataValue dv: sorted) {
 			fw.write(getOutString(dv.key, dv.value));
 		}
 		
