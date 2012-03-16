@@ -43,5 +43,6 @@ public interface ButtonConfiguration {
         public static final int DRIVE_ENABLED = 2;
         public static final int PICKUP_IN = 3;
         public static final int SUCK = 4;
+        public static final int SHOOT = 5;
     }
 }

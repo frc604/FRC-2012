@@ -608,6 +608,8 @@ public class Robot2012Orange extends SimpleRobot {
                     hopperMotor.set(0D);
                 }
 
+                // TODO: Implement shooting.
+                
                 elevatorMotors.reload();
                 shooterMotors.reload();
                 hopperMotor.reload();
