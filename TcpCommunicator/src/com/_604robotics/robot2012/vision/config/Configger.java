@@ -152,8 +152,8 @@ public class Configger {
 		Runnable r = new Runnable() {
 			public void run() {
 				try {
-					//vp.loopAndProcessPreSavedPics();
-					vp.loopAndProcessPics();
+					vp.loopAndProcessPreSavedPics();
+					//vp.loopAndProcessPics();
 				} catch (IOException ex) {
 					ex.printStackTrace();
 				}
@@ -217,7 +217,7 @@ public class Configger {
 		centerCheck = new JCheckBox("Check Center", conf.getBoolean("checkCenter"));
 		scanWholeTile = new JCheckBox("Scan Whole Tile", conf.getBoolean("scanWholeTile"));
 		
-		minBlobSize = new LinkedSlider.IntLinkedSlider("Min. Blob Size", 1, 100, conf.getInt("minBlobSize"));
+		minBlobSize = new LinkedSlider.IntLinkedSlider("Min. Blob Size", 1, 200, conf.getInt("minBlobSize"));
 		tileSize = new LinkedSlider.IntLinkedSlider("Tile Size", 1, 12, conf.getInt("tileSize"));
 		
 		

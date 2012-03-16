@@ -65,9 +65,9 @@ public class ResultImage {
 		color_targetG = conf.getInt("color_targetG");
 		color_targetB = conf.getInt("color_targetB");
 		
-		color_mulR = conf.getInt("color_mulR");
-		color_mulG = conf.getInt("color_mulG");
-		color_mulB = conf.getInt("color_mulB");
+		color_mulR = conf.getDouble("color_mulR");
+		color_mulG = conf.getDouble("color_mulG");
+		color_mulB = conf.getDouble("color_mulB");
 		
 		
 		//iterate through all of the Result tiles and initialize them
