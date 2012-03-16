@@ -363,16 +363,17 @@ public class Config {
 		/**
 		 * The color of the vision target when the light is shining on it
 		 */
-		addKeyValuePair("color_targetR", 28);
-		addKeyValuePair("color_targetG", 168);
-		addKeyValuePair("color_targetB", 255);
+		//was (28, 168, 255) for blue light
+		addKeyValuePair("color_targetR", 3);
+		addKeyValuePair("color_targetG", 251);
+		addKeyValuePair("color_targetB", 242);
 		
 		/**
 		 * How much to multiply the square of the errors per color channel by
 		 */
-		addKeyValuePair("color_mulR", 0.022347725382064434);
-		addKeyValuePair("color_mulG", 0.00927123096675047);
-		addKeyValuePair("color_mulB", 0.019325228797194463);
+		addKeyValuePair("color_mulR", 0.0207);
+		addKeyValuePair("color_mulG", 0.02);
+		addKeyValuePair("color_mulB", 0.02);
 	}
 
 
