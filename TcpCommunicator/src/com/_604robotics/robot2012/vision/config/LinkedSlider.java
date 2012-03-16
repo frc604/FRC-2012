@@ -73,6 +73,8 @@ public abstract class LinkedSlider extends Box implements ChangeListener {
 		 * What to multiply values
 		 */
 		private double valMul = 1;
+		
+		private static final double exponent = 50;
 
 		/**
 		 * A constructor to make an ExponentialLinkedSlider
@@ -82,8 +84,10 @@ public abstract class LinkedSlider extends Box implements ChangeListener {
 		 * @param max	The maximum value
 		 */
 		public ExponentialLinkedSlider(String name, double initial, double max) {
-			super(name, Math.log10(initial*9+1)/max, 1);
+			super(name, Math.log(initial*(exponent-1)+1)/max/Math.log(exponent), 1);
 			valMul = max;
+			
+			System.out.println(getValue());
 			
 			updateValLabel();
 		}
@@ -104,7 +108,7 @@ public abstract class LinkedSlider extends Box implements ChangeListener {
 		 */
 		public double getValue() {
 			double rawVal = (slider.getValue()*1.0)/max;
-			rawVal = (Math.pow(10, rawVal)-1)/9;
+			rawVal = (Math.pow(exponent, rawVal)-1)/(exponent - 1);
 			return valMul*rawVal + min;
 		}
 		
@@ -112,7 +116,7 @@ public abstract class LinkedSlider extends Box implements ChangeListener {
 		 * @see com._604robotics.robot2012.vision.config.LinkedSlider.DoubleLinkedSlider#setValue(double)
 		 */
 		public void setValue(double val) {
-			slider.setValue((int) (max*Math.log10(val*9+1)/valMul));
+			slider.setValue((int) (max*Math.log(val*(exponent - 1)+1)/valMul/Math.log(exponent)));
 		}
 	}
 	
