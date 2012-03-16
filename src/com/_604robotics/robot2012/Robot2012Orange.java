@@ -348,6 +348,9 @@ public class Robot2012Orange extends SimpleRobot {
 
         Timer controlTimer = new Timer();
         controlTimer.start();
+
+        Timer calibrationTimer = new Timer();
+        calibrationTimer.start();
         
         encoderTurretRotation.setOffset(SensorConfiguration.TURRET_CALIBRATION_OFFSET);
         turretMachine.setTurretSidewaysPosition(encoderTurretRotation.getDistance());
@@ -368,8 +371,14 @@ public class Robot2012Orange extends SimpleRobot {
             /* Calibrate the elevator while everything else is going on. */
             
             if (step > 4 && !elevatorCalibrated) {
-                if (elevatorLimitSwitch.get()) {
-                    elevatorMotors.set(-0.3);
+                if (calibrationTimer.get() < 5) {
+                    if (elevatorLimitSwitch.get()) {
+                        elevatorMotors.set(-0.3);
+                    } else {
+                        elevatorMotors.set(0D);
+                        encoderElevator.reset();
+                        elevatorCalibrated = true;
+                    }
                 } else {
                     elevatorMotors.set(0D);
                     encoderElevator.reset();
@@ -554,6 +563,8 @@ public class Robot2012Orange extends SimpleRobot {
         }
         
         if (kinect && elevatorCalibrated) {
+            ringLight.set(ActuatorConfiguration.RING_LIGHT.ON);
+            
             while (isAutonomous() && isEnabled() && !abort) {
                 abort = leftKinect.getRawButton(ButtonConfiguration.Kinect.ABORT);
                 
@@ -570,6 +581,8 @@ public class Robot2012Orange extends SimpleRobot {
                 hopperMotor.reload();
                 turretRotationMotor.reload();
             }
+            
+            ringLight.set(ActuatorConfiguration.RING_LIGHT.OFF);
             
             while (isAutonomous() && isEnabled() && !abort) {
                 abort = leftKinect.getRawButton(ButtonConfiguration.Kinect.ABORT);
@@ -602,7 +615,9 @@ public class Robot2012Orange extends SimpleRobot {
                 ringLight.reload();
             }
         }
-
+        
+        driveTrain.tankDrive(0D, 0D);
+        
         pickupMotor.set(0D);
         hopperMotor.set(0D);
         
