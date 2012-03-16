@@ -32,6 +32,7 @@ import java.util.Date;
  * @author  Sebastian Merz <merzbasti95@gmail.com>
  * @author  Aaron Wang <aaronw94@gmail.com>
  * @author  Colin Aitken <cacolinerd@gmail.com>
+ * @author  Alan Li <alanpusongli@gmail.com>
  */
 public class Robot2012Orange extends SimpleRobot {
     XboxController driveController;
