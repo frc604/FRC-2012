@@ -27,8 +27,8 @@ public interface PortConfiguration {
         
         public static final int SHOOTER_LEFT = 2;
         public static final int SHOOTER_RIGHT = 3;
-        public static final int HOPPER = 5;
-        public static final int PICKUP = 4;
+        public static final int HOPPER = 4;
+        public static final int PICKUP = 5;
         
         public static final int TURRET_ROTATION = 6;
     }
@@ -48,18 +48,18 @@ public interface PortConfiguration {
     
     public interface Encoders {
         public interface Drive {
-            public static final int LEFT_A = 11;
-            public static final int LEFT_B = 12;
+            public static final int LEFT_A = 7;
+            public static final int LEFT_B = 2;
             
-            public static final int RIGHT_A = 13;
-            public static final int RIGHT_B = 14;
+            public static final int RIGHT_A = 3;
+            public static final int RIGHT_B = 4;
         }
         
-        public static final int ELEVATOR_A = 1;
-        public static final int ELEVATOR_B = 2;
+        public static final int ELEVATOR_A = 12;
+        public static final int ELEVATOR_B = 11;
         
-        public static final int TURRET_ROTATION_A = 3;
-        public static final int TURRET_ROTATION_B = 4;
+        public static final int TURRET_ROTATION_A = 14;
+        public static final int TURRET_ROTATION_B = 13;
     }
     
     public interface Pneumatics {
@@ -67,23 +67,23 @@ public interface PortConfiguration {
         public static final int PRESSURE_SWITCH = 5;
 
         public interface SHIFTER_SOLENOID {
-            public static final int LOW_GEAR = 7; // FORWARD
-            public static final int HIGH_GEAR = 8; // REVERSE
+            public static final int LOW_GEAR = 8; // FORWARD
+            public static final int HIGH_GEAR = 7; // REVERSE
         }
         
         public interface SHOOTER_SOLENOID {
-            public static final int LOWER_ANGLE = 6; // FORWARD
-            public static final int UPPER_ANGLE = 5; // REVERSE
+            public static final int LOWER_ANGLE = 5; // FORWARD
+            public static final int UPPER_ANGLE = 6; // REVERSE
         }
         
         public interface PICKUP_SOLENOID {
-            public static final int IN = 2; // FORWARD
-            public static final int OUT = 1; // REVERSE
+            public static final int IN = 4; // FORWARD
+            public static final int OUT = 3; // REVERSE
         }
         
         public interface HOPPER_SOLENOID {
-            public static final int FORWARD = 4; // REGULAR
-            public static final int REVERSE = 3; // PUSH
+            public static final int FORWARD = 2; // REGULAR
+            public static final int REVERSE = 1; // PUSH
         }
     }
 }

@@ -22,6 +22,8 @@ public class DualVictor implements PIDOutput {
     private double lowerDeadband = 0D;
     private double upperDeadband = 0D;
     
+    private boolean disabled = false;
+    
     /**
      * Initialize a DualVictor with a left and a right PWM port.
      * 
@@ -106,6 +108,15 @@ public class DualVictor implements PIDOutput {
      * @param   speed   The speed to set.
      */
     public void set (double speed) {
+        if (this.disabled) {
+            this.leftVictor.set(0D);
+            this.rightVictor.set(0D);
+            
+            this.spring();
+            
+            return;
+        }
+        
         if (speed > this.lowerDeadband && speed < this.upperDeadband)
             speed = 0D;
         
@@ -171,5 +182,13 @@ public class DualVictor implements PIDOutput {
      */
     public void setController (PIDController controller) {
         this.controller = controller;
+    }
+    
+    public boolean getDisabled () {
+        return this.disabled;
+    }
+    
+    public void setDisabled (boolean disabled) {
+        this.disabled = disabled;
     }
 }

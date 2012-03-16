@@ -25,6 +25,14 @@ public class SlowbroRotationProvider implements RotationProvider {
     private final Timer lastTimer = new Timer();
     private final Timer steadyTimer = new Timer();
     
+    public static double getDouble(String key, double def) {
+        try {
+            return SmartDashboard.getDouble(key, def);
+        } catch (Exception ex) {
+            return def;
+        }
+    }
+    
     /**
      * Initializes a new SlowbroRotationProvider.
      * 
@@ -70,24 +78,24 @@ public class SlowbroRotationProvider implements RotationProvider {
         System.out.println("--------------------");
         
         if (Math.abs(this.encoderTurret.get() - this.controller.getRealSetpoint()) < 10) {
-            if (this.confidenceTimer.get() >= SmartDashboard.getDouble("Confidence Threshold", 0.7)) {
+            if (this.confidenceTimer.get() >= getDouble("Confidence Threshold", 0.7)) {
                 this.steadyTimer.start();
                 if (target != null) {
                     this.controller.setSetpoint((Math.toDegrees(MathUtils.atan2(target.z, target.x)) * -1.0 + 90) * 0.8 + encoderTurret.getDistance());
                     this.lastTimer.reset();
                     if (Math.abs(target.x) < 1) {
                         this.controller.reset();
-                        if (this.steadyTimer.get() < SmartDashboard.getDouble("Steady Threshold", 0.5))
+                        if (this.steadyTimer.get() < getDouble("Steady Threshold", 0.5))
                             this.controller.enable();
                         else
                             return true;
                     } else {
-                        if (this.steadyTimer.get() > SmartDashboard.getDouble("Unsteady Threshold", 1D))
+                        if (this.steadyTimer.get() > getDouble("Unsteady Threshold", 1D))
                             this.steadyTimer.reset();
                         else
                             return true;
                     }
-                } else if (this.lastTimer.get() >= SmartDashboard.getDouble("Target Timeout", 1.5)) {
+                } else if (this.lastTimer.get() >= getDouble("Target Timeout", 1.5)) {
                     this.controller.setSetpoint(this.defaultPosition);
                 }
             } else {

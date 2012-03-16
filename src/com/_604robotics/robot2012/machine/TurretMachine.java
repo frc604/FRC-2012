@@ -57,13 +57,16 @@ public class TurretMachine implements StrangeMachine {
      * @return  Whether or not we're relatively on target.
      */
     private boolean onTarget (double target) {
-        return Math.abs(target - this.encoder.getDistance()) <= ActuatorConfiguration.TURRET_POSITION.TOLERANCE;
+        boolean ret = Math.abs(target - this.encoder.getDistance()) <= ActuatorConfiguration.TURRET_POSITION.TOLERANCE;
+        if (!ret)
+            this.changeTimer.reset();
+        return ret && this.changeTimer.get() >= 1;
     }
 
     public boolean test (int state) {
         switch (state) {
             case TurretState.SIDEWAYS:
-                return this.controller.getSetpoint() == this.turretSidewaysPosition && onTarget(this.turretSidewaysPosition) && this.changeTimer.get() >= 3;
+                return this.controller.getSetpoint() == this.turretSidewaysPosition && onTarget(this.turretSidewaysPosition);
             case TurretState.AIMED:
                 return this.isAimed;
             case TurretState.FORWARD:

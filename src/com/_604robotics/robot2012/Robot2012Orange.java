@@ -94,7 +94,15 @@ public class Robot2012Orange extends SimpleRobot {
     boolean noFixedDirection = true;
     int turretDirection = TurretState.FORWARD;
     
-    int turretSidewaysPosition = 0;
+    boolean dontAim = false;
+    
+    public static double getDouble(String key, double def) {
+        try {
+            return SmartDashboard.getDouble(key, def);
+        } catch (Exception ex) {
+            return def;
+        }
+    }
     
     /**
      * Constructor.
@@ -157,7 +165,7 @@ public class Robot2012Orange extends SimpleRobot {
         encoderLeftDrive.setDistancePerPulse(SensorConfiguration.Encoders.LEFT_DRIVE_INCHES_PER_CLICK);
         encoderRightDrive.setDistancePerPulse(SensorConfiguration.Encoders.RIGHT_DRIVE_INCHES_PER_CLICK);
         
-        encoderElevator.setOffset(450);
+        encoderElevator.setOffset(616);
         
         encoderTurretRotation.setDistancePerPulse(SensorConfiguration.Encoders.TURRET_DEGREES_PER_CLICK);
         
@@ -196,7 +204,7 @@ public class Robot2012Orange extends SimpleRobot {
          */
         
         pidElevator = new UpDownPIDController(new Gains(0.0085, 0D, 0.018), new Gains(0.0029, 0.000003, 0.007), encoderElevator, elevatorMotors);
-        pidTurretRotation = new ConvertingPIDController(0.0022, 0.0008, 0.006, encoderTurretRotation, turretRotationMotor);
+        pidTurretRotation = new ConvertingPIDController(-0.0022, -0.0008, -0.006, encoderTurretRotation, turretRotationMotor);
         
         pidElevator.setInputRange(0, 1550);
         pidElevator.setOutputRange(ActuatorConfiguration.ELEVATOR_POWER_MIN, ActuatorConfiguration.ELEVATOR_POWER_MAX);
@@ -235,16 +243,16 @@ public class Robot2012Orange extends SimpleRobot {
         shooterMachine = new ShooterMachine(shooterMotors, hopperMotor);
         
         double p_Vel, i_Vel, d_Vel;
-        SmartDashboard.putDouble("P_Vel", p_Vel = SmartDashboard.getDouble("P_Vel", 0));
-        SmartDashboard.putDouble("I_Vel", i_Vel = SmartDashboard.getDouble("I_Vel", 0));
-        SmartDashboard.putDouble("D_Vel", d_Vel = SmartDashboard.getDouble("D_Vel", 0));
+        SmartDashboard.putDouble("P_Vel", p_Vel = getDouble("P_Vel", 0));
+        SmartDashboard.putDouble("I_Vel", i_Vel = getDouble("I_Vel", 0));
+        SmartDashboard.putDouble("D_Vel", d_Vel = getDouble("D_Vel", 0));
         
         velocityController = new VelocityController(p_Vel, i_Vel, d_Vel, encoderLeftDrive, encoderRightDrive, driveTrain, gyroBalance);
         
-        SmartDashboard.putInt("Confidence Threshold", 700);
-        SmartDashboard.putInt("Target Timeout", 1500);
-        SmartDashboard.putInt("Steady Threshold", 500);
-        SmartDashboard.putInt("Unsteady Threshold", 1000);
+        SmartDashboard.putDouble("Confidence Threshold", 0.7);
+        SmartDashboard.putDouble("Target Timeout", 1.5);
+        SmartDashboard.putDouble("Steady Threshold", 0.5);
+        SmartDashboard.putDouble("Unsteady Threshold", 1D);
         
         SmartDashboard.putDouble("Auton: Step 5", AutonomousConfiguration.STEP_5_FORWARD_TIME);
         SmartDashboard.putDouble("Auton: Step 5 Sides", AutonomousConfiguration.STEP_5_FORWARD_TIME_SIDES);
@@ -303,12 +311,12 @@ public class Robot2012Orange extends SimpleRobot {
          * Aim, or make sure we're aimed. Then fire.
          */
         
-        if (turretMachine.crank(TurretState.AIMED)) {
+        if (dontAim || turretMachine.crank(TurretState.AIMED)) {
             // TODO: Add actual firing stuff here.
             
             System.out.println("SHOOTING");
             
-            solenoidHopper.set(ActuatorConfiguration.SOLENOID_HOPPER.PUSH);
+            //solenoidHopper.set(ActuatorConfiguration.SOLENOID_HOPPER.PUSH);
             shooterMachine.crank(ShooterState.SHOOTING);
         }
     }
@@ -331,7 +339,7 @@ public class Robot2012Orange extends SimpleRobot {
         double drivePower;
         double gyroAngle;
         
-        double forwardTime = SmartDashboard.getDouble("Auton: Step 5", AutonomousConfiguration.STEP_5_FORWARD_TIME_SIDES);
+        double forwardTime = getDouble("Auton: Step 5", AutonomousConfiguration.STEP_5_FORWARD_TIME_SIDES);
         
         boolean turnedAround = false;
         boolean pickupIsIn = false;
@@ -339,11 +347,23 @@ public class Robot2012Orange extends SimpleRobot {
         boolean kinect = false;
         boolean abort = false;
         
+        boolean lightState = false;
+        
+        /* Reset stuff. */
+        
+        upHigh = false;
+        pickupIn = true;
+
+        noFixedDirection = true;
+        turretDirection = TurretState.FORWARD;
+
+        dontAim = false;
+        
         /* If we're not in the middle, skip over the bridge stuff. */
         
         if (((String) inTheMiddle.getSelected()).equals("Yes")) {
             step = 4;
-            forwardTime = SmartDashboard.getDouble("Auton: Step 5 Sides", AutonomousConfiguration.STEP_5_FORWARD_TIME_SIDES);
+            forwardTime = getDouble("Auton: Step 5 Sides", AutonomousConfiguration.STEP_5_FORWARD_TIME_SIDES);
         }
 
         Timer controlTimer = new Timer();
@@ -352,6 +372,7 @@ public class Robot2012Orange extends SimpleRobot {
         Timer calibrationTimer = new Timer();
         calibrationTimer.start();
         
+        encoderTurretRotation.reset();
         encoderTurretRotation.setOffset(SensorConfiguration.TURRET_CALIBRATION_OFFSET);
         turretMachine.setTurretSidewaysPosition(encoderTurretRotation.getDistance());
         
@@ -370,16 +391,20 @@ public class Robot2012Orange extends SimpleRobot {
             
             /* Calibrate the elevator while everything else is going on. */
             
+            pickupMachine.crank(PickupState.OUT);
+            
             if (step > 4 && !elevatorCalibrated) {
                 if (calibrationTimer.get() < 5) {
                     if (elevatorLimitSwitch.get()) {
-                        elevatorMotors.set(-0.3);
+                        elevatorMotors.set(-0.4);
                     } else {
+                        calibrationTimer.stop();
                         elevatorMotors.set(0D);
                         encoderElevator.reset();
                         elevatorCalibrated = true;
                     }
                 } else {
+                    calibrationTimer.stop();
                     elevatorMotors.set(0D);
                     encoderElevator.reset();
                     elevatorCalibrated = true;
@@ -394,8 +419,23 @@ public class Robot2012Orange extends SimpleRobot {
             if (new Date().getTime() - began > 1500)
                 step = 5;
             
-            if (step > AutonomousConfiguration.MAX_STEP)
+            if (controlTimer.get() >= 1) {
+                lightState = !lightState;
+                ringLight.set((lightState) ? ActuatorConfiguration.RING_LIGHT.ON : ActuatorConfiguration.RING_LIGHT.OFF);
+                controlTimer.reset();
+            }
+            
+            if (step > AutonomousConfiguration.MAX_STEP) {
+                driveTrain.tankDrive(0D, 0D);
+
+                elevatorMotors.reload();
+                shooterMotors.reload();
+                hopperMotor.reload();
+                turretRotationMotor.reload();
+                ringLight.reload();
+
                 continue;
+            }
             
             /* Handle the main logic. */
             
@@ -404,7 +444,7 @@ public class Robot2012Orange extends SimpleRobot {
                     /* Drive forward and stop, then smash down the bridge. */
                     
                     if (controlTimer.get() <= AutonomousConfiguration.STEP_1_FORWARD_TIME) {
-                        drivePower = Math.max(0.2, 1 - controlTimer.get() / SmartDashboard.getDouble("Auton: Step 1", AutonomousConfiguration.STEP_1_FORWARD_TIME));
+                        drivePower = Math.max(0.2, 1 - controlTimer.get() / getDouble("Auton: Step 1", AutonomousConfiguration.STEP_1_FORWARD_TIME));
                         driveTrain.tankDrive(drivePower, drivePower);
                     } else {
                         driveTrain.tankDrive(0D, 0D);
@@ -420,7 +460,7 @@ public class Robot2012Orange extends SimpleRobot {
                     
                     driveTrain.tankDrive(0D, 0D);
                     
-                    if (controlTimer.get() >= SmartDashboard.getDouble("Auton: Step 2", AutonomousConfiguration.STEP_2_WAIT_TIME)) 
+                    if (controlTimer.get() >= getDouble("Auton: Step 2", AutonomousConfiguration.STEP_2_WAIT_TIME)) 
                         step++;
                     
                     break;
@@ -428,7 +468,7 @@ public class Robot2012Orange extends SimpleRobot {
                     /* Drive backward. */
                         
                     if (controlTimer.get() <= AutonomousConfiguration.STEP_3_BACKWARD_TIME) {
-                        drivePower = Math.max(0.2, 1 - controlTimer.get() / SmartDashboard.getDouble("Auton: Step 3", AutonomousConfiguration.STEP_3_BACKWARD_TIME));
+                        drivePower = Math.max(0.2, 1 - controlTimer.get() / getDouble("Auton: Step 3", AutonomousConfiguration.STEP_3_BACKWARD_TIME));
                         driveTrain.tankDrive(drivePower, drivePower);
                     } else {
                         driveTrain.tankDrive(0D, 0D);
@@ -446,9 +486,9 @@ public class Robot2012Orange extends SimpleRobot {
                      * nets.
                      */
                     
-                    solenoidPickup.set(ActuatorConfiguration.SOLENOID_PICKUP.OUT);
+                    pickupMachine.crank(PickupState.OUT);
                     
-                    if (controlTimer.get() <= SmartDashboard.getDouble("Auton: Step 4", AutonomousConfiguration.STEP_4_TURN_TIME)) {
+                    if (controlTimer.get() <= getDouble("Auton: Step 4", AutonomousConfiguration.STEP_4_TURN_TIME)) {
                         gyroAngle = gyroHeading.getAngle();
                         
                         if (turnedAround || (gyroAngle > 179 && gyroAngle < 181)) {
@@ -473,7 +513,7 @@ public class Robot2012Orange extends SimpleRobot {
                      * is going on.
                      */
                     
-                    solenoidPickup.set(ActuatorConfiguration.SOLENOID_PICKUP.OUT);
+                    pickupMachine.crank(PickupState.OUT);
                     
                     if (controlTimer.get() <= forwardTime) {
                         drivePower = Math.max(0.2, 1 - controlTimer.get() / forwardTime);
@@ -536,7 +576,7 @@ public class Robot2012Orange extends SimpleRobot {
                     
                     driveTrain.tankDrive(0D, 0D);
                     
-                    if (controlTimer.get() < SmartDashboard.getDouble("Auton: Step 10", AutonomousConfiguration.STEP_10_SHOOTING_TIME))
+                    if (controlTimer.get() < getDouble("Auton: Step 10", AutonomousConfiguration.STEP_10_SHOOTING_TIME))
                         shooterMachine.crank(ShooterState.SHOOTING);
                     
                     break;
@@ -654,7 +694,14 @@ public class Robot2012Orange extends SimpleRobot {
         pidTurretRotation.reset();
         
         while (isOperatorControl() && isEnabled()) {
-            shooterMachine.setShooterSpeed(SmartDashboard.getDouble("Shooter Speed", 1D));
+            shooterMachine.setShooterSpeed(getDouble("Shooter Speed", -1D));
+            ringLight.set(ActuatorConfiguration.RING_LIGHT.ON);
+            
+            if (driveController.getToggle(ButtonConfiguration.Driver.DISABLE_ELEVATOR))
+                elevatorMotors.setDisabled(!elevatorMotors.getDisabled());
+            
+            if (manipulatorController.getToggle(ButtonConfiguration.Manipulator.AIMING_OVERRIDE))
+                dontAim = !dontAim;
             
             if (!elevatorLimitSwitch.get())
                 encoderElevator.reset();
@@ -671,9 +718,9 @@ public class Robot2012Orange extends SimpleRobot {
 
             if (driveController.getButton(ButtonConfiguration.Driver.AUTO_BALANCE)) {
                 
-                double p = SmartDashboard.getDouble("P_Vel", 0);
-                double i = SmartDashboard.getDouble("I_Vel", 0);
-                double d = SmartDashboard.getDouble("D_Vel", 0);
+                double p = getDouble("P_Vel", 0);
+                double i = getDouble("I_Vel", 0);
+                double d = getDouble("D_Vel", 0);
                 
                 velocityController.setAngleGains(p, i, d);
                 // TODO: Replace this with stuff from the balancing code, once it's hammered out.
@@ -746,9 +793,8 @@ public class Robot2012Orange extends SimpleRobot {
              */
             
             if ((pickupIn && upHigh) || pickupIn) {
-                if (elevatorMachine.test(ElevatorState.PICKUP_OKAY)) {
+                if (elevatorMachine.test(ElevatorState.PICKUP_OKAY) || elevatorMotors.getDisabled())
                     pickupMachine.crank(PickupState.IN);
-                }
                 
                 if (upHigh && !noFixedDirection && elevatorMachine.test(ElevatorState.TURRET_OKAY))
                     noFixedDirection = turretMachine.crank(turretDirection);
@@ -756,6 +802,11 @@ public class Robot2012Orange extends SimpleRobot {
                 if (upHigh) {
                     if (elevatorMachine.crank(ElevatorState.HIGH)) {
                         SmartDashboard.putString("Ready to Shoot", "Yes");
+                        
+                        if (Math.abs(manipulatorController.getAxis(Axis.LEFT_STICK_X)) > 0) {
+                            noFixedDirection = true;
+                            turretRotationMotor.set(manipulatorController.getAxis(Axis.LEFT_STICK_X) * 0.5);
+                        }
 
                         /* Toggles the shooter angle. */
                         

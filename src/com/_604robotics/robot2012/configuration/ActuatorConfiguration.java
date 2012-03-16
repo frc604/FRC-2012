@@ -22,10 +22,10 @@ public interface ActuatorConfiguration {
     public static final double TURRET_ROTATION_POWER_MIN = -0.4;
     public static final double TURRET_ROTATION_POWER_MAX = 0.4;
     
-    public static final double MAX_SLOW_SPEED = 0.6;
+    public static final double MAX_SLOW_SPEED = 0.7;
     
-    public static final double TINY_FORWARD_SPEED = 0.2;
-    public static final double TINY_REVERSE_SPEED = 0.2;
+    public static final double TINY_FORWARD_SPEED = 0.6;
+    public static final double TINY_REVERSE_SPEED = 0.6;
     
     public interface TURRET_POSITION {
         public static final double FORWARD = 0D;
@@ -68,8 +68,8 @@ public interface ActuatorConfiguration {
     }
     
     public interface SOLENOID_SHOOTER {
-        public static final DoubleSolenoid.Value LOWER_ANGLE = DoubleSolenoid.Value.kForward;
-        public static final DoubleSolenoid.Value UPPER_ANGLE  = DoubleSolenoid.Value.kReverse;
+        public static final DoubleSolenoid.Value LOWER_ANGLE = DoubleSolenoid.Value.kReverse;
+        public static final DoubleSolenoid.Value UPPER_ANGLE  = DoubleSolenoid.Value.kForward;
     }
     
     public interface SOLENOID_PICKUP {
