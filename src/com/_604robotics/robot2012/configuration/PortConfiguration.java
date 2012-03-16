@@ -27,10 +27,10 @@ public interface PortConfiguration {
         
         public static final int SHOOTER_LEFT = 2;
         public static final int SHOOTER_RIGHT = 3;
-        public static final int HOPPER = 4;
-        public static final int PICKUP = 6;
+        public static final int HOPPER = 5;
+        public static final int PICKUP = 4;
         
-        public static final int TURRET_ROTATION = 5;
+        public static final int TURRET_ROTATION = 6;
     }
     
     public interface Relays {
@@ -48,18 +48,18 @@ public interface PortConfiguration {
     
     public interface Encoders {
         public interface Drive {
-            public static final int LEFT_A = 13;
-            public static final int LEFT_B = 14;
+            public static final int LEFT_A = 11;
+            public static final int LEFT_B = 12;
             
-            public static final int RIGHT_A = 12;
-            public static final int RIGHT_B = 11;
+            public static final int RIGHT_A = 13;
+            public static final int RIGHT_B = 14;
         }
         
-        public static final int ELEVATOR_A = 8;
-        public static final int ELEVATOR_B = 9;
+        public static final int ELEVATOR_A = 1;
+        public static final int ELEVATOR_B = 2;
         
-        public static final int TURRET_ROTATION_A = 7;
-        public static final int TURRET_ROTATION_B = 6;
+        public static final int TURRET_ROTATION_A = 3;
+        public static final int TURRET_ROTATION_B = 4;
     }
     
     public interface Pneumatics {
