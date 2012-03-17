@@ -25,13 +25,14 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.util.Date;
 
 /**
- * Main class for the 2012 robot code.
+ * Main class for the 2012 robot code codenamed Orange.
  * 
  * @author  Michael Smith <mdsmtp@gmail.com>
  * @author  Kevin Parker <kevin.m.parker@gmail.com>
  * @author  Sebastian Merz <merzbasti95@gmail.com>
  * @author  Aaron Wang <aaronw94@gmail.com>
  * @author  Colin Aitken <cacolinerd@gmail.com>
+ * @author  Alan Li <alanpusongli@gmail.com>
  */
 public class Robot2012Orange extends SimpleRobot {
     XboxController driveController;
