@@ -60,7 +60,7 @@ public class TurretMachine implements StrangeMachine {
         boolean ret = Math.abs(target - this.encoder.getDistance()) <= ActuatorConfiguration.TURRET_POSITION.TOLERANCE;
         if (!ret)
             this.changeTimer.reset();
-        return ret && this.changeTimer.get() >= 1;
+        return ret && this.changeTimer.get() >= 0.5;
     }
 
     public boolean test (int state) {
@@ -91,6 +91,7 @@ public class TurretMachine implements StrangeMachine {
                 this.controller.setSetpoint(this.turretSidewaysPosition);
                 break;
             case TurretState.AIMED:
+                //this.ringLight.set(ActuatorConfiguration.RING_LIGHT.ON);
                 this.isAimed = this.provider.update();
                 return this.isAimed;
             case TurretState.FORWARD:
@@ -104,14 +105,17 @@ public class TurretMachine implements StrangeMachine {
                 break;
             default:
                 this.controller.disable();
+                //this.ringLight.set(ActuatorConfiguration.RING_LIGHT.OFF);
                 this.isAimed = false;
                 return false;
         }
         
         this.isAimed = false;
         
-        if (!this.controller.isEnable())
+        if (!this.controller.isEnable()) {
+            System.out.println("ENABLED WITH STATE: " + state);
             this.controller.enable();
+        }
         
         return this.test(state);
     }

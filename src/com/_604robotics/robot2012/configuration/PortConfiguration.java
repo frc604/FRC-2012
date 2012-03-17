@@ -27,8 +27,8 @@ public interface PortConfiguration {
         
         public static final int SHOOTER_LEFT = 2;
         public static final int SHOOTER_RIGHT = 3;
-        public static final int HOPPER = 4;
-        public static final int PICKUP = 5;
+        public static final int HOPPER = 5;
+        public static final int PICKUP = 4;
         
         public static final int TURRET_ROTATION = 6;
     }

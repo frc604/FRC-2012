@@ -94,8 +94,6 @@ public class Robot2012Orange extends SimpleRobot {
     boolean noFixedDirection = true;
     int turretDirection = TurretState.FORWARD;
     
-    boolean dontAim = false;
-    
     public static double getDouble(String key, double def) {
         try {
             return SmartDashboard.getDouble(key, def);
@@ -127,7 +125,7 @@ public class Robot2012Orange extends SimpleRobot {
         leftKinect = new KinectStick(PortConfiguration.Kinect.LEFT);
         rightKinect = new KinectStick(PortConfiguration.Kinect.RIGHT);
         
-        manipulatorController.setDeadband(Axis.RIGHT_STICK_X, -0.2, 0.2);
+        manipulatorController.setDeadband(Axis.LEFT_STICK_X, -0.075, 0.075);
         manipulatorController.setDeadband(Axis.RIGHT_STICK_Y, -0.2, 0.2);
         
         /* Set up the drive train. */
@@ -198,6 +196,8 @@ public class Robot2012Orange extends SimpleRobot {
         solenoidPickup = new DoubleSolenoid(PortConfiguration.Pneumatics.PICKUP_SOLENOID.IN, PortConfiguration.Pneumatics.PICKUP_SOLENOID.OUT);
         solenoidHopper = new SpringableDoubleSolenoid(PortConfiguration.Pneumatics.HOPPER_SOLENOID.FORWARD, PortConfiguration.Pneumatics.HOPPER_SOLENOID.REVERSE, ActuatorConfiguration.SOLENOID_HOPPER.REGULAR);
         
+        solenoidShooter.set(ActuatorConfiguration.SOLENOID_SHOOTER.LOWER_ANGLE);
+        
         /*
          * Sets up the PID controllers, and initializes inputs on the
          * SmartDashboard.
@@ -224,7 +224,7 @@ public class Robot2012Orange extends SimpleRobot {
         
         SmartDashboard.putData("inTheMiddle", inTheMiddle);
         
-        SmartDashboard.putDouble("Shooter Speed", 1D);
+        SmartDashboard.putDouble("Shooter Speed", -1D);
         
         /* Sets up the camera inteface. */
         
@@ -261,6 +261,7 @@ public class Robot2012Orange extends SimpleRobot {
         SmartDashboard.putDouble("Auton: Step 3", AutonomousConfiguration.STEP_3_BACKWARD_TIME);
         SmartDashboard.putDouble("Auton: Step 4", AutonomousConfiguration.STEP_4_TURN_TIME);
         SmartDashboard.putDouble("Auton: Step 10", AutonomousConfiguration.STEP_10_SHOOTING_TIME);
+        SmartDashboard.putDouble("Auton: Max Step", AutonomousConfiguration.MAX_STEP);
         
         /* Because we can. */
         
@@ -301,26 +302,7 @@ public class Robot2012Orange extends SimpleRobot {
                 ? correctedValue
                 : xValue;
     }
-    /**
-     * Aim at backboard, shoot.
-     */
-    public void aimAndShoot() {
-        ringLight.set(ActuatorConfiguration.RING_LIGHT.ON);
-        
-        /*
-         * Aim, or make sure we're aimed. Then fire.
-         */
-        
-        if (dontAim || turretMachine.crank(TurretState.AIMED)) {
-            // TODO: Add actual firing stuff here.
-            
-            System.out.println("SHOOTING");
-            
-            //solenoidHopper.set(ActuatorConfiguration.SOLENOID_HOPPER.PUSH);
-            shooterMachine.crank(ShooterState.SHOOTING);
-        }
-    }
-
+    
     /**
      * Automated drive for autonomous mode.
      * 
@@ -356,12 +338,10 @@ public class Robot2012Orange extends SimpleRobot {
 
         noFixedDirection = true;
         turretDirection = TurretState.FORWARD;
-
-        dontAim = false;
         
         /* If we're not in the middle, skip over the bridge stuff. */
         
-        if (((String) inTheMiddle.getSelected()).equals("Yes")) {
+        if (((String) inTheMiddle.getSelected()).equals("No")) {
             step = 4;
             forwardTime = getDouble("Auton: Step 5 Sides", AutonomousConfiguration.STEP_5_FORWARD_TIME_SIDES);
         }
@@ -391,7 +371,7 @@ public class Robot2012Orange extends SimpleRobot {
             
             /* Calibrate the elevator while everything else is going on. */
             
-            pickupMachine.crank(PickupState.OUT);
+            //pickupMachine.crank(PickupState.OUT);
             
             if (step > 4 && !elevatorCalibrated) {
                 if (calibrationTimer.get() < 5) {
@@ -416,8 +396,8 @@ public class Robot2012Orange extends SimpleRobot {
             
             System.out.println("---------------------------");
             
-            if (new Date().getTime() - began > 1500)
-                step = 5;
+            //if (new Date().getTime() - began > 1500)
+            //    step = 5;
             
             if (controlTimer.get() >= 1) {
                 lightState = !lightState;
@@ -425,7 +405,8 @@ public class Robot2012Orange extends SimpleRobot {
                 controlTimer.reset();
             }
             
-            if (step > AutonomousConfiguration.MAX_STEP) {
+            if (step > getDouble("Auton: Max Step", AutonomousConfiguration.MAX_STEP)) {
+                SmartDashboard.putInt("STOPPED AT", step);
                 driveTrain.tankDrive(0D, 0D);
 
                 elevatorMotors.reload();
@@ -435,18 +416,26 @@ public class Robot2012Orange extends SimpleRobot {
                 ringLight.reload();
 
                 continue;
+            } else {
+                SmartDashboard.putInt("STOPPED AT", -1);
             }
             
             /* Handle the main logic. */
+            
+            SmartDashboard.putInt("CURRENT STEP", step);
+            SmartDashboard.putDouble("CONTROL TIMER", controlTimer.get());
             
             switch (step) {
                 case 1:
                     /* Drive forward and stop, then smash down the bridge. */
                     
                     if (controlTimer.get() <= AutonomousConfiguration.STEP_1_FORWARD_TIME) {
-                        drivePower = Math.max(0.2, 1 - controlTimer.get() / getDouble("Auton: Step 1", AutonomousConfiguration.STEP_1_FORWARD_TIME));
+                        SmartDashboard.putString("STAGE", "DRIVING");
+                        drivePower = Math.min(-0.2, (1 - controlTimer.get() / getDouble("Auton: Step 1", AutonomousConfiguration.STEP_1_FORWARD_TIME)) * -1);
+                        SmartDashboard.putDouble("AUTON DRIVE POWER", drivePower);
                         driveTrain.tankDrive(drivePower, drivePower);
                     } else {
+                        SmartDashboard.putString("STAGE", "SMASHING!");
                         driveTrain.tankDrive(0D, 0D);
                         pickupMachine.crank(PickupState.OUT);
                         
@@ -556,8 +545,10 @@ public class Robot2012Orange extends SimpleRobot {
                     
                     driveTrain.tankDrive(0D, 0D);
                     
-                    if (turretMachine.crank(TurretState.FORWARD))
+                    if (turretMachine.crank(TurretState.FORWARD)) {
+                        controlTimer.reset();
                         step++;
+                    }
                     
                     break;
                 case 9:
@@ -565,7 +556,7 @@ public class Robot2012Orange extends SimpleRobot {
                     
                     driveTrain.tankDrive(0D, 0D);
                     
-                    if (turretMachine.crank(TurretState.AIMED)) {
+                    if (controlTimer.get() >= AutonomousConfiguration.STEP_9_AIMING_TIMEOUT || turretMachine.crank(TurretState.AIMED)) {
                         controlTimer.reset();
                         step++;
                     }
@@ -700,11 +691,11 @@ public class Robot2012Orange extends SimpleRobot {
             if (driveController.getToggle(ButtonConfiguration.Driver.DISABLE_ELEVATOR))
                 elevatorMotors.setDisabled(!elevatorMotors.getDisabled());
             
-            if (manipulatorController.getToggle(ButtonConfiguration.Manipulator.AIMING_OVERRIDE))
-                dontAim = !dontAim;
-            
             if (!elevatorLimitSwitch.get())
                 encoderElevator.reset();
+            
+            if (Math.abs(manipulatorController.getAxis(Axis.RIGHT_STICK_Y)) > 0)
+                hopperMotor.set(manipulatorController.getAxis(Axis.RIGHT_STICK_Y));
             
             /* Controls the gear shift. */
             
@@ -792,66 +783,75 @@ public class Robot2012Orange extends SimpleRobot {
              * elevator.
              */
             
-            if ((pickupIn && upHigh) || pickupIn) {
-                if (elevatorMachine.test(ElevatorState.PICKUP_OKAY) || elevatorMotors.getDisabled())
-                    pickupMachine.crank(PickupState.IN);
-                
-                if (upHigh && !noFixedDirection && elevatorMachine.test(ElevatorState.TURRET_OKAY))
-                    noFixedDirection = turretMachine.crank(turretDirection);
+            if (manipulatorController.getButton(ButtonConfiguration.Driver.CALIBRATE)) {
+                if (pickupMachine.crank(PickupState.OUT))
+                    elevatorMotors.set(-0.4);
+            } else {
+                if ((pickupIn && upHigh) || pickupIn) {
+                    if (elevatorMachine.test(ElevatorState.PICKUP_OKAY) || elevatorMotors.getDisabled())
+                        pickupMachine.crank(PickupState.IN);
 
-                if (upHigh) {
-                    if (elevatorMachine.crank(ElevatorState.HIGH)) {
-                        SmartDashboard.putString("Ready to Shoot", "Yes");
-                        
-                        if (Math.abs(manipulatorController.getAxis(Axis.LEFT_STICK_X)) > 0) {
-                            noFixedDirection = true;
-                            turretRotationMotor.set(manipulatorController.getAxis(Axis.LEFT_STICK_X) * 0.5);
-                        }
+                    if (upHigh && !noFixedDirection && elevatorMachine.test(ElevatorState.TURRET_OKAY))
+                        noFixedDirection = turretMachine.crank(turretDirection);
 
-                        /* Toggles the shooter angle. */
-                        
-                        if (manipulatorController.getToggle(ButtonConfiguration.Manipulator.TOGGLE_ANGLE)) {
-                            if (solenoidShooter.get() == ActuatorConfiguration.SOLENOID_SHOOTER.LOWER_ANGLE)
-                                solenoidShooter.set(ActuatorConfiguration.SOLENOID_SHOOTER.UPPER_ANGLE);
-                            else
-                                solenoidShooter.set(ActuatorConfiguration.SOLENOID_SHOOTER.LOWER_ANGLE);
+                    if (upHigh) {
+                        if (manipulatorController.getButton(ButtonConfiguration.Manipulator.SHOOT) || elevatorMachine.crank(ElevatorState.HIGH)) {
+                            SmartDashboard.putString("Ready to Shoot", "Yes");
+
+                            if (Math.abs(manipulatorController.getAxis(Axis.LEFT_STICK_X)) > 0) {
+                                pidElevator.disable();
+                                noFixedDirection = true;
+                                turretRotationMotor.set(manipulatorController.getAxis(Axis.LEFT_STICK_X) * 0.5);
+                            }
+
+                            /* Toggles the shooter angle. */
+
+                            if (manipulatorController.getToggle(ButtonConfiguration.Manipulator.TOGGLE_ANGLE)) {
+                                if (solenoidShooter.get() == ActuatorConfiguration.SOLENOID_SHOOTER.LOWER_ANGLE)
+                                    solenoidShooter.set(ActuatorConfiguration.SOLENOID_SHOOTER.UPPER_ANGLE);
+                                else
+                                    solenoidShooter.set(ActuatorConfiguration.SOLENOID_SHOOTER.LOWER_ANGLE);
+                            }
+
+                            if (manipulatorController.getToggle(ButtonConfiguration.Manipulator.AIM)) {
+                                noFixedDirection = true;
+                                turretMachine.crank(TurretState.AIMED);
+                            }
+
+                            if (manipulatorController.getButton(ButtonConfiguration.Manipulator.SHOOT)) {
+                                pidElevator.disable();
+                                noFixedDirection = true;
+                                shooterMachine.crank(ShooterState.SHOOTING);
+                            }
                         }
-                        
-                        if (manipulatorController.getToggle(ButtonConfiguration.Manipulator.AIM_AND_SHOOT))
-                            pidTurretRotation.reset();
-                        
-                        if (manipulatorController.getButton(ButtonConfiguration.Manipulator.AIM_AND_SHOOT))  {
-                            noFixedDirection = true;
-                            this.aimAndShoot();
-                        }
+                    } else {
+                        if (turretMachine.crank(TurretState.SIDEWAYS))
+                            elevatorMachine.crank(ElevatorState.MEDIUM);
                     }
                 } else {
-                    if (turretMachine.crank(TurretState.SIDEWAYS))
-                        elevatorMachine.crank(ElevatorState.MEDIUM);
-                }
-            } else {
-                if (turretMachine.crank(TurretState.SIDEWAYS)) {
-                    /*
-                     * To prevent us from unintentionally violating <G21>, the
-                     * pickup cannot go out until the turret is in the sideways
-                     * position.
-                     */
-                    
-                    if (pickupMachine.crank(PickupState.OUT)) {
+                    if (turretMachine.crank(TurretState.SIDEWAYS)) {
                         /*
-                         * If the pickup is down and the elevator is at rest,
-                         * then allow the user to trigger the pickup mechanism.
-                         */
-                        
-                        if (elevatorMachine.crank(ElevatorState.LOW)) {
-                            /* Controls the pickup mechanism. */
+                        * To prevent us from unintentionally violating <G21>, the
+                        * pickup cannot go out until the turret is in the sideways
+                        * position.
+                        */
 
-                            if (manipulatorController.getButton(ButtonConfiguration.Manipulator.PICKUP)) {
-                                pickupMotor.set(ActuatorConfiguration.PICKUP_POWER);
-                                hopperMotor.set(ActuatorConfiguration.HOPPER_POWER);
-                                
-                                settleState = 0;
-                                settleTimer.stop();
+                        if (pickupMachine.crank(PickupState.OUT)) {
+                            /*
+                            * If the pickup is down and the elevator is at rest,
+                            * then allow the user to trigger the pickup mechanism.
+                            */
+
+                            if (elevatorMachine.crank(ElevatorState.LOW)) {
+                                /* Controls the pickup mechanism. */
+
+                                if (manipulatorController.getButton(ButtonConfiguration.Manipulator.PICKUP)) {
+                                    pickupMotor.set(ActuatorConfiguration.PICKUP_POWER);
+                                    hopperMotor.set(ActuatorConfiguration.HOPPER_POWER);
+
+                                    settleState = 0;
+                                    settleTimer.stop();
+                                }
                             }
                         }
                     }

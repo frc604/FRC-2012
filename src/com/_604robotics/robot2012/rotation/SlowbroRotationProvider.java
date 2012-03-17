@@ -65,12 +65,14 @@ public class SlowbroRotationProvider implements RotationProvider {
         } */
         
         for (int i = 0; i < targetsIn.length; i++) {
-            if (targetsIn[i].x_uncertainty < 9000)
+            if (targetsIn[i].x_uncertainty < 100000)
                 targets.addElement(targetsIn[i]);
         }
         
         if (targets.size() > 0) {
             target = (Target) targets.elementAt(0);
+            target.x += 5.25;
+            
             System.out.println("x: " + target.x + ", y: " + target.y + ", z: " + target.z);
             System.out.println("x_uncertainty: " + target.x_uncertainty);
         }
@@ -85,10 +87,12 @@ public class SlowbroRotationProvider implements RotationProvider {
                     this.lastTimer.reset();
                     if (Math.abs(target.x) < 1) {
                         this.controller.reset();
-                        if (this.steadyTimer.get() < getDouble("Steady Threshold", 0.5))
+                        if (this.steadyTimer.get() < getDouble("Steady Threshold", 0.5)) {
+                            System.out.println("ENABLING IN ROTATIONPROVIDER");
                             this.controller.enable();
-                        else
+                        } else {
                             return true;
+                        }
                     } else {
                         if (this.steadyTimer.get() > getDouble("Unsteady Threshold", 1D))
                             this.steadyTimer.reset();
@@ -106,6 +110,7 @@ public class SlowbroRotationProvider implements RotationProvider {
         }
         
         this.controller.enable();
+        System.out.println("ENABLED AT END OF ROTATIONPROVIDER");
         
         return false;
     }

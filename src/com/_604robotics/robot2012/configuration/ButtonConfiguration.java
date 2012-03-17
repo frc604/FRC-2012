@@ -20,6 +20,8 @@ public interface ButtonConfiguration {
         
         public static final int TINY_FORWARD = Button.Y;
         public static final int TINY_REVERSE = Button.A;
+        
+        public static final int CALIBRATE = Button.LB;
     }
     
     public interface Manipulator {
@@ -30,10 +32,10 @@ public interface ButtonConfiguration {
             public static final int DOWN = Button.A;
         }
         
-        public static final int AIM_AND_SHOOT = Button.RT;
-        public static final int PICKUP = Button.LT;
+        public static final int AIM = Button.RB;
+        public static final int SHOOT = Button.RT;
         
-        public static final int AIMING_OVERRIDE = Button.RB;
+        public static final int PICKUP = Button.LT;
         
         public static final int TOGGLE_ANGLE = Button.LB;
         public static final int TOGGLE_LIGHT = Button.Back;

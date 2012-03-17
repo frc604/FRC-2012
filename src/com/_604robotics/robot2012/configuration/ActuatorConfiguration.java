@@ -14,7 +14,7 @@ public interface ActuatorConfiguration {
     
     public static final double HOPPER_POWER = 0.8;
     public static final double HOPPER_POWER_REVERSE = -0.5;
-    public static final double PICKUP_POWER = 0.8;
+    public static final double PICKUP_POWER = -0.8;
     
     public static final double ELEVATOR_POWER_MIN = -0.8;
     public static final double ELEVATOR_POWER_MAX = 0.8;
@@ -32,7 +32,7 @@ public interface ActuatorConfiguration {
         public static final double LEFT = -45D;
         public static final double RIGHT = 45D;
         
-        public static final double TOLERANCE = 1D;
+        public static final double TOLERANCE = 2D;
     }
     
     public interface RING_LIGHT {
@@ -58,7 +58,7 @@ public interface ActuatorConfiguration {
             public static final int HIGH = 1490;
             public static final int MEDIUM_UPPER = 691; // +28
             public static final int MEDIUM_LOWER = 611; // -52
-            public static final int LOW = 35;
+            public static final int LOW = 40;
         }
     }
     
