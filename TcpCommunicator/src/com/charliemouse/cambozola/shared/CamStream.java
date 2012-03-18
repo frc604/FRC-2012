@@ -341,7 +341,10 @@ public class CamStream extends Thread {
 				else
 					m_logger.severe(e.toString());
 			} else if (!m_isDefunct) {
-				m_logger.severe(e.toString());
+				if(m_logger == null)
+					e.printStackTrace();
+				else
+					m_logger.severe(e.toString());
 			}
 		} finally {
 			unhook();
