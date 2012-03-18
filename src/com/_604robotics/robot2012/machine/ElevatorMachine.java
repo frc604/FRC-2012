@@ -65,6 +65,7 @@ public class ElevatorMachine implements StrangeMachine {
     public boolean crank (int state) {
         if (this.lastState != state) {
             this.withinTolerance = false;
+            this.controller.reset();
             this.lastState = state;
         }
         

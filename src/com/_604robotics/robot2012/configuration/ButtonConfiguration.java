@@ -34,6 +34,7 @@ public interface ButtonConfiguration {
         
         public static final int AIM = Button.RB;
         public static final int SHOOT = Button.RT;
+        public static final int POWER_HOPPER = Button.RightStick;
         
         public static final int PICKUP = Button.LT;
         
@@ -42,11 +43,11 @@ public interface ButtonConfiguration {
     }
     
     public interface Kinect {
-        public static final int ENABLE = 0;
-        public static final int ABORT = 1;
-        public static final int DRIVE_ENABLED = 2;
-        public static final int PICKUP_IN = 3;
-        public static final int SUCK = 4;
-        public static final int SHOOT = 5;
+        public static final int ENABLE = 1;
+        public static final int ABORT = 2;
+        public static final int DRIVE_ENABLED = 3;
+        public static final int PICKUP_IN = 4;
+        public static final int SUCK = 5;
+        public static final int SHOOT = 6;
     }
 }

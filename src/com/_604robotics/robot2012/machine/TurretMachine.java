@@ -5,6 +5,7 @@ import com._604robotics.robot2012.rotation.RotationProvider;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.Victor;
 
 /**
  * Machine to control the turret.
@@ -15,11 +16,15 @@ public class TurretMachine implements StrangeMachine {
     private final PIDController controller;
     private final RotationProvider provider;
     private final Encoder encoder;
+    private final Victor turretMotor;
+    
     private final Timer changeTimer = new Timer();
+    private final Timer jumpTimer = new Timer();
     
     private double turretSidewaysPosition = 0;
     private boolean isAimed = false;
     
+    private boolean initialSwitch = false;
     private int lastState = TurretState.SIDEWAYS;
     
     /**
@@ -41,12 +46,14 @@ public class TurretMachine implements StrangeMachine {
      * @param   encoder         The encoder measuring the horizontal position
      *                          of the turret.
      */
-    public TurretMachine (PIDController controller, RotationProvider provider, Encoder encoder) {
+    public TurretMachine (PIDController controller, RotationProvider provider, Encoder encoder, Victor turretMotor) {
         this.controller = controller;
         this.provider = provider;
         this.encoder = encoder;
+        this.turretMotor = turretMotor;
         
         this.changeTimer.start();
+        this.jumpTimer.start();
     }
     
     /**
@@ -57,10 +64,14 @@ public class TurretMachine implements StrangeMachine {
      * @return  Whether or not we're relatively on target.
      */
     private boolean onTarget (double target) {
-        boolean ret = Math.abs(target - this.encoder.getDistance()) <= ActuatorConfiguration.TURRET_POSITION.TOLERANCE;
+        boolean ret;
+        //if (this.lastState == TurretState.SIDEWAYS)
+        //    ret = this.encoder.getDistance() - target <= ActuatorConfiguration.TURRET_POSITION.TOLERANCE;
+        //else
+            ret = Math.abs(target - this.encoder.getDistance()) <= ActuatorConfiguration.TURRET_POSITION.TOLERANCE;
         if (!ret)
             this.changeTimer.reset();
-        return ret && this.changeTimer.get() >= 0.5;
+        return ret && this.changeTimer.get() >= 1D;
     }
 
     public boolean test (int state) {
@@ -83,6 +94,9 @@ public class TurretMachine implements StrangeMachine {
     public boolean crank (int state) {
         if (this.lastState != state) {
             this.changeTimer.reset();
+            this.jumpTimer.reset();
+            
+            this.controller.reset();
             this.lastState = state;
         }
         
@@ -112,12 +126,29 @@ public class TurretMachine implements StrangeMachine {
         
         this.isAimed = false;
         
-        if (!this.controller.isEnable()) {
-            System.out.println("ENABLED WITH STATE: " + state);
-            this.controller.enable();
+        boolean ret = this.test(state);
+        
+        if (ret && state != TurretState.AIMED) {
+            this.controller.disable();
+        } else {
+            if (!this.controller.isEnable()) {
+                System.out.println("ENABLED WITH STATE: " + state);
+                this.controller.enable();
+            }
         }
         
-        return this.test(state);
+        /* if (this.jumpTimer.get() < 0.01) {
+            if (this.initialSwitch) {
+                if (this.turretMotor.get() > 0)
+                    this.turretMotor.set(0.5);
+                else
+                    this.turretMotor.set(-0.5);
+            }
+        } else {
+            this.initialSwitch = true;
+        } */
+        
+        return ret;
     }
     
     /**

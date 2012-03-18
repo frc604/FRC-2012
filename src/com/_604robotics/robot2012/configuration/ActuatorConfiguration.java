@@ -27,12 +27,14 @@ public interface ActuatorConfiguration {
     public static final double TINY_FORWARD_SPEED = 0.6;
     public static final double TINY_REVERSE_SPEED = 0.6;
     
+    public static final double ELEVATOR_PICKUP_POWER = -0.22;
+    
     public interface TURRET_POSITION {
         public static final double FORWARD = 0D;
         public static final double LEFT = -45D;
         public static final double RIGHT = 45D;
         
-        public static final double TOLERANCE = 2D;
+        public static final double TOLERANCE = 12D;
     }
     
     public interface RING_LIGHT {
@@ -55,10 +57,10 @@ public interface ActuatorConfiguration {
         }
         
         public interface DEADBAND {
-            public static final int HIGH = 1490;
+            public static final int HIGH = 1470;
             public static final int MEDIUM_UPPER = 691; // +28
             public static final int MEDIUM_LOWER = 611; // -52
-            public static final int LOW = 40;
+            public static final int LOW = 64;
         }
     }
     
