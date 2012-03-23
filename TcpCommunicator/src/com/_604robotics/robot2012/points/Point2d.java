@@ -1,4 +1,4 @@
-package com._604robotics.robot2012.vision;
+package com._604robotics.robot2012.points;
 
 
 /**

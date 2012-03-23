@@ -1,5 +1,7 @@
 package com._604robotics.robot2012.vision;
 
+import com._604robotics.robot2012.points.Point2d;
+
 /**
  * A class representing a Quadrilateral, with four corner points.
  * 

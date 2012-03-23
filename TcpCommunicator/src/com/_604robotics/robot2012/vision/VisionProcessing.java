@@ -14,6 +14,7 @@ import java.util.Arrays;
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 
+import com._604robotics.robot2012.points.Point2d;
 import com._604robotics.robot2012.vision.LinearRegression.RegressionResult;
 import com._604robotics.robot2012.vision.config.Config;
 import com._604robotics.tcpcommunicator.TcpCommunicator;

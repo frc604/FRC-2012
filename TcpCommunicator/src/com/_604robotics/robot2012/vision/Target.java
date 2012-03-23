@@ -1,5 +1,7 @@
 package com._604robotics.robot2012.vision;
 
+import com._604robotics.robot2012.points.Point3d;
+
 /**
  * <p>
  * This class represents a physical vision Target with four main attributes (x, y, z, angle). As well, there are
@@ -181,7 +183,7 @@ public class Target implements Comparable<Target> {
 
 	/**
 	 * @return the reflected position of the hoop accounting for the fact that the center of the hoop is not at the
-	 *         center of the target. This is useful bounces
+	 *         center of the target. This is useful for bounces
 	 */
 	public Point3d getReflectedHoopPosition() {
 		return getReflectedHoopPosition(1);
@@ -194,7 +196,7 @@ public class Target implements Comparable<Target> {
 	 *        position. In a idealized collision, this is equal to the inverse of its coefficient of restitution.
 	 *        However, with spin, this number should be less.
 	 * @return the reflected position of the hoop accounting for the fact that the center of the hoop is not at the
-	 *         center of the target. This is useful bounces
+	 *         center of the target. This is useful for bounces
 	 */
 	public Point3d getReflectedHoopPosition(double bounceFactor) {
 		return new Point3d(x - Math.sin(angle) * RelHoopZ * bounceFactor, y + RelHoopY, z - Math.cos(angle) * RelHoopZ

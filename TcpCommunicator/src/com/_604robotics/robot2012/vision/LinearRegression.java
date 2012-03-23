@@ -1,5 +1,7 @@
 package com._604robotics.robot2012.vision;
 
+import com._604robotics.robot2012.points.Point2d;
+
 /**
  * Accepts a sequence of pairs of real numbers and computes the best fit (least squares) line y = ax + b through the set
  * of points. Also computes the correlation coefficient and the standard error of the regression coefficients.

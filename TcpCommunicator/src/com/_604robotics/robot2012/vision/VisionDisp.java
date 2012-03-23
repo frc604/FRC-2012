@@ -7,6 +7,7 @@ import java.awt.image.BufferedImage;
 
 import javax.swing.JPanel;
 
+import com._604robotics.robot2012.points.Point2d;
 import com._604robotics.robot2012.vision.LinearRegression.BackwardsRegressionResult;
 import com._604robotics.robot2012.vision.LinearRegression.RegressionResult;
 

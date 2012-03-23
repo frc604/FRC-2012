@@ -1,5 +1,8 @@
 package com._604robotics.robot2012.vision;
 
+import com._604robotics.robot2012.points.Point2d;
+import com._604robotics.robot2012.points.Point3d;
+
 /**
  * This code does the 2D-to-3D calculations
  * 
