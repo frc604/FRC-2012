@@ -1,6 +1,6 @@
 package com._604robotics.robot2012.physics;
 
-import com._604robotics.robot2012.aiming.Point2d;
+import com._604robotics.robot2012.points.Point2d;
 
 /**
  * Used for determining launch velocities of the ball.

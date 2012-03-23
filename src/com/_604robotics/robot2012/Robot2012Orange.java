@@ -1,9 +1,5 @@
 package com._604robotics.robot2012;
 
-import com._604robotics.robot2012.autonomous.PIDDriveEncoderDifference;
-import com._604robotics.robot2012.autonomous.PIDDriveEncoderOutput;
-import com._604robotics.robot2012.autonomous.PIDDriveGyro;
-import com._604robotics.robot2012.balancing.Balancing;
 import com._604robotics.robot2012.camera.CameraInterface;
 import com._604robotics.robot2012.camera.RemoteCameraTCP;
 import com._604robotics.robot2012.configuration.*;
@@ -17,12 +13,10 @@ import com._604robotics.robot2012.rotation.SlowbroRotationProvider;
 import com._604robotics.utils.UpDownPIDController.Gains;
 import com._604robotics.utils.*;
 import com._604robotics.utils.XboxController.Axis;
-import com.sun.squawk.util.MathUtils;
 import edu.wpi.first.wpilibj.RobotDrive.MotorType;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import java.util.Date;
 
 /**
  * Main class for the 2012 robot code codenamed Orange.
@@ -53,9 +47,6 @@ public class Robot2012Orange extends SimpleRobot {
     
     SpringableRelay ringLight;
     
-    Encoder encoderLeftDrive;
-    Encoder encoderRightDrive;
-    
     EncoderPIDSource encoderElevator;
     EncoderPIDSource encoderTurretRotation;
     
@@ -63,8 +54,6 @@ public class Robot2012Orange extends SimpleRobot {
     DigitalInput turretLimitSwitch;
     
     Gyro360 gyroHeading;
-    Gyro gyroBalance;
-    Accelerometer accelBalance;
     
     Compressor compressorPump;
     
@@ -86,8 +75,6 @@ public class Robot2012Orange extends SimpleRobot {
     SendableChooser inTheMiddle;
     
     CameraInterface cameraInterface;
-    
-    VelocityController velocityController;
     
     boolean upHigh = false;
     boolean pickupIn = true;
@@ -155,24 +142,11 @@ public class Robot2012Orange extends SimpleRobot {
         
         /* Sets up the encoders for the drive, elevator, and turret. */
         
-        encoderLeftDrive = new Encoder(PortConfiguration.Encoders.Drive.LEFT_A, PortConfiguration.Encoders.Drive.LEFT_B);
-        encoderRightDrive = new Encoder(PortConfiguration.Encoders.Drive.RIGHT_A, PortConfiguration.Encoders.Drive.RIGHT_B);
-        
         encoderElevator = new EncoderPIDSource(PortConfiguration.Encoders.ELEVATOR_A, PortConfiguration.Encoders.ELEVATOR_B);
         encoderTurretRotation = new EncoderPIDSource(PortConfiguration.Encoders.TURRET_ROTATION_A, PortConfiguration.Encoders.TURRET_ROTATION_B);
         
-        encoderLeftDrive.setDistancePerPulse(SensorConfiguration.Encoders.LEFT_DRIVE_INCHES_PER_CLICK);
-        encoderRightDrive.setDistancePerPulse(SensorConfiguration.Encoders.RIGHT_DRIVE_INCHES_PER_CLICK);
-        
         encoderElevator.setOffset(616);
-        
         encoderTurretRotation.setDistancePerPulse(SensorConfiguration.Encoders.TURRET_DEGREES_PER_CLICK);
-        
-        encoderLeftDrive.setPIDSourceParameter(Encoder.PIDSourceParameter.kDistance);
-        encoderRightDrive.setPIDSourceParameter(Encoder.PIDSourceParameter.kDistance);
-        
-        encoderLeftDrive.start();
-        encoderRightDrive.start();
         
         encoderElevator.start();
         encoderTurretRotation.start();
@@ -181,12 +155,9 @@ public class Robot2012Orange extends SimpleRobot {
         
         elevatorLimitSwitch = new DigitalInput(PortConfiguration.Sensors.ELEVATOR_LIMIT_SWITCH);
         
-        /* Sets up the gyros and the accelerometer. */
+        /* Sets up the gyro. */
         
         gyroHeading = new Gyro360(PortConfiguration.Sensors.GYRO_HEADING);
-        gyroBalance = new Gyro(PortConfiguration.Sensors.GYRO_BALANCE);
-        accelBalance = new Accelerometer(PortConfiguration.Sensors.ACCELEROMETER);
-        accelBalance.setSensitivity(SensorConfiguration.ACCELEROMETER_SENSITIVITY);
 
         /* Sets up the pneumatics. */
         
@@ -252,15 +223,8 @@ public class Robot2012Orange extends SimpleRobot {
         
         pickupMachine = new PickupMachine(solenoidPickup);
         elevatorMachine = new ElevatorMachine(pidElevator, encoderElevator);
-        turretMachine = new TurretMachine(pidTurretRotation, rotationProvider, encoderTurretRotation, turretRotationMotor);
+        turretMachine = new TurretMachine(pidTurretRotation, rotationProvider, encoderTurretRotation, turretRotationMotor, ringLight);
         shooterMachine = new ShooterMachine(shooterMotors, hopperMotor);
-        
-        double p_Vel, i_Vel, d_Vel;
-        SmartDashboard.putDouble("P_Vel", p_Vel = getDouble("P_Vel", 0));
-        SmartDashboard.putDouble("I_Vel", i_Vel = getDouble("I_Vel", 0));
-        SmartDashboard.putDouble("D_Vel", d_Vel = getDouble("D_Vel", 0));
-        
-        velocityController = new VelocityController(p_Vel, i_Vel, d_Vel, encoderLeftDrive, encoderRightDrive, driveTrain, gyroBalance);
         
         SmartDashboard.putDouble("Confidence Threshold", 0.7);
         SmartDashboard.putDouble("Target Timeout", 1.5);
@@ -282,38 +246,26 @@ public class Robot2012Orange extends SimpleRobot {
     }
     
     /**
-     * Figures out if a value is within a specific range.
+     * Resets the motors.
      * 
-     * @param   xValue      The value to test.
-     * @param   upperRange  The upper bound of the range.
-     * @param   lowerRange  The lower bound of the range.
-     * 
-     * @return  TRUE if xValue is between upperRange and lowerRange; FALSE if
-     *          not.
+     * @param   driveToo    Reset the drive train too?
      */
-    public static boolean isInRange(double xValue, double upperRange, double lowerRange) {
-        return xValue <= upperRange && xValue >= lowerRange;
-    }
+    public void resetMotors (boolean driveToo) {
+        if (driveToo)
+            driveTrain.tankDrive(0D, 0D);
 
+        elevatorMotors.reload();
+        shooterMotors.reload();
+        hopperMotor.reload();
+        turretRotationMotor.reload();
+        ringLight.reload();
+    }
+    
     /**
-     * If a value is within a range, set it to a specific value.
-     * 
-     * This is most commonly used to put a deadband on joystick inputs or 
-     * motor outputs.
-     * 
-     * @param   xValue          The value to test.
-     * @param   upperBand       The upper bound of the range.
-     * @param   lowerBand       The lower bound of the range.
-     * @param   correctedValue  The value to return if xValue is within the
-     *                          range.
-     * 
-     * @return  xValue if xValue does not fall within the range; correctedValue
-     *          otherwise.
+     * Resets the motors, but not the drive train.
      */
-    public static double deadband(double xValue, double upperBand, double lowerBand, double correctedValue) {
-        return (isInRange(xValue, upperBand, lowerBand))
-                ? correctedValue
-                : xValue;
+    public void resetMotors () {
+        this.resetMotors(false);
     }
     
     /**
@@ -324,8 +276,6 @@ public class Robot2012Orange extends SimpleRobot {
      * Else, or then, go ahead and try to score.
      */
     public void autonomous() {
-        // TODO: Calibrate encoders.
-        
         compressorPump.start();
         
         boolean elevatorCalibrated = false;
@@ -337,12 +287,10 @@ public class Robot2012Orange extends SimpleRobot {
         double forwardTime = getDouble("Auton: Step 5", AutonomousConfiguration.STEP_5_FORWARD_TIME_SIDES);
         
         boolean turnedAround = false;
-        boolean pickupIsIn = false;
+        boolean pickupIsIn;
         
         boolean kinect = false;
         boolean abort = false;
-        
-        boolean lightState = false;
         
         /* Reset stuff. */
         
@@ -372,8 +320,6 @@ public class Robot2012Orange extends SimpleRobot {
         elevatorMotors.set(0D);
         
         gyroHeading.reset();
-        
-        long began = new Date().getTime();
         
         while (isAutonomous() && isEnabled()) {
             kinect = leftKinect.getRawButton(ButtonConfiguration.Kinect.ENABLE);
@@ -406,27 +352,10 @@ public class Robot2012Orange extends SimpleRobot {
             
             System.out.println("elevatorLimitSwitch = " + elevatorLimitSwitch.get());
             System.out.println("elevatorCalibrated = " + elevatorCalibrated);
-            
-            System.out.println("---------------------------");
-            
-            if (new Date().getTime() - began > 1500)
-                step = 5;
-            
-            if (controlTimer.get() >= 1) {
-                lightState = !lightState;
-                ringLight.set((lightState) ? ActuatorConfiguration.RING_LIGHT.ON : ActuatorConfiguration.RING_LIGHT.OFF);
-                controlTimer.reset();
-            }
-            
+                        
             if (step > getDouble("Auton: Max Step", AutonomousConfiguration.MAX_STEP)) {
                 SmartDashboard.putInt("STOPPED AT", step);
-                driveTrain.tankDrive(0D, 0D);
-
-                elevatorMotors.reload();
-                shooterMotors.reload();
-                hopperMotor.reload();
-                turretRotationMotor.reload();
-                ringLight.reload();
+                this.resetMotors();
 
                 continue;
             } else {
@@ -586,11 +515,7 @@ public class Robot2012Orange extends SimpleRobot {
                     break;
             }
             
-            elevatorMotors.reload();
-            shooterMotors.reload();
-            hopperMotor.reload();
-            turretRotationMotor.reload();
-            ringLight.reload();
+            this.resetMotors();
         }
         
         System.out.println("BROKEN OUT OF AUTON");
@@ -602,18 +527,10 @@ public class Robot2012Orange extends SimpleRobot {
             
             System.out.println("WAITING FOR KINECT");
         
-            driveTrain.tankDrive(0D, 0D);
-
-            elevatorMotors.reload();
-            shooterMotors.reload();
-            hopperMotor.reload();
-            turretRotationMotor.reload();
-            ringLight.reload();
+            this.resetMotors(true);
         }
         
         if (kinect && elevatorCalibrated) {
-            ringLight.set(ActuatorConfiguration.RING_LIGHT.ON);
-            
             System.out.println("KINECT ON");
         
             while (isAutonomous() && isEnabled() && !abort) {
@@ -625,12 +542,8 @@ public class Robot2012Orange extends SimpleRobot {
                 if (turretMachine.crank(TurretState.SIDEWAYS) && pickupMachine.crank(PickupState.OUT) && elevatorMachine.crank(ElevatorState.LOW))
                     break;
                 
-                driveTrain.tankDrive(0D, 0D);
-                
-                elevatorMotors.reload();
-                shooterMotors.reload();
-                hopperMotor.reload();
-                turretRotationMotor.reload();
+                ringLight.set(ActuatorConfiguration.RING_LIGHT.ON);
+                this.resetMotors(true);
             }
             
             ringLight.set(ActuatorConfiguration.RING_LIGHT.OFF);
@@ -646,12 +559,16 @@ public class Robot2012Orange extends SimpleRobot {
                 else
                     driveTrain.tankDrive(0D, 0D);
 
-                if (leftKinect.getRawButton(ButtonConfiguration.Kinect.PICKUP_IN)) {
-                    if (elevatorMachine.crank(ElevatorState.MEDIUM))
-                        pickupMachine.crank(PickupState.IN);
+                if (leftKinect.getRawButton(ButtonConfiguration.Kinect.SHOOT) && elevatorMachine.crank(ElevatorState.HIGH)) {
+                    shooterMachine.crank(ShooterState.SHOOTING);
                 } else {
-                    if (pickupMachine.crank(PickupState.OUT))
-                        elevatorMachine.crank(ElevatorState.LOW);
+                    if (leftKinect.getRawButton(ButtonConfiguration.Kinect.PICKUP_IN)) {
+                        if (elevatorMachine.crank(ElevatorState.MEDIUM))
+                            pickupMachine.crank(PickupState.IN);
+                    } else {
+                        if (pickupMachine.crank(PickupState.OUT))
+                            elevatorMachine.crank(ElevatorState.LOW);
+                    }
                 }
 
                 if (leftKinect.getRawButton(ButtonConfiguration.Kinect.SUCK) && pickupMachine.test(PickupState.OUT)) {
@@ -661,27 +578,15 @@ public class Robot2012Orange extends SimpleRobot {
                     pickupMotor.set(0D);
                     hopperMotor.set(0D);
                 }
-
-                // TODO: Implement shooting.
                 
-                elevatorMotors.reload();
-                shooterMotors.reload();
-                hopperMotor.reload();
-                turretRotationMotor.reload();
-                ringLight.reload();
+                this.resetMotors();
             }
         }
         
-        driveTrain.tankDrive(0D, 0D);
+        this.resetMotors();
         
         pickupMotor.set(0D);
         hopperMotor.set(0D);
-        
-        elevatorMotors.reload();
-        shooterMotors.reload();
-        hopperMotor.reload();
-        turretRotationMotor.reload();
-        ringLight.reload();
         
         compressorPump.stop();
     }
@@ -711,7 +616,6 @@ public class Robot2012Orange extends SimpleRobot {
             System.out.println(pidTurretRotation.isEnable());
             
             shooterMachine.setShooterSpeed(getDouble("Shooter Speed", -1D));
-            ringLight.set(ActuatorConfiguration.RING_LIGHT.ON);
             
             pidElevator.setUpGains(new Gains(getDouble("Elevator Up P", 0.0085), getDouble("Elevator Up I", 0D), getDouble("Elevator Up D", 0.018)));
             pidElevator.setDownGains(new Gains(getDouble("Elevator Down P", 0.0029), getDouble("Elevator Down I", 0.000003), getDouble("Elevator Down P", 0.007)));
@@ -731,32 +635,9 @@ public class Robot2012Orange extends SimpleRobot {
             if (driveController.getButton(ButtonConfiguration.Driver.SHIFT))
                 solenoidShifter.set(ActuatorConfiguration.SOLENOID_SHIFTER.HIGH_GEAR);
             
-            /* 
-             * Automatically balances the robot on the bridge. Well, that's the
-             * plan, anyway.
-             */
+            /* Drive train controls. */
 
-            if (driveController.getButton(ButtonConfiguration.Driver.AUTO_BALANCE)) {
-                
-                double p = getDouble("P_Vel", 0);
-                double i = getDouble("I_Vel", 0);
-                double d = getDouble("D_Vel", 0);
-                
-                velocityController.setAngleGains(p, i, d);
-                // TODO: Replace this with stuff from the balancing code, once it's hammered out.
-                
-                //accelPower = deadband(MathUtils.asin(accelBalance.getAcceleration()), 0.1745, -0.1745, 0D) / SensorConfiguration.ACCELEROMETER_UPPER_RADIANS * ActuatorConfiguration.ACCELEROMETER_DRIVE_POWER;
-                
-                double driveVel = Balancing.getSpeedforBalance(gyroBalance.getAngle());
-                
-                velocityController.setVelocity(driveVel);
-                SmartDashboard.putDouble("Drive Velocity", driveVel);
-                
-                //driveTrain.tankDrive(accelPower, accelPower);
-                
-                SmartDashboard.putString("Drive Mode", "Balancing");
-                SmartDashboard.putDouble("DriveVel", driveVel);
-            } else if (driveController.getButton(ButtonConfiguration.Driver.TINY_FORWARD)) {
+            if (driveController.getButton(ButtonConfiguration.Driver.TINY_FORWARD)) {
                 driveTrain.tankDrive(ActuatorConfiguration.TINY_FORWARD_SPEED, ActuatorConfiguration.TINY_FORWARD_SPEED);
                 SmartDashboard.putString("Drive Mode", "Tiny (Forward)");
             } else if (driveController.getButton(ButtonConfiguration.Driver.TINY_REVERSE)) {
@@ -934,11 +815,6 @@ public class Robot2012Orange extends SimpleRobot {
             /* Debug output. */
             
             SmartDashboard.putDouble("gyroHeading", gyroHeading.getAngle());
-            SmartDashboard.putDouble("gyroBalance", gyroBalance.getAngle());
-            SmartDashboard.putDouble("accelBalance", accelBalance.getAcceleration());
-            
-            SmartDashboard.putDouble("encoderLeftDrive", encoderLeftDrive.get());
-            SmartDashboard.putDouble("encoderRightDrive", encoderRightDrive.get());
             
             SmartDashboard.putDouble("encoderElevator", encoderElevator.get());
             SmartDashboard.putDouble("encoderTurretRotation", encoderTurretRotation.get());

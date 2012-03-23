@@ -9,9 +9,6 @@ import edu.wpi.first.wpilibj.Relay.Value;
  * @author  Michael Smith <mdsmtp@gmail.com>
  */
 public interface ActuatorConfiguration {
-    public static final double ACCELEROMETER_DRIVE_POWER = 0.5;
-        // TODO: Configure this.
-    
     public static final double HOPPER_POWER = 0.8;
     public static final double HOPPER_POWER_REVERSE = -0.5;
     public static final double PICKUP_POWER = -0.8;

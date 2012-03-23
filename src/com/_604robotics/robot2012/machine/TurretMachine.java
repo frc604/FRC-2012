@@ -2,10 +2,7 @@ package com._604robotics.robot2012.machine;
 
 import com._604robotics.robot2012.configuration.ActuatorConfiguration;
 import com._604robotics.robot2012.rotation.RotationProvider;
-import edu.wpi.first.wpilibj.Encoder;
-import edu.wpi.first.wpilibj.PIDController;
-import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.Victor;
+import edu.wpi.first.wpilibj.*;
 
 /**
  * Machine to control the turret.
@@ -17,6 +14,7 @@ public class TurretMachine implements StrangeMachine {
     private final RotationProvider provider;
     private final Encoder encoder;
     private final Victor turretMotor;
+    private final Relay ringLight;
     
     private final Timer changeTimer = new Timer();
     private final Timer jumpTimer = new Timer();
@@ -46,11 +44,12 @@ public class TurretMachine implements StrangeMachine {
      * @param   encoder         The encoder measuring the horizontal position
      *                          of the turret.
      */
-    public TurretMachine (PIDController controller, RotationProvider provider, Encoder encoder, Victor turretMotor) {
+    public TurretMachine (PIDController controller, RotationProvider provider, Encoder encoder, Victor turretMotor, Relay ringLight) {
         this.controller = controller;
         this.provider = provider;
         this.encoder = encoder;
         this.turretMotor = turretMotor;
+        this.ringLight = ringLight;
         
         this.changeTimer.start();
         this.jumpTimer.start();
@@ -105,7 +104,7 @@ public class TurretMachine implements StrangeMachine {
                 this.controller.setSetpoint(this.turretSidewaysPosition);
                 break;
             case TurretState.AIMED:
-                //this.ringLight.set(ActuatorConfiguration.RING_LIGHT.ON);
+                this.ringLight.set(ActuatorConfiguration.RING_LIGHT.ON);
                 this.isAimed = this.provider.update();
                 return this.isAimed;
             case TurretState.FORWARD:
@@ -119,12 +118,12 @@ public class TurretMachine implements StrangeMachine {
                 break;
             default:
                 this.controller.disable();
-                //this.ringLight.set(ActuatorConfiguration.RING_LIGHT.OFF);
                 this.isAimed = false;
                 return false;
         }
         
         this.isAimed = false;
+        this.ringLight.set(ActuatorConfiguration.RING_LIGHT.ON);
         
         boolean ret = this.test(state);
         

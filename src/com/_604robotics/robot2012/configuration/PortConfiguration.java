@@ -40,8 +40,6 @@ public interface PortConfiguration {
     
     public interface Sensors {
         public static final int GYRO_HEADING = 2;
-        public static final int GYRO_BALANCE = 1;
-        public static final int ACCELEROMETER = 3;
         
         public static final int ELEVATOR_LIMIT_SWITCH = 1;
     }

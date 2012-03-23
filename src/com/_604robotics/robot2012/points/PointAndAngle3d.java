@@ -1,4 +1,4 @@
-package com._604robotics.robot2012.aiming;
+package com._604robotics.robot2012.points;
 
 /**
  * A class to hold a 3d point.
