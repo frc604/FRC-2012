@@ -1,0 +1,12 @@
+C:\Source\Kinect Server\obj\Release\ResolveAssemblyReference.cache
+C:\Source\Kinect Server\obj\Release\MainWindow.baml
+C:\Source\Kinect Server\obj\Release\MainWindow.g.cs
+C:\Source\Kinect Server\obj\Release\App.g.cs
+C:\Source\Kinect Server\obj\Release\KinectServer_MarkupCompile.cache
+C:\Source\Kinect Server\obj\Release\KinectServer.g.resources
+C:\Source\Kinect Server\bin\Release\KinectServer.exe.config
+C:\Source\Kinect Server\bin\Release\KinectServer.exe
+C:\Source\Kinect Server\bin\Release\Microsoft.Samples.Kinect.WpfViewers.FIRST.dll
+C:\Source\Kinect Server\bin\Release\INuiInstanceHelper.dll
+C:\Source\Kinect Server\bin\Release\Microsoft.Samples.Kinect.WpfViewers.FIRST.pdb
+C:\Source\Kinect Server\obj\Release\KinectServer.exe
