@@ -9,13 +9,16 @@ import java.io.OutputStream;
 import java.net.Socket;
 
 /**
- * TURTLE
+ * TURTLE protocol
  * 
- * That
- * Unknown
- * Robot/Computer
- * Transfer
- * List
+ * 
+ * Target
+ * Upload to
+ * Robot
+ * Transfered from
+ * Laptop
+ * Exchange
+ * protocol
  * 
  * 
  * 
