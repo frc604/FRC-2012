@@ -1,5 +1,6 @@
 package com._604robotics.robot2012.machine;
 
+import com._604robotics.utils.StrangeMachine;
 import com._604robotics.robot2012.configuration.ActuatorConfiguration;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.PIDController;

@@ -1,4 +1,4 @@
-package com._604robotics.robot2012.machine;
+package com._604robotics.utils;
 
 /**
  * State manager for various components of the robot.
