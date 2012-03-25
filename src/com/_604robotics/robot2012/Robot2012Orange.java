@@ -3,11 +3,13 @@ package com._604robotics.robot2012;
 import com._604robotics.robot2012.camera.CameraInterface;
 import com._604robotics.robot2012.camera.RemoteCameraTCP;
 import com._604robotics.robot2012.configuration.*;
+import com._604robotics.robot2012.machine.ElevatorMachine;
 import com._604robotics.robot2012.machine.ElevatorMachine.ElevatorState;
+import com._604robotics.robot2012.machine.PickupMachine;
 import com._604robotics.robot2012.machine.PickupMachine.PickupState;
+import com._604robotics.robot2012.machine.ShooterMachine;
 import com._604robotics.robot2012.machine.ShooterMachine.ShooterState;
-import com._604robotics.robot2012.machine.*;
-import com._604robotics.robot2012.machine.TurretMachine.TurretState;
+import com._604robotics.robot2012.machine.StrangeMachine;
 import com._604robotics.robot2012.rotation.RotationProvider;
 import com._604robotics.robot2012.rotation.SlowbroRotationProvider;
 import com._604robotics.utils.UpDownPIDController.Gains;
@@ -48,10 +50,8 @@ public class Robot2012Orange extends SimpleRobot {
     SpringableRelay ringLight;
     
     EncoderPIDSource encoderElevator;
-    EncoderPIDSource encoderTurretRotation;
     
     DigitalInput elevatorLimitSwitch;
-    DigitalInput turretLimitSwitch;
     
     Gyro360 gyroHeading;
     
@@ -63,14 +63,10 @@ public class Robot2012Orange extends SimpleRobot {
     SpringableDoubleSolenoid solenoidHopper;
     
     UpDownPIDController pidElevator;
-    ConvertingPIDController pidTurretRotation;
 
     StrangeMachine pickupMachine;
     StrangeMachine elevatorMachine;
-    TurretMachine turretMachine;
     ShooterMachine shooterMachine;
-    
-    RotationProvider rotationProvider;
     
     SendableChooser inTheMiddle;
     
@@ -80,7 +76,6 @@ public class Robot2012Orange extends SimpleRobot {
     boolean pickupIn = true;
     
     boolean noFixedDirection = true;
-    int turretDirection = TurretState.FORWARD;
     
     public static double getDouble(String key, double def) {
         try {
@@ -134,8 +129,6 @@ public class Robot2012Orange extends SimpleRobot {
         hopperMotor = new SpringableVictor(PortConfiguration.Motors.HOPPER);
         pickupMotor = new SpringableVictor(PortConfiguration.Motors.PICKUP);
         
-        turretRotationMotor = new SpringableVictor(PortConfiguration.Motors.TURRET_ROTATION);
-        
         /* Sets up the ring light relay. */
         
         ringLight = new SpringableRelay(PortConfiguration.Relays.RING_LIGHT_PORT, PortConfiguration.Relays.RING_LIGHT_DIRECTION, ActuatorConfiguration.RING_LIGHT.OFF);
@@ -143,13 +136,8 @@ public class Robot2012Orange extends SimpleRobot {
         /* Sets up the encoders for the drive, elevator, and turret. */
         
         encoderElevator = new EncoderPIDSource(PortConfiguration.Encoders.ELEVATOR_A, PortConfiguration.Encoders.ELEVATOR_B);
-        encoderTurretRotation = new EncoderPIDSource(PortConfiguration.Encoders.TURRET_ROTATION_A, PortConfiguration.Encoders.TURRET_ROTATION_B);
-        
         encoderElevator.setOffset(616);
-        encoderTurretRotation.setDistancePerPulse(SensorConfiguration.Encoders.TURRET_DEGREES_PER_CLICK);
-        
         encoderElevator.start();
-        encoderTurretRotation.start();
         
         /* Sets up the limit switches for calibration. */
         
@@ -188,7 +176,6 @@ public class Robot2012Orange extends SimpleRobot {
         SmartDashboard.putDouble("Turret D", -0.009);
         
         pidElevator = new UpDownPIDController(new Gains(getDouble("Elevator Up P", 0.0085), getDouble("Elevator Up I", 0D), getDouble("Elevator Up D", 0.018)), new Gains(getDouble("Elevator Down P", 0.0029), getDouble("Elevator Down I", 0.000003), getDouble("Elevator Down P", 0.007)), encoderElevator, elevatorMotors);
-        pidTurretRotation = new ConvertingPIDController(getDouble("Turret P", -0.00196), getDouble("Turret I", 0D), getDouble("Turret D", -0.009), encoderTurretRotation, turretRotationMotor);
         
         pidElevator.setInputRange(0, 1550);
         pidElevator.setOutputRange(ActuatorConfiguration.ELEVATOR_POWER_MIN, ActuatorConfiguration.ELEVATOR_POWER_MAX);
@@ -223,7 +210,6 @@ public class Robot2012Orange extends SimpleRobot {
         
         pickupMachine = new PickupMachine(solenoidPickup);
         elevatorMachine = new ElevatorMachine(pidElevator, encoderElevator);
-        turretMachine = new TurretMachine(pidTurretRotation, rotationProvider, encoderTurretRotation, turretRotationMotor, ringLight);
         shooterMachine = new ShooterMachine(shooterMotors, hopperMotor);
         
         SmartDashboard.putDouble("Confidence Threshold", 0.7);
@@ -298,7 +284,6 @@ public class Robot2012Orange extends SimpleRobot {
         pickupIn = true;
 
         noFixedDirection = true;
-        turretDirection = TurretState.FORWARD;
         
         /* If we're not in the middle, skip over the bridge stuff. */
         
@@ -315,7 +300,6 @@ public class Robot2012Orange extends SimpleRobot {
         
         encoderTurretRotation.reset();
         encoderTurretRotation.setOffset(SensorConfiguration.TURRET_CALIBRATION_OFFSET);
-        turretMachine.setTurretSidewaysPosition(encoderTurretRotation.getDistance());
         
         elevatorMotors.set(0D);
         
