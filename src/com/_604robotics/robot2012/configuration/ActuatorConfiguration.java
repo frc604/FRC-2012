@@ -16,23 +16,12 @@ public interface ActuatorConfiguration {
     public static final double ELEVATOR_POWER_MIN = -0.8;
     public static final double ELEVATOR_POWER_MAX = 0.8;
     
-    public static final double TURRET_ROTATION_POWER_MIN = -0.4;
-    public static final double TURRET_ROTATION_POWER_MAX = 0.4;
-    
     public static final double MAX_SLOW_SPEED = 0.7;
     
     public static final double TINY_FORWARD_SPEED = 0.6;
     public static final double TINY_REVERSE_SPEED = 0.6;
     
     public static final double ELEVATOR_PICKUP_POWER = -0.22;
-    
-    public interface TURRET_POSITION {
-        public static final double FORWARD = 0D;
-        public static final double LEFT = -45D;
-        public static final double RIGHT = 45D;
-        
-        public static final double TOLERANCE = 12D;
-    }
     
     public interface RING_LIGHT {
         public static final Value ON = Value.kOn;

@@ -26,9 +26,7 @@ public interface ButtonConfiguration {
     
     public interface Manipulator {
         public interface Elevator {
-            public static final int FORWARD = Button.Y;
-            public static final int LEFT = Button.X;
-            public static final int RIGHT = Button.B;
+            public static final int UP = Button.Y;
             public static final int DOWN = Button.A;
         }
         

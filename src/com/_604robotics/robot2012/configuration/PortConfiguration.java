@@ -29,8 +29,6 @@ public interface PortConfiguration {
         public static final int SHOOTER_RIGHT = 3;
         public static final int HOPPER = 5;
         public static final int PICKUP = 4;
-        
-        public static final int TURRET_ROTATION = 6;
     }
     
     public interface Relays {
@@ -55,9 +53,6 @@ public interface PortConfiguration {
         
         public static final int ELEVATOR_A = 12;
         public static final int ELEVATOR_B = 11;
-        
-        public static final int TURRET_ROTATION_A = 14;
-        public static final int TURRET_ROTATION_B = 13;
     }
     
     public interface Pneumatics {
