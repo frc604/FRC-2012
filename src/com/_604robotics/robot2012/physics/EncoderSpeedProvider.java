@@ -65,4 +65,9 @@ public class EncoderSpeedProvider implements SpeedProvider {
     public double getSetSpeed() {
         return setSpeed;
     }
+    
+    
+    public boolean isOnTarget(double tolerance) {
+        return Math.abs(tolerance - currentSpeed) < tolerance;
+    }
 }

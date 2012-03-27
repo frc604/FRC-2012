@@ -23,4 +23,12 @@ public interface SpeedProvider {
      * @return  the target speed
      */
     public double getSetSpeed();
+    
+    
+    /**
+     * 
+     * @param tolerance How close the current speed must be to the setPoint
+     * @return  if it's within the tolerance of target speed
+     */
+    public boolean isOnTarget(double tolerance);
 }
