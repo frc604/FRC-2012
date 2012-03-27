@@ -12,7 +12,7 @@ public interface SpeedProvider {
     
     /**
      * Calculates the power to set the motor to
-     * @return the power for the motor
+     * @return  the power for the motor
      */
     public double getMotorPower();
     
@@ -22,5 +22,9 @@ public interface SpeedProvider {
      */
     public void setSetSpeed(double setSpeed);
     
+    /**
+     * Returns the target speed
+     * @return  the target speed
+     */
     public double getSetSpeed();
 }
