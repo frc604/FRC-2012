@@ -40,7 +40,7 @@ public class Physics {
      *
      * @return  The firing velocity
      */
-    public double getSubparFiringVelocity(double distH, double distV, double slope) {
+    public static double getSubparFiringVelocity(double distH, double distV, double slope) {
         double g = -386;//inches per second squared
 
         return (Math.sqrt(2) * Math.sqrt(g * slope * slope + g)
@@ -62,7 +62,7 @@ public class Physics {
      * @return  A Point2d with the x and y velocities does not return the time.
      *
      */
-    public Point2d betterVersionOfgetFiringVelocity(double distH, double distV, double verticalVel) {
+    public static Point2d betterVersionOfgetFiringVelocity(double distH, double distV, double verticalVel) {
 
         double g = -386;//inches per second squared
 
@@ -95,7 +95,7 @@ public class Physics {
      *
      * @return  A Point2d with the x and y velocities does not return the time.
      */
-    public Point2d betterVersionOfgetFiringVelocity(double distH, double distV) {
+    public static Point2d betterVersionOfgetFiringVelocity(double distH, double distV) {
 
         //TODO: this approximation of a "good velocity" will need to be tuned once we have a working robot
         double verticalVel = -120 - distV * .5;
@@ -116,7 +116,7 @@ public class Physics {
      * @return  A BallFireInfo with the velocity, angle, and horizontalAngle to
      *          fire the ball at (eventually)
      */
-    public BallFireInfo GetBallFiringInfo(double xDist, double yDist, double zDist, double robotVelX, double robotVelZ) {
+    public static BallFireInfo GetBallFiringInfo(double xDist, double yDist, double zDist, double robotVelX, double robotVelZ) {
         //TODO - needz moar math
 
         return null;

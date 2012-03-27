@@ -43,16 +43,10 @@ public interface PortConfiguration {
     }
     
     public interface Encoders {
-        public interface Drive {
-            public static final int LEFT_A = 7;
-            public static final int LEFT_B = 2;
-            
-            public static final int RIGHT_A = 3;
-            public static final int RIGHT_B = 4;
-        }
+        public static final int SHOOTER = 3;
         
-        public static final int ELEVATOR_A = 12;
-        public static final int ELEVATOR_B = 11;
+        public static final int ELEVATOR_A = 11;
+        public static final int ELEVATOR_B = 12;
     }
     
     public interface Pneumatics {

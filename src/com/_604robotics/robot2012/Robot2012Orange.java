@@ -6,6 +6,8 @@ import com._604robotics.robot2012.configuration.ActuatorConfiguration;
 import com._604robotics.robot2012.configuration.AutonomousConfiguration;
 import com._604robotics.robot2012.configuration.ButtonConfiguration;
 import com._604robotics.robot2012.configuration.PortConfiguration;
+import com._604robotics.robot2012.firing.CameraFiringProvider;
+import com._604robotics.robot2012.firing.ManualFiringProvider;
 import com._604robotics.robot2012.machine.ElevatorMachine;
 import com._604robotics.robot2012.machine.ElevatorMachine.ElevatorState;
 import com._604robotics.robot2012.machine.PickupMachine;
@@ -16,6 +18,7 @@ import com._604robotics.utils.StrangeMachine;
 import com._604robotics.utils.UpDownPIDController.Gains;
 import com._604robotics.utils.*;
 import com._604robotics.utils.XboxController.Axis;
+import com._604robotics.utils.XboxController.Button;
 import edu.wpi.first.wpilibj.RobotDrive.MotorType;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -70,6 +73,8 @@ public class Robot2012Orange extends SimpleRobot {
     SendableChooser inTheMiddle;
     
     CameraInterface cameraInterface;
+    
+    CameraFiringProvider firingProvider;
     
     boolean upHigh = false;
     boolean pickupIn = true;
@@ -184,18 +189,20 @@ public class Robot2012Orange extends SimpleRobot {
         
         SmartDashboard.putData("inTheMiddle", inTheMiddle);
         
-        SmartDashboard.putDouble("Shooter Speed", -1D);
-        
         /* Sets up the camera inteface. */
         
         cameraInterface = new RemoteCameraTCP();
         cameraInterface.begin();
                 
+        /* Sets up the firing provider. */
+        
+        firingProvider = new CameraFiringProvider(cameraInterface, new ManualFiringProvider());
+        
         /* Sets up the Machines. */
         
         pickupMachine = new PickupMachine(solenoidPickup);
         elevatorMachine = new ElevatorMachine(pidElevator, encoderElevator);
-        shooterMachine = new ShooterMachine(shooterMotors, hopperMotor);
+        shooterMachine = new ShooterMachine(shooterMotors, hopperMotor, firingProvider);
         
         SmartDashboard.putDouble("Confidence Threshold", 0.7);
         SmartDashboard.putDouble("Target Timeout", 1.5);
@@ -547,8 +554,6 @@ public class Robot2012Orange extends SimpleRobot {
         pidElevator.reset();
         
         while (isOperatorControl() && isEnabled()) {
-            shooterMachine.setShooterSpeed(getDouble("Shooter Speed", -1D));
-            
             pidElevator.setUpGains(new Gains(getDouble("Elevator Up P", 0.0085), getDouble("Elevator Up I", 0D), getDouble("Elevator Up D", 0.018)));
             pidElevator.setDownGains(new Gains(getDouble("Elevator Down P", 0.0029), getDouble("Elevator Down I", 0.000003), getDouble("Elevator Down P", 0.007)));
             
@@ -581,6 +586,13 @@ public class Robot2012Orange extends SimpleRobot {
                 driveTrain.tankDrive(driveController.getAxis(Axis.LEFT_STICK_Y), driveController.getAxis(Axis.RIGHT_STICK_Y));
                 SmartDashboard.putString("Drive Mode", "Manual");
             }
+            
+            /* Manually set whether or not we're at the fender. */
+            
+            if (manipulatorController.getToggle(ButtonConfiguration.Manipulator.AT_FENDER))
+                firingProvider.setAtFender(true);
+            else if (manipulatorController.getToggle(ButtonConfiguration.Manipulator.AT_KEY))
+                firingProvider.setAtFender(false);
             
             /* Toggle the "default" height between "up high" and "down low". */
             
@@ -703,6 +715,10 @@ public class Robot2012Orange extends SimpleRobot {
             solenoidHopper.reload();
             
             /* Debug output. */
+            
+            SmartDashboard.putDouble("Shooter Speed", shooterMachine.getShooterSpeed());
+            SmartDashboard.putBoolean("Using Targets?", firingProvider.usingTargets());
+            SmartDashboard.putBoolean("At the Fender?", firingProvider.isAtFender());
             
             SmartDashboard.putDouble("gyroHeading", gyroHeading.getAngle());
             

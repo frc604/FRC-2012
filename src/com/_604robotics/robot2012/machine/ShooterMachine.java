@@ -2,6 +2,7 @@ package com._604robotics.robot2012.machine;
 
 import com._604robotics.utils.StrangeMachine;
 import com._604robotics.robot2012.configuration.ActuatorConfiguration;
+import com._604robotics.robot2012.firing.FiringProvider;
 import com._604robotics.utils.DualVictor;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Victor;
@@ -12,13 +13,14 @@ import edu.wpi.first.wpilibj.Victor;
  * @author  Michael Smith <mdsmtp@gmail.com>
  */
 public class ShooterMachine implements StrangeMachine {
+    // TODO: Integrate with Kevin's SpeedProvider stuff.
+    
     private final Timer spinTimer = new Timer();
     private final Timer sinceTimer = new Timer();
     
     private final DualVictor shooter;
     private final Victor hopper;
-    
-    private double speed = 0D;
+    private final FiringProvider provider;
     
     /**
      * The possible states the shooter could be in.
@@ -33,19 +35,21 @@ public class ShooterMachine implements StrangeMachine {
      * @param   shooter     The motors of the shooter to control.
      * @param   hopper      The motor of the hopper to control.
      */
-    public ShooterMachine (DualVictor shooter, Victor hopper) {
+    public ShooterMachine (DualVictor shooter, Victor hopper, FiringProvider provider) {
         this.shooter = shooter;
         this.hopper = hopper;
+        this.provider = provider;
+        
         this.sinceTimer.start();
     }
     
     /**
-     * Sets the shooter speed to use when, well, shooting.
+     * Gets the calculated shooter speed.
      * 
-     * @param   speed   The shooter speed to use when, well, shooting.
+     * @return  The calculated shooter speed.
      */
-    public void setShooterSpeed (double speed) {
-        this.speed = speed;
+    public double getShooterSpeed () {
+        return this.provider.getSpeed();
     }
 
     public boolean test (int state) {
@@ -60,7 +64,7 @@ public class ShooterMachine implements StrangeMachine {
     public boolean crank (int state) {
         switch (state) {
             case ShooterState.SHOOTING:
-                this.shooter.set(this.speed);
+                this.shooter.set(this.provider.getSpeed());
                 
                 if (this.sinceTimer.get() >= 0.25) {
                     System.out.println("RESETTING TIMER");

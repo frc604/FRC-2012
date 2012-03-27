@@ -38,6 +38,9 @@ public interface ButtonConfiguration {
         
         public static final int TOGGLE_ANGLE = Button.LB;
         public static final int TOGGLE_LIGHT = Button.Back;
+        
+        public static final int AT_FENDER = Button.DPad.Up;
+        public static final int AT_KEY = Button.DPad.Down;
     }
     
     public interface Kinect {
