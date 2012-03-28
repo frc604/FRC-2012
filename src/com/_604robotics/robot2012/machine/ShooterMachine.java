@@ -3,8 +3,8 @@ package com._604robotics.robot2012.machine;
 import com._604robotics.utils.StrangeMachine;
 import com._604robotics.robot2012.configuration.ActuatorConfiguration;
 import com._604robotics.robot2012.firing.FiringProvider;
+import com._604robotics.robot2012.speedcontrol.SpeedProvider;
 import com._604robotics.utils.DualVictor;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.Victor;
 
 /**
@@ -13,14 +13,9 @@ import edu.wpi.first.wpilibj.Victor;
  * @author  Michael Smith <mdsmtp@gmail.com>
  */
 public class ShooterMachine implements StrangeMachine {
-    // TODO: Integrate with Kevin's SpeedProvider stuff.
-    
-    private final Timer spinTimer = new Timer();
-    private final Timer sinceTimer = new Timer();
-    
-    private final DualVictor shooter;
     private final Victor hopper;
     private final FiringProvider provider;
+    private final SpeedProvider shooter;
     
     /**
      * The possible states the shooter could be in.
@@ -35,12 +30,10 @@ public class ShooterMachine implements StrangeMachine {
      * @param   shooter     The motors of the shooter to control.
      * @param   hopper      The motor of the hopper to control.
      */
-    public ShooterMachine (DualVictor shooter, Victor hopper, FiringProvider provider) {
-        this.shooter = shooter;
+    public ShooterMachine (Victor hopper, FiringProvider provider, SpeedProvider shooter) {
         this.hopper = hopper;
         this.provider = provider;
-        
-        this.sinceTimer.start();
+        this.shooter = shooter;
     }
     
     /**
@@ -64,31 +57,21 @@ public class ShooterMachine implements StrangeMachine {
     public boolean crank (int state) {
         switch (state) {
             case ShooterState.SHOOTING:
-                this.shooter.set(this.provider.getSpeed());
+                this.shooter.setSetSpeed(this.provider.getSpeed());
+                this.shooter.apply();
                 
-                if (this.sinceTimer.get() >= 0.25) {
-                    System.out.println("RESETTING TIMER");
-                    
-                    this.spinTimer.reset();
-                    this.spinTimer.start();
-                
-                    this.sinceTimer.reset();
-                    
-                    return false;
-                } else if (this.spinTimer.get() >= 0.5) {
+                if (this.shooter.isOnTarget(ActuatorConfiguration.SHOOTER_SPEED_TOLERANCE)) {
                     System.out.println("SHOOTING NOW");
                     this.hopper.set(ActuatorConfiguration.HOPPER_POWER);
                 } else {
                     System.out.println("CHARGING UP");
+                    this.shooter.reset();
                 }
-                
-                this.sinceTimer.reset();
                 
                 return true;
         }
         
-        this.spinTimer.stop();
-        this.shooter.set(0D);
+        this.shooter.reset();
         
         return false;
     }

@@ -24,7 +24,6 @@ public interface SpeedProvider {
      */
     public double getSetSpeed();
     
-    
     /**
      * 
      * @param tolerance How close the current speed must be to the setPoint

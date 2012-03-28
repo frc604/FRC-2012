@@ -14,6 +14,8 @@ public class EncoderSpeedProvider implements SpeedProvider {
     private final Encoder encoder;
     private final Timer timer = new Timer();
     
+    private boolean loaded = false;
+    
     private double setSpeed;
     private double P, I;
     private double integral;
@@ -54,16 +56,6 @@ public class EncoderSpeedProvider implements SpeedProvider {
         return (setSpeed-currentSpeed)*P + integral*I;
     }
     
-    public void apply() {
-        this.motor.set(this.getMotorPower());
-    }
-    
-    public void reset() {
-        integral = 0;
-        timer.reset();
-        this.motor.set(0D);
-    }
-    
     public void setSetSpeed(double setSpeed) {
         this.setSpeed = setSpeed;
     }
@@ -74,5 +66,20 @@ public class EncoderSpeedProvider implements SpeedProvider {
     
     public boolean isOnTarget(double tolerance) {
         return Math.abs(tolerance - this.encoder.getRate()) < tolerance;
+    }
+    
+    public void apply() {
+        this.loaded = true;
+        this.motor.set(this.getMotorPower());
+    }
+    
+    public void reset() {
+        if (!this.loaded) {
+            integral = 0;
+            timer.reset();
+            this.motor.set(0D);
+        }
+        
+        this.loaded = false;
     }
 }

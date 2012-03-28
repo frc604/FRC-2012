@@ -14,6 +14,8 @@ import com._604robotics.robot2012.machine.PickupMachine;
 import com._604robotics.robot2012.machine.PickupMachine.PickupState;
 import com._604robotics.robot2012.machine.ShooterMachine;
 import com._604robotics.robot2012.machine.ShooterMachine.ShooterState;
+import com._604robotics.robot2012.speedcontrol.ProcessSpeedProvider;
+import com._604robotics.robot2012.speedcontrol.SpeedProvider;
 import com._604robotics.utils.StrangeMachine;
 import com._604robotics.utils.UpDownPIDController.Gains;
 import com._604robotics.utils.*;
@@ -51,6 +53,7 @@ public class Robot2012Orange extends SimpleRobot {
     SpringableRelay ringLight;
     
     EncoderPIDSource encoderElevator;
+    EncoderSamplingRate encoderShooter;
     
     DigitalInput elevatorLimitSwitch;
     
@@ -74,6 +77,7 @@ public class Robot2012Orange extends SimpleRobot {
     CameraInterface cameraInterface;
     
     CameraFiringProvider firingProvider;
+    SpeedProvider speedProvider;
     
     boolean upHigh = false;
     boolean pickupIn = true;
@@ -134,11 +138,18 @@ public class Robot2012Orange extends SimpleRobot {
         
         ringLight = new SpringableRelay(PortConfiguration.Relays.RING_LIGHT_PORT, PortConfiguration.Relays.RING_LIGHT_DIRECTION, ActuatorConfiguration.RING_LIGHT.OFF);
         
-        /* Sets up the encoder for elevator. */
+        /* Sets up the encoders. */
         
         encoderElevator = new EncoderPIDSource(PortConfiguration.Encoders.ELEVATOR_A, PortConfiguration.Encoders.ELEVATOR_B);
         encoderElevator.setOffset(616);
         encoderElevator.start();
+        
+        encoderShooter = new EncoderSamplingRate(3, 4);
+        encoderShooter.setDistancePerPulse(1);
+        encoderShooter.setPIDSourceParameter(Encoder.PIDSourceParameter.kRate);
+        encoderShooter.setSamplingRate(20);
+        encoderShooter.setAveragePoints(10);
+        encoderShooter.start();
         
         /* Sets up the limit switches for calibration. */
         
@@ -192,16 +203,20 @@ public class Robot2012Orange extends SimpleRobot {
         
         cameraInterface = new RemoteCameraTCP();
         cameraInterface.begin();
-                
+        
         /* Sets up the firing provider. */
         
         firingProvider = new CameraFiringProvider(cameraInterface, new ManualFiringProvider());
+        
+        /* Sets up the speed provider for the shooter. */
+        
+        speedProvider = new ProcessSpeedProvider(0D, 0D, 0D, encoderShooter, new DifferentialMotorOutput(shooterMotors));
         
         /* Sets up the Machines. */
         
         pickupMachine = new PickupMachine(solenoidPickup);
         elevatorMachine = new ElevatorMachine(pidElevator, encoderElevator);
-        shooterMachine = new ShooterMachine(shooterMotors, hopperMotor, firingProvider);
+        shooterMachine = new ShooterMachine(hopperMotor, firingProvider, speedProvider);
         
         SmartDashboard.putDouble("Confidence Threshold", 0.7);
         SmartDashboard.putDouble("Target Timeout", 1.5);
@@ -230,6 +245,8 @@ public class Robot2012Orange extends SimpleRobot {
         if (driveToo)
             driveTrain.tankDrive(0D, 0D);
 
+        speedProvider.reset();
+        
         elevatorMotors.reload();
         shooterMotors.reload();
         hopperMotor.reload();
@@ -702,6 +719,8 @@ public class Robot2012Orange extends SimpleRobot {
                 ringLight.set(ActuatorConfiguration.RING_LIGHT.ON);
             
             /* Reload the springs. */
+            
+            speedProvider.reset();
             
             elevatorMotors.reload();
             shooterMotors.reload();

@@ -13,6 +13,8 @@ public class GuestimatedSpeedProvider implements SpeedProvider {
     private final DualVictor motor;
     private final Timer timer = new Timer();
     
+    private boolean loaded = false;
+    
     private double setSpeed;
     private double setPow;
     private double constantFactor;
@@ -74,10 +76,13 @@ public class GuestimatedSpeedProvider implements SpeedProvider {
     }
 
     public void apply() {
+        this.loaded = true;
         this.motor.set(this.getMotorPower());
     }
 
     public void reset() {
-        this.motor.set(0D);
+        if (!this.loaded)
+            this.motor.set(0D);
+        this.loaded = false;
     }
 }
