@@ -1,0 +1,6 @@
+MIDlet-Name: TuneTheElevator
+MIDlet-Version: 1.0.0
+MIDlet-Vendor: FIRST
+MIDlet-1: TuneTheElevator, , com._604robotics.robot2012.tunetheelevator.TuneTheElevator
+MicroEdition-Profile: IMP-1.0
+MicroEdition-Configuration: CLDC-1.1
