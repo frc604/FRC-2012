@@ -18,7 +18,6 @@ import com._604robotics.utils.StrangeMachine;
 import com._604robotics.utils.UpDownPIDController.Gains;
 import com._604robotics.utils.*;
 import com._604robotics.utils.XboxController.Axis;
-import com._604robotics.utils.XboxController.Button;
 import edu.wpi.first.wpilibj.RobotDrive.MotorType;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;

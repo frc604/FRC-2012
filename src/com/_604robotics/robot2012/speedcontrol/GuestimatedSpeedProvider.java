@@ -1,13 +1,17 @@
-package com._604robotics.robot2012.physics;
+package com._604robotics.robot2012.speedcontrol;
 
+import com._604robotics.utils.DualVictor;
 import com.sun.squawk.util.MathUtils;
 import edu.wpi.first.wpilibj.Timer;
 
 /**
  *
  * @author Kevin Parker <kevin.m.parker@gmail.com>
+ * @author Michael Smith <mdsmtp@gmail.com>
  */
 public class GuestimatedSpeedProvider implements SpeedProvider {
+    private final DualVictor motor;
+    private final Timer timer = new Timer();
     
     private double setSpeed;
     private double setPow;
@@ -15,13 +19,18 @@ public class GuestimatedSpeedProvider implements SpeedProvider {
     private double linearFactor;
     private double quadraticFactor;
     
-    private Timer timer = new Timer();
     private double deltaV;
     private double spikeTime = .25;
+    
+    public GuestimatedSpeedProvider(DualVictor motor) {
+        this.motor = motor;
+        this.timer.start();
+    }
     
     public double getLinearFactor() {
         return linearFactor;
     }
+    
     public double getQuadraticFactor() {
         return quadraticFactor;
     }
@@ -62,5 +71,13 @@ public class GuestimatedSpeedProvider implements SpeedProvider {
     
     public boolean isOnTarget(double tolerance) {
         return timer.get() > deltaV*spikeTime;
+    }
+
+    public void apply() {
+        this.motor.set(this.getMotorPower());
+    }
+
+    public void reset() {
+        this.motor.set(0D);
     }
 }

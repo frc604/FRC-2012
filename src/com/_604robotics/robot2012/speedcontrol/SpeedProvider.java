@@ -1,11 +1,11 @@
-package com._604robotics.robot2012.physics;
+package com._604robotics.robot2012.speedcontrol;
 
 /**
  *
  * @author Kevin Parker <kevin.m.parker@gmail.com>
+ * @author Michael Smith <mdsmtp@gmail.com>
  */
 public interface SpeedProvider {
-    
     /**
      * Calculates the power to set the motor to
      * @return  the power for the motor
@@ -31,4 +31,14 @@ public interface SpeedProvider {
      * @return  if it's within the tolerance of target speed
      */
     public boolean isOnTarget(double tolerance);
+    
+    /**
+     * Applies the calculated power to the motor.
+     */
+    public void apply();
+    
+    /**
+     * Disables/resets the SpeedProvider.
+     */
+    public void reset();
 }

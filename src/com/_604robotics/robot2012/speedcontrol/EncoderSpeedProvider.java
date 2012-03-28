@@ -1,20 +1,30 @@
-package com._604robotics.robot2012.physics;
+package com._604robotics.robot2012.speedcontrol;
 
+import com._604robotics.utils.DualVictor;
+import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Timer;
 
 /**
  *
  * @author Kevin Parker <kevin.m.parker@gmail.com>
+ * @author Michael Smith <mdsmtp@gmail.com>
  */
 public class EncoderSpeedProvider implements SpeedProvider {
+    private final DualVictor motor;
+    private final Encoder encoder;
+    private final Timer timer = new Timer();
     
-    private Timer timer = new Timer();
     private double setSpeed;
     private double P, I;
     private double integral;
-    private double currentSpeed;
     
     private static final double maxTimePerIntegral = .05; // 50 ms max integration time
+    
+    public EncoderSpeedProvider(DualVictor motor, Encoder encoder) {
+        this.motor = motor;
+        this.encoder = encoder;
+        this.timer.start();
+    }
     
     public double getP() {
         return P;
@@ -32,30 +42,26 @@ public class EncoderSpeedProvider implements SpeedProvider {
         I = i;
     }
     
-    public void resetIntegral() {
-        integral = 0;
-        timer.reset();
-    }
-    
-    
-    /**
-     * 
-     * @param current   The speed as given from the encoder
-     */
-    public void setCurrentSpeed(double current) {
-        currentSpeed = current;
-        
+    public double getMotorPower() {
+        double currentSpeed = this.encoder.getRate();
         double cTime = timer.get();
         
         if(cTime > maxTimePerIntegral)
             cTime = maxTimePerIntegral;
         
         integral += cTime*currentSpeed;
+        
+        return (setSpeed-currentSpeed)*P + integral*I;
     }
     
-
-    public double getMotorPower() {
-        return (setSpeed-currentSpeed)*P + integral*I;
+    public void apply() {
+        this.motor.set(this.getMotorPower());
+    }
+    
+    public void reset() {
+        integral = 0;
+        timer.reset();
+        this.motor.set(0D);
     }
     
     public void setSetSpeed(double setSpeed) {
@@ -66,8 +72,7 @@ public class EncoderSpeedProvider implements SpeedProvider {
         return setSpeed;
     }
     
-    
     public boolean isOnTarget(double tolerance) {
-        return Math.abs(tolerance - currentSpeed) < tolerance;
+        return Math.abs(tolerance - this.encoder.getRate()) < tolerance;
     }
 }
