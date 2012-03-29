@@ -344,12 +344,13 @@ public class Robot2012Orange extends SimpleRobot {
                     
                     break;
                 case 3:
-                    /* Turn around and face the bridge. */
-                    /* Put the elevator down. */
-                    
-                    boolean crank = elevatorMachine.crank(ElevatorState.MEDIUM);
+                    /* 
+                     * Turn around and face the bridge, and put the elevator
+                     * down.
+                     */
                     
                     if (controlTimer.get() <= getDouble("Auton: Step 3", AutonomousConfiguration.STEP_3_TURN_TIME)) {
+                        elevatorMachine.crank(ElevatorState.MEDIUM);
                         gyroAngle = gyroHeading.getAngle();
                         
                         if (turnedAround || (gyroAngle > 179 && gyroAngle < 181)) {
@@ -363,7 +364,7 @@ public class Robot2012Orange extends SimpleRobot {
                         driveTrain.tankDrive(0D, 0D);
                         
                         controlTimer.reset();
-                        if(crank)
+                        if(elevatorMachine.crank(ElevatorState.MEDIUM))
                             step++;
                     }
                     
