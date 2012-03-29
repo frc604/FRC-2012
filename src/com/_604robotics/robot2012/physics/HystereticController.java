@@ -12,6 +12,7 @@ public class HystereticController {
     }
     
     private double factor = 100;
+    private double overshootFac = 1.05;
     
     /*
      * position, velocity
@@ -67,7 +68,7 @@ public class HystereticController {
      */
     public void setCurrentPosition(double pos) {
         p = pos;
-        // TODO - calculate v and a from pos
+        // TODO - calculate v and a from pos?
     }
     /**
      * 
@@ -75,7 +76,6 @@ public class HystereticController {
      */
     public void setCurrentVelocity(double vel) {
         v = vel;
-        // TODO - calculate v and a from pos
     }
     
     /**
@@ -99,7 +99,7 @@ public class HystereticController {
         // delXStop = .5*(m/f)*v^2
         double delXStop = .5*inertiaVsMotorForce*v*v;
         
-        double output = f((delP - delXStop*1.05) * factor * inertiaVsMotorForce);
+        double output = f((delP - delXStop*overshootFac) * factor * inertiaVsMotorForce);
         
         
         
