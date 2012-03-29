@@ -125,10 +125,10 @@ public class Robot2012Orange extends SimpleRobot {
         driveTrain = new RobotDrive(new Victor(PortConfiguration.Motors.LEFT_DRIVE), new Victor(PortConfiguration.Motors.RIGHT_DRIVE));
         driveTrain.setSafetyEnabled(false);
 
-        driveTrain.setInvertedMotor(MotorType.kFrontLeft, true);
-        driveTrain.setInvertedMotor(MotorType.kFrontRight, true);
-        driveTrain.setInvertedMotor(MotorType.kRearLeft, true);
-        driveTrain.setInvertedMotor(MotorType.kRearRight, true);
+        driveTrain.setInvertedMotor(MotorType.kFrontLeft, false);
+        driveTrain.setInvertedMotor(MotorType.kFrontRight, false);
+        driveTrain.setInvertedMotor(MotorType.kRearLeft, false);
+        driveTrain.setInvertedMotor(MotorType.kRearRight, false);
         
         /* Set up the elevator, shooter, hopper, pickup, and rotation motors. */
         
