@@ -96,8 +96,11 @@ public class Robot2012Orange extends SimpleRobot {
      * Constructor.
      * 
      * Disables the built-in watchdog, since it's not really needed anymore.
-     */    
+     */
     public Robot2012Orange() {
+        DriverStation.getInstance().setDigitalOut(2, false);
+        DriverStation.getInstance().setDigitalOut(5, false);
+        
         this.getWatchdog().setEnabled(false);
     }
 
@@ -171,10 +174,10 @@ public class Robot2012Orange extends SimpleRobot {
         
         solenoidShooter.set(ActuatorConfiguration.SOLENOID_SHOOTER.LOWER_ANGLE);
         
-        /*
-         * Sets up the PID controllers, and initializes inputs on the
-         * SmartDashboard.
-         */
+        /* Initializes inputs on the SmartDashboard and driver station. */
+        
+        DriverStation.getInstance().setDigitalOut(2, true);
+        DriverStation.getInstance().setDigitalOut(5, false);
         
         SmartDashboard.putDouble("Elevator Up P", 0.0085);
         SmartDashboard.putDouble("Elevator Up I", 0D);
@@ -183,6 +186,8 @@ public class Robot2012Orange extends SimpleRobot {
         SmartDashboard.putDouble("Elevator Down P", 0.0029);
         SmartDashboard.putDouble("Elevator Down I", 0.000003);
         SmartDashboard.putDouble("Elevator Down D", 0.007);
+        
+        /* Sets up the PID controllers. */
         
         pidElevator = new UpDownPIDController(new Gains(getDouble("Elevator Up P", 0.0085), getDouble("Elevator Up I", 0D), getDouble("Elevator Up D", 0.018)), new Gains(getDouble("Elevator Down P", 0.0029), getDouble("Elevator Down I", 0.000003), getDouble("Elevator Down P", 0.007)), encoderElevator, elevatorMotors);
         
@@ -271,6 +276,9 @@ public class Robot2012Orange extends SimpleRobot {
      * Else, or then, go ahead and try to score.
      */
     public void autonomous() {
+        DriverStation.getInstance().setDigitalOut(2, false);
+        DriverStation.getInstance().setDigitalOut(5, false);
+        
         compressorPump.start();
         
         int step = 1;
@@ -489,6 +497,9 @@ public class Robot2012Orange extends SimpleRobot {
      * other things.
      */
     public void operatorControl() {
+        DriverStation.getInstance().setDigitalOut(2, false);
+        DriverStation.getInstance().setDigitalOut(5, false);
+        
         driveTrain.setSafetyEnabled(true);
         compressorPump.start();
         
@@ -616,7 +627,7 @@ public class Robot2012Orange extends SimpleRobot {
                         if (elevatorMachine.test(ElevatorState.LOW)) {
                             /* Controls the pickup mechanism. */
 
-                            if (manipulatorController.getButton(ButtonConfiguration.Driver.PICKUP)) {
+                            if (manipulatorController.getButton(ButtonConfiguration.Manipulator.PICKUP)) {
                                 pickupMotor.set(ActuatorConfiguration.PICKUP_POWER);
                                 hopperMotor.set(ActuatorConfiguration.HOPPER_POWER);
                                 elevatorMotors.set(ActuatorConfiguration.ELEVATOR_PICKUP_POWER);
@@ -633,7 +644,7 @@ public class Robot2012Orange extends SimpleRobot {
              * Settle the balls back in a bit after picking up.
              */
         
-            if (!manipulatorController.getButton(ButtonConfiguration.Driver.PICKUP) && settleState != 2) {
+            if (!manipulatorController.getButton(ButtonConfiguration.Manipulator.PICKUP) && settleState != 2) {
                 if (settleState == 0) {
                     settleTimer.reset();
                     settleTimer.start();
@@ -707,6 +718,7 @@ public class Robot2012Orange extends SimpleRobot {
                 if(!didIJustRecalibrateElevator)
                     System.out.println("CALIBRATED ELEVATOR");
                 didIJustRecalibrateElevator = true;
+                DriverStation.getInstance().setDigitalOut(5, true);
                 SmartDashboard.getBoolean("Elevator Calibrated", true);
                 encoderElevator.reset();
             } else {
