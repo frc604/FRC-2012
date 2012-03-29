@@ -1,7 +1,6 @@
 package com._604robotics.robot2012.configuration;
 
 import com._604robotics.utils.XboxController.Button;
-import com._604robotics.utils.XboxController.Stick;
 
 /**
  * Button configuration.
