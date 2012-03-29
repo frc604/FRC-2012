@@ -2,6 +2,7 @@ package com._604robotics.robot2012.machine;
 
 import com._604robotics.robot2012.configuration.ActuatorConfiguration;
 import com._604robotics.utils.StrangeMachine;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.PIDController;
 
@@ -13,9 +14,12 @@ import edu.wpi.first.wpilibj.PIDController;
 public class ElevatorMachine implements StrangeMachine {
     private final PIDController controller;
     private final Encoder encoder;
+    private final DoubleSolenoid hood;
     
     private int lastState = ElevatorState.MEDIUM;
     private boolean withinTolerance = false;
+    
+    private DoubleSolenoid.Value hoodPosition = ActuatorConfiguration.SOLENOID_SHOOTER.UPPER_ANGLE;
 
     /**
      * Various possible states the elevator can be in.
@@ -34,9 +38,10 @@ public class ElevatorMachine implements StrangeMachine {
      * @param   encoder     The encoder monitoring the elevator's vertical
      *                      position.
      */
-    public ElevatorMachine (PIDController controller, Encoder encoder) {
+    public ElevatorMachine (PIDController controller, Encoder encoder, DoubleSolenoid hood) {
         this.controller = controller;
         this.encoder = encoder;
+        this.hood = hood;
     }
     
     public boolean test (int state) {
@@ -70,6 +75,7 @@ public class ElevatorMachine implements StrangeMachine {
         switch (state) {
             case ElevatorState.HIGH:
                 this.controller.setSetpoint(ActuatorConfiguration.ELEVATOR.HIGH);
+                this.hood.set(hoodPosition);
                 break;
             case ElevatorState.MEDIUM:
                 this.controller.setSetpoint(ActuatorConfiguration.ELEVATOR.MEDIUM);
@@ -80,6 +86,11 @@ public class ElevatorMachine implements StrangeMachine {
             default:
                 this.controller.disable();
                 return false;
+        }
+        
+        if (state != ElevatorState.HIGH) {
+            this.hoodPosition = this.hood.get();
+            this.hood.set(ActuatorConfiguration.SOLENOID_SHOOTER.LOWER_ANGLE);
         }
         
         boolean ret = this.test(state);

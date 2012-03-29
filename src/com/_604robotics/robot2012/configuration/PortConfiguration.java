@@ -60,8 +60,8 @@ public interface PortConfiguration {
         }
         
         public interface SHOOTER_SOLENOID {
-            public static final int LOWER_ANGLE = 5; // FORWARD
-            public static final int UPPER_ANGLE = 6; // REVERSE
+            public static final int LOWER_ANGLE = 6; // FORWARD
+            public static final int UPPER_ANGLE = 5; // REVERSE
         }
         
         public interface PICKUP_SOLENOID {

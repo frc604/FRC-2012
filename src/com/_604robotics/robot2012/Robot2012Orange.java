@@ -17,8 +17,8 @@ import com._604robotics.robot2012.machine.PickupMachine;
 import com._604robotics.robot2012.machine.PickupMachine.PickupState;
 import com._604robotics.robot2012.machine.ShooterMachine;
 import com._604robotics.robot2012.machine.ShooterMachine.ShooterState;
-import com._604robotics.robot2012.speedcontrol.ProcessSpeedProvider;
 import com._604robotics.robot2012.speedcontrol.SpeedProvider;
+import com._604robotics.robot2012.speedcontrol.StupidSpeedProvider;
 import com._604robotics.utils.UpDownPIDController.Gains;
 import com._604robotics.utils.*;
 import com._604robotics.utils.XboxController.Axis;
@@ -216,12 +216,12 @@ public class Robot2012Orange extends SimpleRobot {
         
         /* Sets up the speed provider for the shooter. */
         
-        speedProvider = new ProcessSpeedProvider(0D, 0D, 0D, encoderShooter, shooterMotors);
+        speedProvider = new StupidSpeedProvider(shooterMotors);//0D, 0D, 0D, encoderShooter, shooterMotors);
         
         /* Sets up the Machines. */
         
         pickupMachine = new PickupMachine(solenoidPickup);
-        elevatorMachine = new ElevatorMachine(pidElevator, encoderElevator);
+        elevatorMachine = new ElevatorMachine(pidElevator, encoderElevator, solenoidShooter);
         shooterMachine = new ShooterMachine(hopperMotor, firingProvider, speedProvider);
         
         /* Sets up debug outputs. */
@@ -405,9 +405,14 @@ public class Robot2012Orange extends SimpleRobot {
                     
                     break;
                 case 6:
-                    /* Pull in the pickup. */
+                    /* Pull in the pickup and put the elevator down. */
                     
-                    pickupMachine.crank(PickupState.IN);
+                    if (elevatorMachine.test(ElevatorState.PICKUP_OKAY)) {
+                        if (pickupMachine.crank(PickupState.IN))
+                            elevatorMachine.crank(ElevatorState.MEDIUM);
+                    } else {
+                        elevatorMachine.crank(ElevatorState.MEDIUM);
+                    }
                     
                     break;
             }
