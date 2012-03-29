@@ -21,4 +21,18 @@ public class ShooterAnglePick {
         angleRad = angleDeg * Math.PI / 180;
         angleSlope = Math.tan(angleRad);
     }
+
+    public double getAngleDeg() {
+        return angleDeg;
+    }
+
+    public double getAngleRad() {
+        return angleRad;
+    }
+
+    public double getAngleSlope() {
+        return angleSlope;
+    }
+    
+    
 }

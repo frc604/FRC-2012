@@ -1,4 +1,4 @@
-package com._604robotics.robot2012.points;
+package com._604robotics.robot2012.vision;
 
 /**
  * Represents a single point on the 2D plane.
