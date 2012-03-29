@@ -12,8 +12,13 @@ public interface FiringConfiguration {
     public static final double SHOOTER_HEIGHT = 0D;
         // TODO: Configure this.
     
-    public static final double FENDER_FIRING_SPEED = 0D;
+    public static final double FENDER_FIRING_POWER = -0.32;
         // TODO: Configure this.
-    public static final double KEY_FIRING_SPEED = 0D;
+    public static final double KEY_FIRING_POWER = -1D;
+        // TODO: Configure this.
+    
+    public static final double FENDER_FIRING_SPEED = FENDER_FIRING_POWER;
+        // TODO: Configure this.
+    public static final double KEY_FIRING_SPEED = KEY_FIRING_POWER;
         // TODO: Configure this.
 }
