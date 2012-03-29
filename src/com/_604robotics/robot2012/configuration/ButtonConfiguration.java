@@ -11,7 +11,9 @@ import com._604robotics.utils.XboxController.Stick;
 public interface ButtonConfiguration {
     public interface Driver {
         public static final int SHIFT = Button.EitherTrigger;
+        
         public static final int TOGGLE_PICKUP = Button.RB;
+        public static final int PICKUP = Button.LT;
         
         public static final int AUTO_BALANCE = Button.X;
         public static final int DISABLE_ELEVATOR = Button.Back;
@@ -30,17 +32,14 @@ public interface ButtonConfiguration {
             public static final int DOWN = Button.A;
         }
         
-        public static final int AIM = Button.RB;
         public static final int SHOOT = Button.RT;
         public static final int POWER_HOPPER = Button.RightStick;
-        
-        public static final int PICKUP = Button.LT;
         
         public static final int TOGGLE_ANGLE = Button.LB;
         public static final int TOGGLE_LIGHT = Button.Back;
         
-        public static final int AT_FENDER = Button.DPad.Up;
-        public static final int AT_KEY = Button.DPad.Down;
+        public static final int AT_FENDER = Button.LB;
+        public static final int AT_KEY = Button.LT;
     }
     
     public interface Kinect {

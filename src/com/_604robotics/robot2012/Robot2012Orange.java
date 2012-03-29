@@ -210,7 +210,7 @@ public class Robot2012Orange extends SimpleRobot {
         
         /* Sets up the speed provider for the shooter. */
         
-        speedProvider = new ProcessSpeedProvider(0D, 0D, 0D, encoderShooter, new DifferentialMotorOutput(shooterMotors));
+        speedProvider = new ProcessSpeedProvider(0D, 0D, 0D, encoderShooter, shooterMotors);
         
         /* Sets up the Machines. */
         
@@ -223,12 +223,10 @@ public class Robot2012Orange extends SimpleRobot {
         SmartDashboard.putDouble("Steady Threshold", 0.5);
         SmartDashboard.putDouble("Unsteady Threshold", 1D);
         
-        SmartDashboard.putDouble("Auton: Step 5", AutonomousConfiguration.STEP_5_FORWARD_TIME);
-        SmartDashboard.putDouble("Auton: Step 5 Sides", AutonomousConfiguration.STEP_5_FORWARD_TIME_SIDES);
-        SmartDashboard.putDouble("Auton: Step 1", AutonomousConfiguration.STEP_1_FORWARD_TIME);
-        SmartDashboard.putDouble("Auton: Step 2", AutonomousConfiguration.STEP_2_WAIT_TIME);
-        SmartDashboard.putDouble("Auton: Step 3", AutonomousConfiguration.STEP_3_BACKWARD_TIME);
-        SmartDashboard.putDouble("Auton: Step 4", AutonomousConfiguration.STEP_4_TURN_TIME);
+        SmartDashboard.putDouble("Auton: Step 2", AutonomousConfiguration.STEP_2_SHOOT_TIME);
+        SmartDashboard.putDouble("Auton: Step 3", AutonomousConfiguration.STEP_3_TURN_TIME);
+        SmartDashboard.putDouble("Auton: Step 5", AutonomousConfiguration.STEP_5_DRIVE_TIME);
+        SmartDashboard.putDouble("Auton: Step 6", AutonomousConfiguration.STEP_6_WAIT_TIME);
         SmartDashboard.putDouble("Auton: Max Step", AutonomousConfiguration.MAX_STEP);
         
         /* Because we can. */
@@ -270,16 +268,12 @@ public class Robot2012Orange extends SimpleRobot {
     public void autonomous() {
         compressorPump.start();
         
-        boolean elevatorCalibrated = false;
         int step = 1;
         
         double drivePower;
         double gyroAngle;
         
-        double forwardTime = getDouble("Auton: Step 5", AutonomousConfiguration.STEP_5_FORWARD_TIME_SIDES);
-        
         boolean turnedAround = false;
-        boolean pickupIsIn;
         
         boolean kinect = false;
         boolean abort = false;
@@ -289,13 +283,8 @@ public class Robot2012Orange extends SimpleRobot {
         upHigh = false;
         pickupIn = true;
         
-        /* If we're not in the middle, skip over the bridge stuff. */
+        /* Set stuff up. */
         
-        if (((String) inTheMiddle.getSelected()).equals("No")) {
-            step = 4;
-            forwardTime = getDouble("Auton: Step 5 Sides", AutonomousConfiguration.STEP_5_FORWARD_TIME_SIDES);
-        }
-
         Timer controlTimer = new Timer();
         controlTimer.start();
 
@@ -313,31 +302,6 @@ public class Robot2012Orange extends SimpleRobot {
             if (kinect || abort)
                 break;
             
-            /* Calibrate the elevator while everything else is going on. */
-            
-            pickupMachine.crank(PickupState.OUT);
-            
-            if (step > 4 && !elevatorCalibrated) {
-                if (calibrationTimer.get() < 5) {
-                    if (elevatorLimitSwitch.get()) {
-                        elevatorMotors.set(-0.4);
-                    } else {
-                        calibrationTimer.stop();
-                        elevatorMotors.set(0D);
-                        encoderElevator.reset();
-                        elevatorCalibrated = true;
-                    }
-                } else {
-                    calibrationTimer.stop();
-                    elevatorMotors.set(0D);
-                    encoderElevator.reset();
-                    elevatorCalibrated = true;
-                }
-            }
-            
-            System.out.println("elevatorLimitSwitch = " + elevatorLimitSwitch.get());
-            System.out.println("elevatorCalibrated = " + elevatorCalibrated);
-                        
             if (step > getDouble("Auton: Max Step", AutonomousConfiguration.MAX_STEP)) {
                 SmartDashboard.putInt("STOPPED AT", step);
                 this.resetMotors();
@@ -354,57 +318,29 @@ public class Robot2012Orange extends SimpleRobot {
             
             switch (step) {
                 case 1:
-                    /* Drive forward and stop, then smash down the bridge. */
-                    
-                    if (controlTimer.get() <= AutonomousConfiguration.STEP_1_FORWARD_TIME) {
-                        SmartDashboard.putString("STAGE", "DRIVING");
-                        drivePower = Math.min(-0.2, (1 - controlTimer.get() / getDouble("Auton: Step 1", AutonomousConfiguration.STEP_1_FORWARD_TIME)) * -1);
-                        SmartDashboard.putDouble("AUTON DRIVE POWER", drivePower);
-                        driveTrain.tankDrive(drivePower, drivePower);
-                    } else {
-                        SmartDashboard.putString("STAGE", "SMASHING!");
-                        driveTrain.tankDrive(0D, 0D);
-                        pickupMachine.crank(PickupState.OUT);
-                        
-                        controlTimer.reset();
-                        step++;
-                    }
-                    
-                    break;
-                case 2:
-                    /* Wait a bit. */
+                    /* Put the elevator up. */
                     
                     driveTrain.tankDrive(0D, 0D);
                     
-                    if (controlTimer.get() >= getDouble("Auton: Step 2", AutonomousConfiguration.STEP_2_WAIT_TIME)) 
+                    if (elevatorMachine.crank(ElevatorState.HIGH))
+                        step++;
+                    
+                    break;
+                case 2:
+                    /* Shoot! */
+                    
+                    driveTrain.tankDrive(0D, 0D);
+                    
+                    if (controlTimer.get() < AutonomousConfiguration.STEP_2_SHOOT_TIME)
+                        shooterMachine.crank(ShooterState.SHOOTING);
+                    else if (((String) inTheMiddle.getSelected()).equals("Yes"))
                         step++;
                     
                     break;
                 case 3:
-                    /* Drive backward. */
-                        
-                    if (controlTimer.get() <= AutonomousConfiguration.STEP_3_BACKWARD_TIME) {
-                        drivePower = Math.max(0.2, 1 - controlTimer.get() / getDouble("Auton: Step 3", AutonomousConfiguration.STEP_3_BACKWARD_TIME));
-                        driveTrain.tankDrive(drivePower, drivePower);
-                    } else {
-                        driveTrain.tankDrive(0D, 0D);
-                        
-                        gyroHeading.reset();
-                        
-                        controlTimer.reset();
-                        step++;
-                    }
+                    /* Turn around and face the bridge. */
                     
-                    break;
-                case 4:
-                    /*
-                     * Make sure the pickup is down. Turn around, and face the
-                     * nets.
-                     */
-                    
-                    pickupMachine.crank(PickupState.OUT);
-                    
-                    if (controlTimer.get() <= getDouble("Auton: Step 4", AutonomousConfiguration.STEP_4_TURN_TIME)) {
+                    if (controlTimer.get() <= getDouble("Auton: Step 3", AutonomousConfiguration.STEP_3_TURN_TIME)) {
                         gyroAngle = gyroHeading.getAngle();
                         
                         if (turnedAround || (gyroAngle > 179 && gyroAngle < 181)) {
@@ -422,53 +358,44 @@ public class Robot2012Orange extends SimpleRobot {
                     }
                     
                     break;
+                case 4:
+                    /* Put the elevator down. */
+                    
+                    if (elevatorMachine.crank(ElevatorState.MEDIUM))
+                        step++;
+                    
+                    break;
                 case 5:
-                    /*
-                     * Keep the pickup down, just in case. Drive forward toward
-                     * the nets. The elevator should be calibrating while this
-                     * is going on.
-                     */
+                    /* Drive forward and stop, then smash down the bridge. */
                     
-                    pickupMachine.crank(PickupState.OUT);
-                    
-                    if (controlTimer.get() <= forwardTime) {
-                        drivePower = Math.max(0.2, 1 - controlTimer.get() / forwardTime);
+                    if (controlTimer.get() <= AutonomousConfiguration.STEP_5_DRIVE_TIME) {
+                        SmartDashboard.putString("STAGE", "DRIVING");
+                        drivePower = Math.min(-0.2, (1 - controlTimer.get() / getDouble("Auton: Step 5", AutonomousConfiguration.STEP_5_DRIVE_TIME)) * -1);
+                        SmartDashboard.putDouble("AUTON DRIVE POWER", drivePower);
                         driveTrain.tankDrive(drivePower, drivePower);
                     } else {
+                        SmartDashboard.putString("STAGE", "SMASHING!");
                         driveTrain.tankDrive(0D, 0D);
+                        pickupMachine.crank(PickupState.OUT);
+                        
                         controlTimer.reset();
                         step++;
                     }
                     
                     break;
                 case 6:
-                    /* Block until the elevator is calibrated. */
+                    /* Wait a bit. */
                     
                     driveTrain.tankDrive(0D, 0D);
                     
-                    if (elevatorCalibrated)
+                    if (controlTimer.get() >= getDouble("Auton: Step 6", AutonomousConfiguration.STEP_6_WAIT_TIME)) 
                         step++;
                     
                     break;
                 case 7:
-                    /* Put the elevator up and the pickup in. */
+                    /* Pull in the pickup. */
                     
-                    driveTrain.tankDrive(0D, 0D);
-                    
-                    if (elevatorMachine.test(ElevatorState.PICKUP_OKAY))
-                        pickupIsIn = pickupMachine.crank(PickupState.IN);
-                    else
-                        pickupIsIn = false;
-                    
-                    if (elevatorMachine.crank(ElevatorState.HIGH) && pickupIsIn)
-                        step++;
-                    
-                    break;
-                case 8:
-                    /* Shoot! */
-                    
-                    driveTrain.tankDrive(0D, 0D);
-                    shooterMachine.crank(ShooterState.SHOOTING);
+                    pickupMachine.crank(PickupState.IN);
                     
                     break;
             }
@@ -488,7 +415,7 @@ public class Robot2012Orange extends SimpleRobot {
             this.resetMotors(true);
         }
         
-        if (kinect && elevatorCalibrated) {
+        if (kinect) {
             System.out.println("KINECT ON");
         
             while (isAutonomous() && isEnabled() && !abort) {
@@ -679,7 +606,7 @@ public class Robot2012Orange extends SimpleRobot {
                         if (elevatorMachine.crank(ElevatorState.LOW)) {
                             /* Controls the pickup mechanism. */
 
-                            if (manipulatorController.getButton(ButtonConfiguration.Manipulator.PICKUP)) {
+                            if (manipulatorController.getButton(ButtonConfiguration.Driver.PICKUP)) {
                                 pickupMotor.set(ActuatorConfiguration.PICKUP_POWER);
                                 hopperMotor.set(ActuatorConfiguration.HOPPER_POWER);
                                 elevatorMotors.set(ActuatorConfiguration.ELEVATOR_PICKUP_POWER);
@@ -696,7 +623,7 @@ public class Robot2012Orange extends SimpleRobot {
              * Settle the balls back in a bit after picking up.
              */
         
-            if (!manipulatorController.getButton(ButtonConfiguration.Manipulator.PICKUP) && settleState != 2) {
+            if (!manipulatorController.getButton(ButtonConfiguration.Driver.PICKUP) && settleState != 2) {
                 if (settleState == 0) {
                     settleTimer.reset();
                     settleTimer.start();
@@ -762,5 +689,10 @@ public class Robot2012Orange extends SimpleRobot {
     public void disabled() {
         compressorPump.stop();
         driveTrain.setSafetyEnabled(false);
+        
+        while (isEnabled()) {
+            if (!elevatorLimitSwitch.get())
+                encoderElevator.reset();
+        }
     }
 }
