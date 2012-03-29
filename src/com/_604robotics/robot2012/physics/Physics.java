@@ -59,7 +59,8 @@ public class Physics {
      * @param   verticalVel	Velocity at which the ball should enter the
      *                          hoop.
      *
-     * @return  A Point2d with the x and y velocities does not return the time.
+     * 
+                SmartDashboard.putBoolean("PID Enabled", provider.());@return  A Point2d with the x and y velocities does not return the time.
      *
      */
     public static Point2d betterVersionOfgetFiringVelocity(double distH, double distV, double verticalVel) {
