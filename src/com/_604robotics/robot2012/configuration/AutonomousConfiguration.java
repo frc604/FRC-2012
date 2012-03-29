@@ -11,6 +11,6 @@ public interface AutonomousConfiguration {
     
     public static final double STEP_2_SHOOT_TIME = 1D;
     public static final double STEP_3_TURN_TIME = 1D;
-    public static final double STEP_5_DRIVE_TIME = 1D;
-    public static final double STEP_6_WAIT_TIME = 1D;
+    public static final double STEP_4_DRIVE_TIME = 1D;
+    public static final double STEP_5_WAIT_TIME = 1D;
 }

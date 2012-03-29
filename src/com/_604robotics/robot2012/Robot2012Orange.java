@@ -230,8 +230,8 @@ public class Robot2012Orange extends SimpleRobot {
         
         SmartDashboard.putDouble("Auton: Step 2", AutonomousConfiguration.STEP_2_SHOOT_TIME);
         SmartDashboard.putDouble("Auton: Step 3", AutonomousConfiguration.STEP_3_TURN_TIME);
-        SmartDashboard.putDouble("Auton: Step 5", AutonomousConfiguration.STEP_5_DRIVE_TIME);
-        SmartDashboard.putDouble("Auton: Step 6", AutonomousConfiguration.STEP_6_WAIT_TIME);
+        SmartDashboard.putDouble("Auton: Step 4", AutonomousConfiguration.STEP_4_DRIVE_TIME);
+        SmartDashboard.putDouble("Auton: Step 5", AutonomousConfiguration.STEP_5_WAIT_TIME);
         SmartDashboard.putDouble("Auton: Max Step", AutonomousConfiguration.MAX_STEP);
         
         /* Because we can. */
@@ -345,6 +345,9 @@ public class Robot2012Orange extends SimpleRobot {
                     break;
                 case 3:
                     /* Turn around and face the bridge. */
+                    /* Put the elevator down. */
+                    
+                    boolean crank = elevatorMachine.crank(ElevatorState.MEDIUM);
                     
                     if (controlTimer.get() <= getDouble("Auton: Step 3", AutonomousConfiguration.STEP_3_TURN_TIME)) {
                         gyroAngle = gyroHeading.getAngle();
@@ -360,23 +363,17 @@ public class Robot2012Orange extends SimpleRobot {
                         driveTrain.tankDrive(0D, 0D);
                         
                         controlTimer.reset();
-                        step++;
+                        if(crank)
+                            step++;
                     }
                     
                     break;
                 case 4:
-                    /* Put the elevator down. */
-                    
-                    if (elevatorMachine.crank(ElevatorState.MEDIUM))
-                        step++;
-                    
-                    break;
-                case 5:
                     /* Drive forward and stop, then smash down the bridge. */
                     
-                    if (controlTimer.get() <= AutonomousConfiguration.STEP_5_DRIVE_TIME) {
+                    if (controlTimer.get() <= AutonomousConfiguration.STEP_4_DRIVE_TIME) {
                         SmartDashboard.putString("STAGE", "DRIVING");
-                        drivePower = Math.min(-0.2, (1 - controlTimer.get() / getDouble("Auton: Step 5", AutonomousConfiguration.STEP_5_DRIVE_TIME)) * -1);
+                        drivePower = Math.min(-0.2, (1 - controlTimer.get() / getDouble("Auton: Step 4", AutonomousConfiguration.STEP_4_DRIVE_TIME)) * -1);
                         SmartDashboard.putDouble("AUTON DRIVE POWER", drivePower);
                         driveTrain.tankDrive(drivePower, drivePower);
                     } else {
@@ -389,16 +386,16 @@ public class Robot2012Orange extends SimpleRobot {
                     }
                     
                     break;
-                case 6:
+                case 5:
                     /* Wait a bit. */
                     
                     driveTrain.tankDrive(0D, 0D);
                     
-                    if (controlTimer.get() >= getDouble("Auton: Step 6", AutonomousConfiguration.STEP_6_WAIT_TIME)) 
+                    if (controlTimer.get() >= getDouble("Auton: Step 5", AutonomousConfiguration.STEP_5_WAIT_TIME)) 
                         step++;
                     
                     break;
-                case 7:
+                case 6:
                     /* Pull in the pickup. */
                     
                     pickupMachine.crank(PickupState.IN);
