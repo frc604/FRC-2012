@@ -144,7 +144,7 @@ public class Robot2012Orange extends SimpleRobot {
         encoderElevator.setOffset(616);
         encoderElevator.start();
         
-        encoderShooter = new EncoderSamplingRate(3, 4);
+        encoderShooter = new EncoderSamplingRate(PortConfiguration.Encoders.SHOOTER_A, PortConfiguration.Encoders.SHOOTER_B);
         encoderShooter.setDistancePerPulse(1);
         encoderShooter.setPIDSourceParameter(Encoder.PIDSourceParameter.kRate);
         encoderShooter.setSamplingRate(20);

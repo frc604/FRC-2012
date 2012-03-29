@@ -27,7 +27,7 @@ public interface PortConfiguration {
         
         public static final int SHOOTER_LEFT = 2;
         public static final int SHOOTER_RIGHT = 3;
-        public static final int HOPPER = 5;
+        public static final int HOPPER = 6;
         public static final int PICKUP = 4;
     }
     
@@ -43,7 +43,8 @@ public interface PortConfiguration {
     }
     
     public interface Encoders {
-        public static final int SHOOTER = 3;
+        public static final int SHOOTER_A = 3;
+        public static final int SHOOTER_B = 4;
         
         public static final int ELEVATOR_A = 11;
         public static final int ELEVATOR_B = 12;
