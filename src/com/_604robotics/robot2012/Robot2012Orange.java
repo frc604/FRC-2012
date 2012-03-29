@@ -451,8 +451,10 @@ public class Robot2012Orange extends SimpleRobot {
                 if (abort)
                     break;
                 
+                double kinectDrivePow = .8;
+                
                 if (leftKinect.getRawButton(ButtonConfiguration.Kinect.DRIVE_ENABLED))
-                    driveTrain.tankDrive(leftKinect.getRawAxis(2) * -0.8, rightKinect.getRawAxis(2) * -0.8);
+                    driveTrain.tankDrive(leftKinect.getRawAxis(2) * -kinectDrivePow,rightKinect.getRawAxis(2) * -kinectDrivePow);
                 else
                     driveTrain.tankDrive(0D, 0D);
 
