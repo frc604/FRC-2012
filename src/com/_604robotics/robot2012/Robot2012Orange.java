@@ -115,7 +115,6 @@ public class Robot2012Orange extends SimpleRobot {
         leftKinect = new KinectStick(PortConfiguration.Kinect.LEFT);
         rightKinect = new KinectStick(PortConfiguration.Kinect.RIGHT);
         
-        manipulatorController.setDeadband(Axis.LEFT_STICK_X, -0.2, 0.2);
         manipulatorController.setDeadband(Axis.RIGHT_STICK_Y, -0.2, 0.2);
         
         /* Set up the drive train. */
