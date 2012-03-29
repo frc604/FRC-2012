@@ -58,6 +58,14 @@ public class HystereticController {
     }
     
     /**
+     * 
+     * @param overshootFac   the overshootFac to set
+     */
+    public void setOvershootFactor(double overshootFac) {
+        this.overshootFac = overshootFac;
+    }
+    
+    /**
      * Where this HystereticController is trying to reach
      */
     private double targetPos;
