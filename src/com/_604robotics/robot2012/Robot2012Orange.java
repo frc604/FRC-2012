@@ -310,7 +310,7 @@ public class Robot2012Orange extends SimpleRobot {
             
             if (step > getDouble("Auton: Max Step", AutonomousConfiguration.MAX_STEP)) {
                 SmartDashboard.putInt("STOPPED AT", step);
-                this.resetMotors();
+                this.resetMotors(true);
 
                 continue;
             } else {

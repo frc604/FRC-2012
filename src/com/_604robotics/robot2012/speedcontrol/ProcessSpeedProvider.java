@@ -91,6 +91,7 @@ public class ProcessSpeedProvider implements SpeedProvider {
             this.ran = false;
             this.controller.reset();
             this.diffOutput.setProcess(-0.7);
+            this.output.pidWrite(0D);
         }
         this.loaded = false;
     }
