@@ -559,7 +559,7 @@ public class Robot2012Orange extends SimpleRobot {
             SmartDashboard.putBoolean("pickupIn", pickupIn);
             
             /*
-             * If pickupIn is true and upHigh is true, or only pickupIn is true,
+             * If upHigh is true, then raise the elevator. If pickupIn is true,
              * then make sure the elevator is up high enough, and lift up the
              * pickup.
              * 
@@ -575,39 +575,45 @@ public class Robot2012Orange extends SimpleRobot {
                     elevatorMotors.set(-0.4);
                 }
             } else {
-                if (upHigh || pickupIn) {
-                    if (pickupIn && (elevatorMachine.test(ElevatorState.PICKUP_OKAY) || elevatorMotors.getDisabled()))
-                        pickupMachine.crank(PickupState.IN);
+                if (upHigh) {
+                    if (manipulatorController.getButton(ButtonConfiguration.Manipulator.SHOOT) || elevatorMachine.crank(ElevatorState.HIGH)) {
+                        SmartDashboard.putString("Ready to Shoot", "Yes");
 
-                    if (upHigh) {
-                        if (manipulatorController.getButton(ButtonConfiguration.Manipulator.SHOOT) || elevatorMachine.crank(ElevatorState.HIGH)) {
-                            SmartDashboard.putString("Ready to Shoot", "Yes");
+                        /*
+                         * Toggles the shooter angle.
+                         */
 
-                            /* Toggles the shooter angle. */
-
-                            if (manipulatorController.getToggle(ButtonConfiguration.Manipulator.TOGGLE_ANGLE)) {
-                                if (solenoidShooter.get() == ActuatorConfiguration.SOLENOID_SHOOTER.LOWER_ANGLE)
-                                    solenoidShooter.set(ActuatorConfiguration.SOLENOID_SHOOTER.UPPER_ANGLE);
-                                else
-                                    solenoidShooter.set(ActuatorConfiguration.SOLENOID_SHOOTER.LOWER_ANGLE);
-                            }
-
-                            if (manipulatorController.getButton(ButtonConfiguration.Manipulator.SHOOT)) {
-                                System.out.println("GET READY U GUIZE");
-                                shooterMachine.crank(ShooterState.SHOOTING);
+                        if (manipulatorController.getToggle(ButtonConfiguration.Manipulator.TOGGLE_ANGLE)) {
+                            if (solenoidShooter.get() == ActuatorConfiguration.SOLENOID_SHOOTER.LOWER_ANGLE) {
+                                solenoidShooter.set(ActuatorConfiguration.SOLENOID_SHOOTER.UPPER_ANGLE);
+                            } else {
+                                solenoidShooter.set(ActuatorConfiguration.SOLENOID_SHOOTER.LOWER_ANGLE);
                             }
                         }
-                    } else {
-                        elevatorMachine.crank(ElevatorState.MEDIUM);
+
+                        if (manipulatorController.getButton(ButtonConfiguration.Manipulator.SHOOT)) {
+                            System.out.println("GET READY U GUIZE");
+                            shooterMachine.crank(ShooterState.SHOOTING);
+                        }
                     }
-                } else if (!pickupIn) {
+                } else {
+                    if (pickupIn)
+                        elevatorMachine.crank(ElevatorState.MEDIUM);
+                    else if (pickupMachine.test(PickupState.OUT))
+                        elevatorMachine.crank(ElevatorState.LOW);
+                }
+
+                if (pickupIn) {
+                    if (elevatorMachine.test(ElevatorState.PICKUP_OKAY) || elevatorMotors.getDisabled())
+                        pickupMachine.crank(PickupState.IN);
+                } else {
                     if (pickupMachine.crank(PickupState.OUT)) {
                         /*
                         * If the pickup is down and the elevator is at rest,
                         * then allow the user to trigger the pickup mechanism.
                         */
 
-                        if (elevatorMachine.crank(ElevatorState.LOW)) {
+                        if (elevatorMachine.test(ElevatorState.LOW)) {
                             /* Controls the pickup mechanism. */
 
                             if (manipulatorController.getButton(ButtonConfiguration.Driver.PICKUP)) {
