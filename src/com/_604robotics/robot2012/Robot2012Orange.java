@@ -220,6 +220,10 @@ public class Robot2012Orange extends SimpleRobot {
         elevatorMachine = new ElevatorMachine(pidElevator, encoderElevator);
         shooterMachine = new ShooterMachine(hopperMotor, firingProvider, speedProvider);
         
+        /* Sets up debug outputs. */
+        
+        SmartDashboard.getBoolean("Elevator Calibrated", false);
+        
         SmartDashboard.putDouble("Confidence Threshold", 0.7);
         SmartDashboard.putDouble("Target Timeout", 1.5);
         SmartDashboard.putDouble("Steady Threshold", 0.5);
@@ -541,12 +545,10 @@ public class Robot2012Orange extends SimpleRobot {
             
             /* Toggle the "default" height between "up high" and "down low". */
             
-            if (manipulatorController.getButton(ButtonConfiguration.Manipulator.Elevator.UP)) {
+            if (manipulatorController.getButton(ButtonConfiguration.Manipulator.Elevator.UP))
                 upHigh = true;
-                pickupIn = true;
-            } else if (manipulatorController.getButton(ButtonConfiguration.Manipulator.Elevator.DOWN)) {
+            else if (manipulatorController.getButton(ButtonConfiguration.Manipulator.Elevator.DOWN))
                 upHigh = false;
-            }
             
             /* Toggle the pickup state between "up" and "down". */
             
@@ -573,8 +575,8 @@ public class Robot2012Orange extends SimpleRobot {
                     elevatorMotors.set(-0.4);
                 }
             } else {
-                if ((pickupIn && upHigh) || pickupIn) {
-                    if (elevatorMachine.test(ElevatorState.PICKUP_OKAY) || elevatorMotors.getDisabled())
+                if (upHigh || pickupIn) {
+                    if (pickupIn && (elevatorMachine.test(ElevatorState.PICKUP_OKAY) || elevatorMotors.getDisabled()))
                         pickupMachine.crank(PickupState.IN);
 
                     if (upHigh) {
@@ -598,7 +600,7 @@ public class Robot2012Orange extends SimpleRobot {
                     } else {
                         elevatorMachine.crank(ElevatorState.MEDIUM);
                     }
-                } else {
+                } else if (!pickupIn) {
                     if (pickupMachine.crank(PickupState.OUT)) {
                         /*
                         * If the pickup is down and the elevator is at rest,
@@ -692,9 +694,12 @@ public class Robot2012Orange extends SimpleRobot {
         compressorPump.stop();
         driveTrain.setSafetyEnabled(false);
         
-        while (isEnabled()) {
-            if (!elevatorLimitSwitch.get())
+        while (!isEnabled()) {
+            if (!elevatorLimitSwitch.get()) {
+                System.out.println("CALIBRATED ELEVATOR");
+                SmartDashboard.getBoolean("Elevator Calibrated", true);
                 encoderElevator.reset();
+            }
         }
     }
 }
