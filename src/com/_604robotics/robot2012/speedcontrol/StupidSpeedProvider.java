@@ -21,7 +21,6 @@ public class StupidSpeedProvider implements SpeedProvider {
     }
 
     public void setSetSpeed (double setSpeed) {
-        this.timer.reset();
         this.speed = setSpeed;
     }
 
@@ -30,21 +29,19 @@ public class StupidSpeedProvider implements SpeedProvider {
     }
 
     public boolean isOnTarget (double tolerance) {
-        return this.timer.get() >= 2;
+        return this.timer.get() >= 1;
     }
     
-    public void resetTimer () {
-        this.timer.reset();
-    }
-
     public void apply() {
         this.loaded = true;
         this.motor.set(this.getMotorPower());
     }
 
     public void reset() {
-        if (!this.loaded)
+        if (!this.loaded) {
             this.motor.set(0D);
+            this.timer.reset();
+        }
         this.loaded = false;
     }
 }

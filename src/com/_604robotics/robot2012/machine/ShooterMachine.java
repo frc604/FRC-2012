@@ -64,7 +64,6 @@ public class ShooterMachine implements StrangeMachine {
                     this.hopper.set(ActuatorConfiguration.HOPPER_POWER);
                 } else {
                     System.out.println("CHARGING UP");
-                    this.shooter.reset();
                 }
                 
                 return true;

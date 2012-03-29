@@ -19,9 +19,9 @@ public interface ActuatorConfiguration {
     public static final double MAX_SLOW_SPEED = 0.7;
     
     public static final double TINY_FORWARD_SPEED = 0.6;
-    public static final double TINY_REVERSE_SPEED = 0.6;
+    public static final double TINY_REVERSE_SPEED = -0.6;
     
-    public static final double ELEVATOR_PICKUP_POWER = -0.22;
+    public static final double ELEVATOR_PICKUP_POWER = -0.32;
     
     public static final double SHOOTER_SPEED_TOLERANCE = 0D;
         // TODO: Configure this.
@@ -47,7 +47,7 @@ public interface ActuatorConfiguration {
         
         public interface DEADBAND {
             public static final int HIGH = 1470;
-            public static final int MEDIUM_UPPER = 691; // +28
+            public static final int MEDIUM_UPPER = 701; // +28
             public static final int MEDIUM_LOWER = 611; // -52
             public static final int LOW = 64;
         }
