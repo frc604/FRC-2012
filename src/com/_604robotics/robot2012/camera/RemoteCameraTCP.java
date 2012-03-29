@@ -212,13 +212,13 @@ class RemoteCameraServer implements Runnable {
                             if ((t.angle = readDouble(in)) == -1)
                                 break;
                             
-                            if ((t.x_uncertainty = readDouble(in)) == -1)
+                            if ((t.xUncertainty = readDouble(in)) == -1)
                                 break;
-                            if ((t.y_uncertainty = readDouble(in)) == -1)
+                            if ((t.yUncertainty = readDouble(in)) == -1)
                                 break;
-                            if ((t.z_uncertainty = readDouble(in)) == -1)
+                            if ((t.zUncertainty = readDouble(in)) == -1)
                                 break;
-                            if ((t.angle_uncertainty = readDouble(in)) == -1)
+                            if ((t.angleUncertainty = readDouble(in)) == -1)
                                 break;
                             
                             tgts.addElement(t);
