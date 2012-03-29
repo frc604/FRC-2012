@@ -1,4 +1,5 @@
 // TOOD: Not let Mrs. Arrington leave without the envelope.
+// TODO: get an alternative power adapter (no surge protector)
 
 package com._604robotics.robot2012;
 
@@ -552,6 +553,8 @@ public class Robot2012Orange extends SimpleRobot {
             if (driveController.getToggle(ButtonConfiguration.Driver.TOGGLE_PICKUP))
                 pickupIn = !pickupIn;
             
+            
+            // TODO - SD danger
             SmartDashboard.putBoolean("upHigh", upHigh);
             SmartDashboard.putBoolean("pickupIn", pickupIn);
             
@@ -697,11 +700,17 @@ public class Robot2012Orange extends SimpleRobot {
         compressorPump.stop();
         driveTrain.setSafetyEnabled(false);
         
+        boolean didIJustRecalibrateElevator = false;
+        
         while (!isEnabled()) {
             if (!elevatorLimitSwitch.get()) {
-                System.out.println("CALIBRATED ELEVATOR");
+                if(!didIJustRecalibrateElevator)
+                    System.out.println("CALIBRATED ELEVATOR");
+                didIJustRecalibrateElevator = true;
                 SmartDashboard.getBoolean("Elevator Calibrated", true);
                 encoderElevator.reset();
+            } else {
+                didIJustRecalibrateElevator = false;
             }
         }
     }
