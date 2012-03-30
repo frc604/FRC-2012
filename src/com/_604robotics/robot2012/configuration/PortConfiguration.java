@@ -37,8 +37,7 @@ public interface PortConfiguration {
     }
     
     public interface Sensors {
-        public static final int GYRO_HEADING = 2;
-        
+        public static final int GYRO_HEADING = 1;
         public static final int ELEVATOR_LIMIT_SWITCH = 1;
     }
     

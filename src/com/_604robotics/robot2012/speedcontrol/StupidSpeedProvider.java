@@ -24,7 +24,7 @@ public class StupidSpeedProvider implements SpeedProvider {
         this.speed = setSpeed;
     }
 
-    public double getSetSpeed () {
+    public double getSetSpeed () {  
         return this.speed;
     }
 
@@ -34,6 +34,7 @@ public class StupidSpeedProvider implements SpeedProvider {
     
     public void apply() {
         this.loaded = true;
+        System.out.println(this.getMotorPower());
         this.motor.set(this.getMotorPower());
     }
 

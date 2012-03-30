@@ -14,8 +14,8 @@ import com._604robotics.robot2012.machine.PickupMachine;
 import com._604robotics.robot2012.machine.PickupMachine.PickupState;
 import com._604robotics.robot2012.machine.ShooterMachine;
 import com._604robotics.robot2012.machine.ShooterMachine.ShooterState;
-import com._604robotics.robot2012.speedcontrol.ProcessSpeedProvider;
 import com._604robotics.robot2012.speedcontrol.SpeedProvider;
+import com._604robotics.robot2012.speedcontrol.StupidSpeedProvider;
 import com._604robotics.robot2012.vision.Target;
 import com._604robotics.utils.UpDownPIDController.Gains;
 import com._604robotics.utils.*;
@@ -77,7 +77,7 @@ public class Robot2012Orange extends SimpleRobot {
     CameraInterface cameraInterface;
     
     CameraFiringProvider firingProvider;
-    ProcessSpeedProvider speedProvider;
+    SpeedProvider speedProvider;
     
     boolean upHigh = false;
     boolean pickupIn = true;
@@ -214,9 +214,8 @@ public class Robot2012Orange extends SimpleRobot {
         
         /* Sets up the speed provider for the shooter. */
         
-        //speedProvider = new StupidSpeedProvider(shooterMotors, encoderShooter);
-        speedProvider = new ProcessSpeedProvider(-0.003, 0D, -0.05, encoderShooter, shooterMotors);
-        //speedProvider = new ProcessSpeedProvider(-0.08, 0D, -0.02, encoderShooter, shooterMotors);
+        speedProvider = new StupidSpeedProvider(shooterMotors);
+        //speedProvider = new ProcessSpeedProvider(-0.0001, 0D, -0.0008, encoderShooter, shooterMotors);
         
         /* Sets up the Machines. */
         
@@ -236,10 +235,6 @@ public class Robot2012Orange extends SimpleRobot {
         SmartDashboard.putDouble("Auton: Step 4", AutonomousConfiguration.STEP_4_DRIVE_TIME);
         SmartDashboard.putDouble("Auton: Step 5", AutonomousConfiguration.STEP_5_WAIT_TIME);
         SmartDashboard.putDouble("Auton: Max Step", AutonomousConfiguration.MAX_STEP);
-        
-        SmartDashboard.putDouble("Shooter P", speedProvider.getP());
-        SmartDashboard.putDouble("Shooter I", speedProvider.getI());
-        SmartDashboard.putDouble("Shooter D", speedProvider.getD());
         
         SmartDashboard.putDouble("fac", encoderShooter.getFac());
         
@@ -531,15 +526,13 @@ public class Robot2012Orange extends SimpleRobot {
         driveController.resetToggles();
         
         pidElevator.reset();
-        
+
         while (isOperatorControl() && isEnabled()) {
             ringLight.set(ActuatorConfiguration.RING_LIGHT.ON);
             encoderShooter.sample();
             
             pidElevator.setUpGains(new Gains(getDouble("Elevator Up P", 0.0085), getDouble("Elevator Up I", 0D), getDouble("Elevator Up D", 0.018)));
             pidElevator.setDownGains(new Gains(getDouble("Elevator Down P", 0.0029), getDouble("Elevator Down I", 0.000003), getDouble("Elevator Down P", 0.007)));
-            
-            speedProvider.setPID(getDouble("Shooter P", 0D), getDouble("Shooter I", 0D), getDouble("Shooter D", 0D));
             
             if (driveController.getToggle(ButtonConfiguration.Driver.DISABLE_ELEVATOR))
                 elevatorMotors.setDisabled(!elevatorMotors.getDisabled());
@@ -589,8 +582,12 @@ public class Robot2012Orange extends SimpleRobot {
             
             /* Toggle the pickup state between "up" and "down". */
             
-            if (driveController.getToggle(ButtonConfiguration.Driver.TOGGLE_PICKUP))
+            if (driveController.getToggle(ButtonConfiguration.Driver.TOGGLE_PICKUP)) {
                 pickupIn = !pickupIn;
+                if (pickupIn == false)
+                    upHigh = false;
+            }
+            
             
             SmartDashboard.putBoolean("upHigh", upHigh);
             SmartDashboard.putBoolean("pickupIn", pickupIn);
@@ -716,7 +713,9 @@ public class Robot2012Orange extends SimpleRobot {
                     target = targets[i];
                 }
             }
-
+            
+            System.out.println(targets.length);
+            
             if (target == null)
                 SmartDashboard.putDouble("AIMING", 999999.999);
             else
@@ -740,7 +739,7 @@ public class Robot2012Orange extends SimpleRobot {
             SmartDashboard.putDouble("Current Elevator Setpoint", pidElevator.getSetpoint());
             SmartDashboard.putDouble("Elevator Output", pidElevator.get());
         }
-
+        
         pidElevator.disable();
         
         compressorPump.stop();
@@ -759,6 +758,10 @@ public class Robot2012Orange extends SimpleRobot {
         
         boolean didIJustRecalibrateElevator = false;
         
+        Timer lastRecalibrated = new Timer();
+
+        lastRecalibrated.start();
+        
         while (!isEnabled()) {
             if (!elevatorLimitSwitch.get()) {
                 if(!didIJustRecalibrateElevator)
@@ -766,7 +769,10 @@ public class Robot2012Orange extends SimpleRobot {
                 didIJustRecalibrateElevator = true;
                 DriverStation.getInstance().setDigitalOut(5, true);
                 SmartDashboard.getBoolean("Elevator Calibrated", true);
-                encoderElevator.reset();
+                if (!didIJustRecalibrateElevator || lastRecalibrated.get() >= 1)
+                    encoderElevator.reset();
+                else
+                    lastRecalibrated.reset();
             } else {
                 didIJustRecalibrateElevator = false;
             }

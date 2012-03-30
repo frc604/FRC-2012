@@ -69,8 +69,6 @@ public class ShooterMachine implements StrangeMachine {
                 return true;
         }
         
-        this.shooter.reset();
-        
         return false;
     }
 }

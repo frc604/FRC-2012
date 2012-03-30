@@ -205,6 +205,8 @@ class RemoteCameraServer implements Runnable {
                             
                             if ((t.x = readDouble(in)) == -1)
                                 break;
+                            else
+                                t.x -= 3.5;
                             if ((t.y = readDouble(in)) == -1)
                                 break;
                             if ((t.z = readDouble(in)) == -1)

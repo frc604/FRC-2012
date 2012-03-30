@@ -23,7 +23,7 @@ public interface ActuatorConfiguration {
     
     public static final double ELEVATOR_PICKUP_POWER = -0.32;
     
-    public static final double SHOOTER_SPEED_TOLERANCE = 0D;
+    public static final double SHOOTER_SPEED_TOLERANCE = 30D;
         // TODO: Configure this.
     
     public interface RING_LIGHT {
@@ -32,21 +32,21 @@ public interface ActuatorConfiguration {
     }
     
     public interface ELEVATOR {
-        public static final int HIGH = 1540;
+        public static final int HIGH = 1520;
         public static final int MEDIUM = 663;
         public static final int LOW = 0;
         
         public static final int OKAY_TO_TURN = 1300;
         
         public interface TOLERANCE {
-            public static final int HIGH = 1505;
+            public static final int HIGH = 1480;
             public static final int MEDIUM_UPPER = 671; // +8
             public static final int MEDIUM_LOWER = 631; // -32
             public static final int LOW = 25;
         }
         
         public interface DEADBAND {
-            public static final int HIGH = 1470;
+            public static final int HIGH = 1450;
             public static final int MEDIUM_UPPER = 701; // +28
             public static final int MEDIUM_LOWER = 611; // -52
             public static final int LOW = 64;
