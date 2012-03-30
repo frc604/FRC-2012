@@ -7,7 +7,6 @@ package com._604robotics.robot2012.speedcontrol;
 
 import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.PIDSource;
-import edu.wpi.first.wpilibj.Timer;
 
 /**
  *
@@ -21,21 +20,21 @@ public class AwesomeSpeedController {
     private final PIDDP controller;
     private final PIDSource source;
     private final PIDOutput output;
-    private final DifferentialOutput diffOutput;
+    private final AddableDifferentialOutput diffOutput;
     
     private boolean loaded = false;
-    private boolean ran = false;
     
-    private class DifferentialOutput implements PIDOutput {
+    private static class AddableDifferentialOutput implements PIDOutput {
         private final PIDOutput out;
         private double process = 0D;
+        private double add = 0;
         
-        public DifferentialOutput (PIDOutput out) {
+        public AddableDifferentialOutput (PIDOutput out) {
             this.out = out;
         }
         
         public void pidWrite (double output) {
-            this.out.pidWrite(this.process += output);
+            this.out.pidWrite((this.process += output) + add);
         }
         
         public void setProcess (double process) {
@@ -46,7 +45,7 @@ public class AwesomeSpeedController {
     public AwesomeSpeedController (double P, double I, double D, double DP, PIDSource source, PIDOutput output) {
         this.source = source;
         this.output = output;
-        this.diffOutput = new DifferentialOutput(this.output);
+        this.diffOutput = new AddableDifferentialOutput(this.output);
         this.controller = new PIDDP(P, I, D, DP, this.source, this.diffOutput);
     }
 
@@ -91,17 +90,19 @@ public class AwesomeSpeedController {
     }
     
     public void apply() {
-        this.ran = true;
         this.loaded = true;
-        if (this.source.pidGet() < fac * controller.getSetpoint())
+        double setpoint = controller.getSetpoint();
+        
+        if (this.source.pidGet() < fac * setpoint) {
             this.output.pidWrite(-maxSpeed);
-        else
+        } else {
+            diffOutput.add = TurretSpeedGuestimator.guestimatePow(setpoint);
             this.controller.enable();
+        }
     }
 
     public void reset() {
         if (!this.loaded) {
-            this.ran = false;
             this.controller.reset();
             this.diffOutput.setProcess(0);
             this.output.pidWrite(0D);
