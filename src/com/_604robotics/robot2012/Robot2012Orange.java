@@ -342,6 +342,8 @@ public class Robot2012Orange extends SimpleRobot {
             if (kinect || abort)
                 break;
             
+            encoderShooter.sample();
+            
             if (step > getDouble("Auton: Max Step", AutonomousConfiguration.MAX_STEP) && step < 6) {
                 SmartDashboard.putInt("STOPPED AT", step);
                 this.resetMotors(true);
@@ -373,7 +375,6 @@ public class Robot2012Orange extends SimpleRobot {
                     
                     driveTrain.tankDrive(0D, 0D);
                     
-                    // TODO - sense drops in encoder values as shot balls
                     if (controlTimer.get() < AutonomousConfiguration.STEP_2_SHOOT_TIME)
                         shooterMachine.crank(ShooterState.SHOOTING);
                     else if (((String) inTheMiddle.getSelected()).equals("Yes"))
