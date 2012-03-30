@@ -1,6 +1,5 @@
 package com._604robotics.robot2012.speedcontrol;
 
-import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.PIDSource;
 import edu.wpi.first.wpilibj.parsing.IUtility;
@@ -363,6 +362,108 @@ public class PIDDP implements IUtility {
     public synchronized double getError() {
         return m_error;
     }
+
+    public boolean isContinuous() {
+        return m_continuous;
+    }
+
+    public boolean isEnabled() {
+        return m_enabled;
+    }
+
+    public void setEnabled(boolean m_enabled) {
+        this.m_enabled = m_enabled;
+    }
+
+    public void setError(double m_error) {
+        this.m_error = m_error;
+    }
+
+    public double getMaximumInput() {
+        return m_maximumInput;
+    }
+
+    public void setMaximumInput(double m_maximumInput) {
+        this.m_maximumInput = m_maximumInput;
+    }
+
+    public double getMaximumOutput() {
+        return m_maximumOutput;
+    }
+
+    public void setMaximumOutput(double m_maximumOutput) {
+        this.m_maximumOutput = m_maximumOutput;
+    }
+
+    public double getMinimumInput() {
+        return m_minimumInput;
+    }
+
+    public void setMinimumInput(double m_minimumInput) {
+        this.m_minimumInput = m_minimumInput;
+    }
+
+    public double getMinimumOutput() {
+        return m_minimumOutput;
+    }
+
+    public void setMinimumOutput(double m_minimumOutput) {
+        this.m_minimumOutput = m_minimumOutput;
+    }
+
+    public double getPeriod() {
+        return m_period;
+    }
+
+    public void setPeriod(double m_period) {
+        this.m_period = m_period;
+    }
+
+    public PIDSource getPidInput() {
+        return m_pidInput;
+    }
+
+    public void setPidInput(PIDSource m_pidInput) {
+        this.m_pidInput = m_pidInput;
+    }
+
+    public PIDOutput getPidOutput() {
+        return m_pidOutput;
+    }
+
+    public void setPidOutput(PIDOutput m_pidOutput) {
+        this.m_pidOutput = m_pidOutput;
+    }
+
+    public double getPrevError() {
+        return m_prevError;
+    }
+
+    public void setPrevError(double m_prevError) {
+        this.m_prevError = m_prevError;
+    }
+
+    public double getResult() {
+        return m_result;
+    }
+
+    public void setResult(double m_result) {
+        this.m_result = m_result;
+    }
+    
+    public double getTolerance() {
+        return m_tolerance;
+    }
+
+    public double getTotalError() {
+        return m_totalError;
+    }
+
+    public void setTotalError(double m_totalError) {
+        this.m_totalError = m_totalError;
+    }
+    
+    
 
     /**
      * Set the percentage error which is considered tolerable for use with
