@@ -5,10 +5,7 @@ package com._604robotics.robot2012;
 
 import com._604robotics.robot2012.camera.CameraInterface;
 import com._604robotics.robot2012.camera.RemoteCameraTCP;
-import com._604robotics.robot2012.configuration.ActuatorConfiguration;
-import com._604robotics.robot2012.configuration.AutonomousConfiguration;
-import com._604robotics.robot2012.configuration.ButtonConfiguration;
-import com._604robotics.robot2012.configuration.PortConfiguration;
+import com._604robotics.robot2012.configuration.*;
 import com._604robotics.robot2012.firing.CameraFiringProvider;
 import com._604robotics.robot2012.firing.ManualFiringProvider;
 import com._604robotics.robot2012.machine.ElevatorMachine;
@@ -125,10 +122,10 @@ public class Robot2012Orange extends SimpleRobot {
         driveTrain = new RobotDrive(new Victor(PortConfiguration.Motors.LEFT_DRIVE), new Victor(PortConfiguration.Motors.RIGHT_DRIVE));
         driveTrain.setSafetyEnabled(false);
 
-        driveTrain.setInvertedMotor(MotorType.kFrontLeft, true);
-        driveTrain.setInvertedMotor(MotorType.kFrontRight, true);
-        driveTrain.setInvertedMotor(MotorType.kRearLeft, true);
-        driveTrain.setInvertedMotor(MotorType.kRearRight, true);
+        driveTrain.setInvertedMotor(MotorType.kFrontLeft, false);
+        driveTrain.setInvertedMotor(MotorType.kFrontRight, false);
+        driveTrain.setInvertedMotor(MotorType.kRearLeft, false);
+        driveTrain.setInvertedMotor(MotorType.kRearRight, false);
         
         /* Set up the elevator, shooter, hopper, pickup, and rotation motors. */
         
@@ -200,8 +197,8 @@ public class Robot2012Orange extends SimpleRobot {
         /* Sets up the switcher for autonomous. */
         
         inTheMiddle = new SendableChooser();
-        inTheMiddle.addDefault("Autonomous: In the Middle", "Yes");
-        inTheMiddle.addObject("Autonomous: On the Sides", "No");
+        inTheMiddle.addDefault("Autonomous: On the Sides", "No");
+        inTheMiddle.addObject("Autonomous: In the Middle", "Yes");
         
         SmartDashboard.putData("inTheMiddle", inTheMiddle);
         
@@ -228,10 +225,8 @@ public class Robot2012Orange extends SimpleRobot {
         
         SmartDashboard.getBoolean("Elevator Calibrated", false);
         
-        SmartDashboard.putDouble("Confidence Threshold", 0.7);
-        SmartDashboard.putDouble("Target Timeout", 1.5);
-        SmartDashboard.putDouble("Steady Threshold", 0.5);
-        SmartDashboard.putDouble("Unsteady Threshold", 1D);
+        SmartDashboard.putDouble("Shooter Preset: Fender", FiringConfiguration.FENDER_FIRING_SPEED);
+        SmartDashboard.putDouble("Shooter Preset: Key", FiringConfiguration.KEY_FIRING_SPEED);
         
         SmartDashboard.putDouble("Auton: Step 2", AutonomousConfiguration.STEP_2_SHOOT_TIME);
         SmartDashboard.putDouble("Auton: Step 3", AutonomousConfiguration.STEP_3_TURN_TIME);
@@ -296,6 +291,9 @@ public class Robot2012Orange extends SimpleRobot {
         upHigh = false;
         pickupIn = true;
         
+        firingProvider.setAtFender(false);
+            // TODO: Make this better.
+        
         /* Set stuff up. */
         
         Timer controlTimer = new Timer();
@@ -315,7 +313,7 @@ public class Robot2012Orange extends SimpleRobot {
             if (kinect || abort)
                 break;
             
-            if (step > getDouble("Auton: Max Step", AutonomousConfiguration.MAX_STEP)) {
+            if (step > getDouble("Auton: Max Step", AutonomousConfiguration.MAX_STEP) && step < 6) {
                 SmartDashboard.putInt("STOPPED AT", step);
                 this.resetMotors(true);
 
@@ -335,8 +333,10 @@ public class Robot2012Orange extends SimpleRobot {
                     
                     driveTrain.tankDrive(0D, 0D);
                     
-                    if (elevatorMachine.crank(ElevatorState.HIGH))
+                    if (elevatorMachine.crank(ElevatorState.HIGH)) {
+                        controlTimer.reset();
                         step++;
+                    }
                     
                     break;
                 case 2:
@@ -349,6 +349,8 @@ public class Robot2012Orange extends SimpleRobot {
                         shooterMachine.crank(ShooterState.SHOOTING);
                     else if (((String) inTheMiddle.getSelected()).equals("Yes"))
                         step++;
+                    else
+                        step = 6;
                     
                     break;
                 case 3:
@@ -519,6 +521,8 @@ public class Robot2012Orange extends SimpleRobot {
         pidElevator.reset();
         
         while (isOperatorControl() && isEnabled()) {
+            ringLight.set(ActuatorConfiguration.RING_LIGHT.ON);
+            
             pidElevator.setUpGains(new Gains(getDouble("Elevator Up P", 0.0085), getDouble("Elevator Up I", 0D), getDouble("Elevator Up D", 0.018)));
             pidElevator.setDownGains(new Gains(getDouble("Elevator Down P", 0.0029), getDouble("Elevator Down I", 0.000003), getDouble("Elevator Down P", 0.007)));
             
@@ -528,7 +532,7 @@ public class Robot2012Orange extends SimpleRobot {
             if (!elevatorLimitSwitch.get())
                 encoderElevator.reset();
             
-            if (Math.abs(manipulatorController.getAxis(Axis.RIGHT_STICK_Y)) > 0)
+            if (Math.abs(manipulatorController.getAxis(Axis.RIGHT_STICK_Y)) > 0) 
                 hopperMotor.set(manipulatorController.getAxis(Axis.RIGHT_STICK_Y));
             
             /* Controls the gear shift. */
@@ -545,10 +549,10 @@ public class Robot2012Orange extends SimpleRobot {
                 driveTrain.tankDrive(ActuatorConfiguration.TINY_REVERSE_SPEED, ActuatorConfiguration.TINY_REVERSE_SPEED);
                 SmartDashboard.putString("Drive Mode", "Tiny (Reverse)");
             } else if (driveController.getButton(ButtonConfiguration.Driver.SLOW_BUTTON)) {
-                driveTrain.tankDrive(driveController.getAxis(Axis.LEFT_STICK_Y) * ActuatorConfiguration.MAX_SLOW_SPEED, driveController.getAxis(Axis.RIGHT_STICK_Y) * ActuatorConfiguration.MAX_SLOW_SPEED);
+                driveTrain.tankDrive(driveController.getAxis(Axis.LEFT_STICK_Y) * ActuatorConfiguration.MAX_SLOW_SPEED * -1, driveController.getAxis(Axis.RIGHT_STICK_Y) * ActuatorConfiguration.MAX_SLOW_SPEED * -1);
                 SmartDashboard.putString("Drive Mode", "Manual (Slow)");
             } else {
-                driveTrain.tankDrive(driveController.getAxis(Axis.LEFT_STICK_Y), driveController.getAxis(Axis.RIGHT_STICK_Y));
+                driveTrain.tankDrive(driveController.getAxis(Axis.LEFT_STICK_Y) * -1, driveController.getAxis(Axis.RIGHT_STICK_Y) * -1);
                 SmartDashboard.putString("Drive Mode", "Manual");
             }
             
@@ -561,10 +565,12 @@ public class Robot2012Orange extends SimpleRobot {
             
             /* Toggle the "default" height between "up high" and "down low". */
             
-            if (manipulatorController.getButton(ButtonConfiguration.Manipulator.Elevator.UP))
+            if (manipulatorController.getButton(ButtonConfiguration.Manipulator.Elevator.UP)) {
                 upHigh = true;
-            else if (manipulatorController.getButton(ButtonConfiguration.Manipulator.Elevator.DOWN))
+                pickupIn = true;
+            } else if (manipulatorController.getButton(ButtonConfiguration.Manipulator.Elevator.DOWN)) {
                 upHigh = false;
+            }
             
             /* Toggle the pickup state between "up" and "down". */
             

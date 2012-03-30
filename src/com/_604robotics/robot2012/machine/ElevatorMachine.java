@@ -69,13 +69,21 @@ public class ElevatorMachine implements StrangeMachine {
         if (this.lastState != state) {
             this.withinTolerance = false;
             this.controller.reset();
+            
+            if (state == ElevatorState.HIGH) {
+                System.out.println(this.hoodPosition == ActuatorConfiguration.SOLENOID_SHOOTER.UPPER_ANGLE);
+                this.hood.set(this.hoodPosition);
+            } else if (this.lastState == ElevatorState.HIGH) {
+                this.hoodPosition = this.hood.get();
+                this.hood.set(ActuatorConfiguration.SOLENOID_SHOOTER.LOWER_ANGLE);
+            }
+            
             this.lastState = state;
         }
         
         switch (state) {
             case ElevatorState.HIGH:
                 this.controller.setSetpoint(ActuatorConfiguration.ELEVATOR.HIGH);
-                this.hood.set(hoodPosition);
                 break;
             case ElevatorState.MEDIUM:
                 this.controller.setSetpoint(ActuatorConfiguration.ELEVATOR.MEDIUM);
@@ -86,11 +94,6 @@ public class ElevatorMachine implements StrangeMachine {
             default:
                 this.controller.disable();
                 return false;
-        }
-        
-        if (state != ElevatorState.HIGH) {
-            this.hoodPosition = this.hood.get();
-            this.hood.set(ActuatorConfiguration.SOLENOID_SHOOTER.LOWER_ANGLE);
         }
         
         boolean ret = this.test(state);
