@@ -14,8 +14,8 @@ import com._604robotics.robot2012.machine.PickupMachine;
 import com._604robotics.robot2012.machine.PickupMachine.PickupState;
 import com._604robotics.robot2012.machine.ShooterMachine;
 import com._604robotics.robot2012.machine.ShooterMachine.ShooterState;
+import com._604robotics.robot2012.speedcontrol.ProcessSpeedProvider;
 import com._604robotics.robot2012.speedcontrol.SpeedProvider;
-import com._604robotics.robot2012.speedcontrol.StupidSpeedProvider;
 import com._604robotics.robot2012.vision.Target;
 import com._604robotics.utils.UpDownPIDController.Gains;
 import com._604robotics.utils.*;
@@ -77,7 +77,7 @@ public class Robot2012Orange extends SimpleRobot {
     CameraInterface cameraInterface;
     
     CameraFiringProvider firingProvider;
-    SpeedProvider speedProvider;
+    ProcessSpeedProvider speedProvider;
     
     boolean upHigh = false;
     boolean pickupIn = true;
@@ -214,8 +214,8 @@ public class Robot2012Orange extends SimpleRobot {
         
         /* Sets up the speed provider for the shooter. */
         
-        speedProvider = new StupidSpeedProvider(shooterMotors);
-        //speedProvider = new ProcessSpeedProvider(-0.003, 0D, -0.05, encoderShooter, shooterMotors);
+        //speedProvider = new StupidSpeedProvider(shooterMotors, encoderShooter);
+        speedProvider = new ProcessSpeedProvider(-0.003, 0D, -0.05, encoderShooter, shooterMotors);
         //speedProvider = new ProcessSpeedProvider(-0.08, 0D, -0.02, encoderShooter, shooterMotors);
         
         /* Sets up the Machines. */
@@ -237,9 +237,9 @@ public class Robot2012Orange extends SimpleRobot {
         SmartDashboard.putDouble("Auton: Step 5", AutonomousConfiguration.STEP_5_WAIT_TIME);
         SmartDashboard.putDouble("Auton: Max Step", AutonomousConfiguration.MAX_STEP);
         
-        /* SmartDashboard.putDouble("Shooter P", speedProvider.getP());
+        SmartDashboard.putDouble("Shooter P", speedProvider.getP());
         SmartDashboard.putDouble("Shooter I", speedProvider.getI());
-        SmartDashboard.putDouble("Shooter D", speedProvider.getD()); */
+        SmartDashboard.putDouble("Shooter D", speedProvider.getD());
         
         SmartDashboard.putDouble("fac", encoderShooter.getFac());
         
@@ -539,7 +539,7 @@ public class Robot2012Orange extends SimpleRobot {
             pidElevator.setUpGains(new Gains(getDouble("Elevator Up P", 0.0085), getDouble("Elevator Up I", 0D), getDouble("Elevator Up D", 0.018)));
             pidElevator.setDownGains(new Gains(getDouble("Elevator Down P", 0.0029), getDouble("Elevator Down I", 0.000003), getDouble("Elevator Down P", 0.007)));
             
-            //speedProvider.setPID(getDouble("Shooter P", 0D), getDouble("Shooter I", 0D), getDouble("Shooter D", 0D));
+            speedProvider.setPID(getDouble("Shooter P", 0D), getDouble("Shooter I", 0D), getDouble("Shooter D", 0D));
             
             if (driveController.getToggle(ButtonConfiguration.Driver.DISABLE_ELEVATOR))
                 elevatorMotors.setDisabled(!elevatorMotors.getDisabled());

@@ -237,7 +237,7 @@ public class EncoderSamplingRate extends Encoder {
     public void sample () {
         final long now = System.currentTimeMillis();
         if (now - this.lastMeasured >= this.samplingRate) {
-            System.out.println("lastCount = " + this.lastCount + ", lastMeasured = " + this.lastMeasured + ", samplingRate = " + this.samplingRate + ", startClicks = " + this.startClicks);
+            //System.out.println("lastCount = " + this.lastCount + ", lastMeasured = " + this.lastMeasured + ", samplingRate = " + this.samplingRate + ", startClicks = " + this.startClicks);
             final int clicks = this.get();
             this.lastCount = (clicks - this.startClicks) / (((double) (now - this.lastMeasured)) / 20);
             this.lastMeasured = now;

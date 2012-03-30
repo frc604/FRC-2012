@@ -1,5 +1,7 @@
 package com._604robotics.robot2012.speedcontrol;
 
+import com._604robotics.utils.DualVictor;
+import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.PIDSource;
 import edu.wpi.first.wpilibj.Timer;
@@ -8,9 +10,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class ProcessSpeedProvider implements SpeedProvider {
     private final Timer spinUp = new Timer();
     
-    private final PIDDP controller;
+    private final PIDController controller;
     private final PIDSource source;
-    private final PIDOutput output;
+    private final DualVictor output;
     private final ProcessSpeedProvider.DifferentialOutput diffOutput;
     
     private boolean loaded = false;
@@ -25,7 +27,10 @@ public class ProcessSpeedProvider implements SpeedProvider {
         }
         
         public void pidWrite (double output) {
-            this.out.pidWrite(this.process += output);
+            this.process += output;
+            if (Math.abs(this.process) > 1)
+                this.process = (this.process < 0) ? -1 : 1;
+            this.out.pidWrite(this.process);
         }
         
         public void setProcess (double process) {
@@ -33,14 +38,12 @@ public class ProcessSpeedProvider implements SpeedProvider {
         }
     }
     
-    public ProcessSpeedProvider (double P, double I, double D, PIDSource source, PIDOutput output) {
-        this(P, I, D, 0, source, output);
-    }
-    public ProcessSpeedProvider (double P, double I, double D, double DP, PIDSource source, PIDOutput output) {
+    public ProcessSpeedProvider (double P, double I, double D, PIDSource source, DualVictor output) {
         this.source = source;
         this.output = output;
         this.diffOutput = new ProcessSpeedProvider.DifferentialOutput(this.output);
-        this.controller = new PIDDP(P, I, D, DP, this.source, this.diffOutput);
+        this.controller = new PIDController(P, I, D, this.source, this.diffOutput);
+        this.output.setController(this.controller);
         this.spinUp.start();
     }
 
@@ -71,16 +74,9 @@ public class ProcessSpeedProvider implements SpeedProvider {
     public double getD () {
         return this.controller.getD();
     }
-    
-    public double getDP () {
-        return this.controller.getDP();
-    }
 
     public void setPID (double P, double I, double D) {
         this.controller.setPID(P, I, D);
-    }
-    public void setPIDDP (double P, double I, double D, double DP) {
-        this.controller.setPIDDP(P, I, D, DP);
     }
     
     public void apply() {
@@ -88,10 +84,11 @@ public class ProcessSpeedProvider implements SpeedProvider {
             this.spinUp.reset();
         this.ran = true;
         this.loaded = true;
+        System.out.println(this.controller.getP());
         SmartDashboard.putDouble("spinUp", this.spinUp.get());
-        if (this.spinUp.get() < 0.5)
-            this.output.pidWrite(-0.7);
-        else
+        if (!(this.spinUp.get() < 0.5))
+//            this.output.pidWrite(-0.7);
+//        else
             this.controller.enable();
     }
 
@@ -99,9 +96,10 @@ public class ProcessSpeedProvider implements SpeedProvider {
         if (!this.loaded) {
             this.ran = false;
             this.controller.reset();
-            this.diffOutput.setProcess(-0.7);
+            this.diffOutput.setProcess(0D);//-0.7);
             this.output.pidWrite(0D);
         }
+        
         this.loaded = false;
     }
 }
