@@ -18,8 +18,6 @@ public class AwesomeSpeedController {
     public double maxSpeed = 1;
     public double fac = .9;
     
-    private final Timer spinUp = new Timer();
-    
     private final PIDDP controller;
     private final PIDSource source;
     private final PIDOutput output;
@@ -50,7 +48,6 @@ public class AwesomeSpeedController {
         this.output = output;
         this.diffOutput = new DifferentialOutput(this.output);
         this.controller = new PIDDP(P, I, D, DP, this.source, this.diffOutput);
-        this.spinUp.start();
     }
 
     public double getMotorPower() {
@@ -94,8 +91,6 @@ public class AwesomeSpeedController {
     }
     
     public void apply() {
-        if (!this.ran)
-            this.spinUp.reset();
         this.ran = true;
         this.loaded = true;
         if (this.source.pidGet() < fac * controller.getSetpoint())
