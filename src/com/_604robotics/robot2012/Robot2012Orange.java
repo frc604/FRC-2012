@@ -214,7 +214,7 @@ public class Robot2012Orange extends SimpleRobot {
         
         /* Sets up the speed provider for the shooter. */
         
-        speedProvider = new StupidSpeedProvider(shooterMotors, encoderShooter);
+        speedProvider = new StupidSpeedProvider(shooterMotors);
         //speedProvider = new ProcessSpeedProvider(-0.003, 0D, -0.05, encoderShooter, shooterMotors);
         //speedProvider = new ProcessSpeedProvider(-0.08, 0D, -0.02, encoderShooter, shooterMotors);
         
