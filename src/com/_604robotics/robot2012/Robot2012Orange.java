@@ -16,6 +16,7 @@ import com._604robotics.robot2012.machine.ShooterMachine;
 import com._604robotics.robot2012.machine.ShooterMachine.ShooterState;
 import com._604robotics.robot2012.speedcontrol.SpeedProvider;
 import com._604robotics.robot2012.speedcontrol.StupidSpeedProvider;
+import com._604robotics.robot2012.vision.Target;
 import com._604robotics.utils.UpDownPIDController.Gains;
 import com._604robotics.utils.*;
 import com._604robotics.utils.XboxController.Axis;
@@ -149,7 +150,7 @@ public class Robot2012Orange extends SimpleRobot {
         encoderShooter.setDistancePerPulse(1);
         encoderShooter.setPIDSourceParameter(Encoder.PIDSourceParameter.kRate);
         encoderShooter.setSamplingRate(20);
-        encoderShooter.setAveragePoints(10);
+        encoderShooter.setFac(getDouble("fac", 0.5));
         encoderShooter.start();
         
         /* Sets up the limit switches for calibration. */
@@ -213,7 +214,9 @@ public class Robot2012Orange extends SimpleRobot {
         
         /* Sets up the speed provider for the shooter. */
         
-        speedProvider = new StupidSpeedProvider(shooterMotors);//0D, 0D, 0D, encoderShooter, shooterMotors);
+        speedProvider = new StupidSpeedProvider(shooterMotors, encoderShooter);
+        //speedProvider = new ProcessSpeedProvider(-0.003, 0D, -0.05, encoderShooter, shooterMotors);
+        //speedProvider = new ProcessSpeedProvider(-0.08, 0D, -0.02, encoderShooter, shooterMotors);
         
         /* Sets up the Machines. */
         
@@ -233,6 +236,12 @@ public class Robot2012Orange extends SimpleRobot {
         SmartDashboard.putDouble("Auton: Step 4", AutonomousConfiguration.STEP_4_DRIVE_TIME);
         SmartDashboard.putDouble("Auton: Step 5", AutonomousConfiguration.STEP_5_WAIT_TIME);
         SmartDashboard.putDouble("Auton: Max Step", AutonomousConfiguration.MAX_STEP);
+        
+        /* SmartDashboard.putDouble("Shooter P", speedProvider.getP());
+        SmartDashboard.putDouble("Shooter I", speedProvider.getI());
+        SmartDashboard.putDouble("Shooter D", speedProvider.getD()); */
+        
+        SmartDashboard.putDouble("fac", encoderShooter.getFac());
         
         /* Because we can. */
         
@@ -515,6 +524,9 @@ public class Robot2012Orange extends SimpleRobot {
         int settleState = 2;
         Timer settleTimer = new Timer();
         
+        Target[] targets;
+        Target target;
+        
         manipulatorController.resetToggles();
         driveController.resetToggles();
         
@@ -522,9 +534,12 @@ public class Robot2012Orange extends SimpleRobot {
         
         while (isOperatorControl() && isEnabled()) {
             ringLight.set(ActuatorConfiguration.RING_LIGHT.ON);
+            encoderShooter.sample();
             
             pidElevator.setUpGains(new Gains(getDouble("Elevator Up P", 0.0085), getDouble("Elevator Up I", 0D), getDouble("Elevator Up D", 0.018)));
             pidElevator.setDownGains(new Gains(getDouble("Elevator Down P", 0.0029), getDouble("Elevator Down I", 0.000003), getDouble("Elevator Down P", 0.007)));
+            
+            //speedProvider.setPID(getDouble("Shooter P", 0D), getDouble("Shooter I", 0D), getDouble("Shooter D", 0D));
             
             if (driveController.getToggle(ButtonConfiguration.Driver.DISABLE_ELEVATOR))
                 elevatorMotors.setDisabled(!elevatorMotors.getDisabled());
@@ -577,8 +592,6 @@ public class Robot2012Orange extends SimpleRobot {
             if (driveController.getToggle(ButtonConfiguration.Driver.TOGGLE_PICKUP))
                 pickupIn = !pickupIn;
             
-            
-            // TODO - SD danger
             SmartDashboard.putBoolean("upHigh", upHigh);
             SmartDashboard.putBoolean("pickupIn", pickupIn);
             
@@ -693,7 +706,27 @@ public class Robot2012Orange extends SimpleRobot {
             solenoidShifter.reload();
             solenoidHopper.reload();
             
+            /* Driver assist. */
+            
+            targets = cameraInterface.getTargets();
+            target = null;
+
+            for (int i = 0; i < targets.length; i++) {
+                if (target == null || targets[i].y < target.y) {
+                    target = targets[i];
+                }
+            }
+
+            if (target == null)
+                SmartDashboard.putDouble("AIMING", 999999.999);
+            else
+                SmartDashboard.putDouble("AIMING", target.x);
+            
             /* Debug output. */
+            
+            SmartDashboard.putDouble("encoderShooter", encoderShooter.get());
+            SmartDashboard.putDouble("Current Encoder Rate", encoderShooter.getRate());
+            SmartDashboard.putDouble("Current Shooter Output", shooterMotors.get());
             
             SmartDashboard.putDouble("Shooter Speed", shooterMachine.getShooterSpeed());
             SmartDashboard.putBoolean("Using Targets?", firingProvider.usingTargets());

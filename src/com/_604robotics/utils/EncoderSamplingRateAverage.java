@@ -4,16 +4,19 @@ import edu.wpi.first.wpilibj.DigitalSource;
 import edu.wpi.first.wpilibj.Encoder;
 import java.util.Vector;
 
-public class EncoderSamplingRate extends Encoder {
+public class EncoderSamplingRateAverage extends Encoder {
     // TODO: Cleanup, document.
+    
+    private final Vector buffer = new Vector();
+    
+    private int averagePoints = 1;
     
     private long lastMeasured = 0;
     private int samplingRate = 20;
     private int startClicks = 0;
-    private double lastCount = 0;
+    private int lastCount = 0;
     
-    private double fac = 0.85;
-    private double filteredRate = 0D;
+    private double averagedRate = 0;
     
     /**
      * Encoder constructor.
@@ -25,7 +28,7 @@ public class EncoderSamplingRate extends Encoder {
      * @param reverseDirection represents the orientation of the encoder and inverts the output values
      * if necessary so forward represents positive values.
      */
-    public EncoderSamplingRate (final int aSlot, final int aChannel, final int bSlot, final int bChannel, boolean reverseDirection) {
+    public EncoderSamplingRateAverage (final int aSlot, final int aChannel, final int bSlot, final int bChannel, boolean reverseDirection) {
         super(aSlot, aChannel, bSlot, bChannel, reverseDirection);
     }
 
@@ -37,7 +40,7 @@ public class EncoderSamplingRate extends Encoder {
      * @param bSlot The b channel digital input module.
      * @param bChannel The b channel digital input channel.
      */
-    public EncoderSamplingRate (final int aSlot, final int aChannel, final int bSlot, final int bChannel) {
+    public EncoderSamplingRateAverage (final int aSlot, final int aChannel, final int bSlot, final int bChannel) {
         super(aSlot, aChannel, bSlot, bChannel);
     }
 
@@ -56,7 +59,7 @@ public class EncoderSamplingRate extends Encoder {
      * a counter object will be used and the returned value will either exactly match the spec'd count
      * or be double (2x) the spec'd count.
      */
-    public EncoderSamplingRate (final int aSlot, final int aChannel, final int bSlot, final int bChannel, boolean reverseDirection, final EncodingType encodingType) {
+    public EncoderSamplingRateAverage (final int aSlot, final int aChannel, final int bSlot, final int bChannel, boolean reverseDirection, final EncodingType encodingType) {
         super(aSlot, aChannel, bSlot, bChannel, reverseDirection, encodingType);
     }
 
@@ -73,7 +76,7 @@ public class EncoderSamplingRate extends Encoder {
      * @param reverseDirection represents the orientation of the encoder and inverts the output values
      * if necessary so forward represents positive values.
      */
-    public EncoderSamplingRate (final int aSlot, final int aChannel, final int bSlot, final int bChannel, final int indexSlot, final int indexChannel, boolean reverseDirection) {
+    public EncoderSamplingRateAverage (final int aSlot, final int aChannel, final int bSlot, final int bChannel, final int indexSlot, final int indexChannel, boolean reverseDirection) {
         super(aSlot, aChannel, bSlot, bChannel, indexSlot, indexChannel, reverseDirection);
     }
 
@@ -88,7 +91,7 @@ public class EncoderSamplingRate extends Encoder {
      * @param indexSlot The index channel digital input module.
      * @param indexChannel The index channel digital input channel.
      */
-    public EncoderSamplingRate (final int aSlot, final int aChannel, final int bSlot, final int bChannel, final int indexSlot, final int indexChannel) {
+    public EncoderSamplingRateAverage (final int aSlot, final int aChannel, final int bSlot, final int bChannel, final int indexSlot, final int indexChannel) {
         super(aSlot, aChannel, bSlot, bChannel, indexSlot, indexChannel);
     }
 
@@ -100,7 +103,7 @@ public class EncoderSamplingRate extends Encoder {
      * @param reverseDirection represents the orientation of the encoder and inverts the output values
      * if necessary so forward represents positive values.
      */
-    public EncoderSamplingRate (final int aChannel, final int bChannel, boolean reverseDirection) {
+    public EncoderSamplingRateAverage (final int aChannel, final int bChannel, boolean reverseDirection) {
         super(aChannel, bChannel, reverseDirection);
     }
 
@@ -110,7 +113,7 @@ public class EncoderSamplingRate extends Encoder {
      * @param aChannel The a channel digital input channel.
      * @param bChannel The b channel digital input channel.
      */
-    public EncoderSamplingRate (final int aChannel, final int bChannel) {
+    public EncoderSamplingRateAverage (final int aChannel, final int bChannel) {
         super(aChannel, bChannel);
     }
 
@@ -127,7 +130,7 @@ public class EncoderSamplingRate extends Encoder {
      * a counter object will be used and the returned value will either exactly match the spec'd count
      * or be double (2x) the spec'd count.
      */
-    public EncoderSamplingRate (final int aChannel, final int bChannel, boolean reverseDirection, final EncodingType encodingType) {
+    public EncoderSamplingRateAverage (final int aChannel, final int bChannel, boolean reverseDirection, final EncodingType encodingType) {
         super(aChannel, bChannel, reverseDirection, encodingType);
     }
 
@@ -141,7 +144,7 @@ public class EncoderSamplingRate extends Encoder {
      * @param reverseDirection represents the orientation of the encoder and inverts the output values
      * if necessary so forward represents positive values.
      */
-    public EncoderSamplingRate (final int aChannel, final int bChannel, final int indexChannel, boolean reverseDirection) {
+    public EncoderSamplingRateAverage (final int aChannel, final int bChannel, final int indexChannel, boolean reverseDirection) {
         super(aChannel, bChannel, indexChannel, reverseDirection);
     }
 
@@ -153,7 +156,7 @@ public class EncoderSamplingRate extends Encoder {
      * @param bChannel The b channel digital input channel.
      * @param indexChannel The index channel digital input channel.
      */
-    public EncoderSamplingRate (final int aChannel, final int bChannel, final int indexChannel) {
+    public EncoderSamplingRateAverage (final int aChannel, final int bChannel, final int indexChannel) {
         super(aChannel, bChannel, indexChannel);
     }
 
@@ -167,7 +170,7 @@ public class EncoderSamplingRate extends Encoder {
      * @param reverseDirection represents the orientation of the encoder and inverts the output values
      * if necessary so forward represents positive values.
      */
-    public EncoderSamplingRate (DigitalSource aSource, DigitalSource bSource, boolean reverseDirection) {
+    public EncoderSamplingRateAverage (DigitalSource aSource, DigitalSource bSource, boolean reverseDirection) {
         super(aSource, bSource, reverseDirection);
     }
 
@@ -179,7 +182,7 @@ public class EncoderSamplingRate extends Encoder {
      * @param aSource The source that should be used for the a channel.
      * @param bSource the source that should be used for the b channel.
      */
-    public EncoderSamplingRate (DigitalSource aSource, DigitalSource bSource) {
+    public EncoderSamplingRateAverage (DigitalSource aSource, DigitalSource bSource) {
         super(aSource, bSource);
     }
 
@@ -198,7 +201,7 @@ public class EncoderSamplingRate extends Encoder {
      * a counter object will be used and the returned value will either exactly match the spec'd count
      * or be double (2x) the spec'd count.
      */
-    public EncoderSamplingRate (DigitalSource aSource, DigitalSource bSource, boolean reverseDirection, final EncodingType encodingType) {
+    public EncoderSamplingRateAverage (DigitalSource aSource, DigitalSource bSource, boolean reverseDirection, final EncodingType encodingType) {
         super(aSource, bSource, reverseDirection, encodingType);
     }
 
@@ -213,7 +216,7 @@ public class EncoderSamplingRate extends Encoder {
      * @param reverseDirection represents the orientation of the encoder and inverts the output values
      * if necessary so forward represents positive values.
      */
-    public EncoderSamplingRate (DigitalSource aSource, DigitalSource bSource, DigitalSource indexSource, boolean reverseDirection) {
+    public EncoderSamplingRateAverage (DigitalSource aSource, DigitalSource bSource, DigitalSource indexSource, boolean reverseDirection) {
         super(aSource, bSource, indexSource, reverseDirection);
     }
 
@@ -226,7 +229,7 @@ public class EncoderSamplingRate extends Encoder {
      * @param bSource the source that should be used for the b channel.
      * @param indexSource the source that should be used for the index channel.
      */
-    public EncoderSamplingRate (DigitalSource aSource, DigitalSource bSource, DigitalSource indexSource) {
+    public EncoderSamplingRateAverage (DigitalSource aSource, DigitalSource bSource, DigitalSource indexSource) {
         super(aSource, bSource, indexSource);
     }
     
@@ -239,27 +242,31 @@ public class EncoderSamplingRate extends Encoder {
         if (now - this.lastMeasured >= this.samplingRate) {
             System.out.println("lastCount = " + this.lastCount + ", lastMeasured = " + this.lastMeasured + ", samplingRate = " + this.samplingRate + ", startClicks = " + this.startClicks);
             final int clicks = this.get();
-            this.lastCount = (clicks - this.startClicks) / (((double) (now - this.lastMeasured)) / 20);
             this.lastMeasured = now;
+            this.lastCount = clicks - this.startClicks;
             this.startClicks = clicks;
             
-            this.filteredRate = fac*this.filteredRate + (1-fac)*this.lastCount;
+            this.buffer.addElement(Integer.toString(this.lastCount));
+            while (this.buffer.size() > this.averagePoints)
+                this.buffer.removeElementAt(0);
+            
+            int sum = 0;
+            for (int i = 0; i < this.buffer.size(); i++)
+                sum += Integer.parseInt((String) this.buffer.elementAt(i));
+            
+            this.averagedRate = ((double) sum) / this.buffer.size();
         }
     }
     
     public double getRate () {
-        return this.filteredRate;
+        return this.averagedRate;
     }
     
     public double getRawRate () {
         return this.lastCount;
     }
     
-    public double getFac () {
-        return this.fac;
-    }
-    
-    public void setFac (double fac) {
-        this.fac = fac;
+    public void setAveragePoints (int averagePoints) {
+        this.averagePoints = averagePoints;
     }
 }

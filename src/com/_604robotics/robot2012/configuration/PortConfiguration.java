@@ -47,7 +47,7 @@ public interface PortConfiguration {
         public static final int SHOOTER_B = 4;
         
         public static final int ELEVATOR_A = 12;
-        public static final int ELEVATOR_B = 11 ;
+        public static final int ELEVATOR_B = 11;
     }
     
     public interface Pneumatics {
