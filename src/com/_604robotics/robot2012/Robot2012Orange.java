@@ -211,6 +211,8 @@ public class Robot2012Orange extends SimpleRobot {
         /* Sets up the firing provider. */
         
         firingProvider = new CameraFiringProvider(cameraInterface, new ManualFiringProvider());
+        firingProvider.setPhysicsEnabled(false);
+        firingProvider.setEnabled(false);
         
         /* Sets up the speed provider for the shooter. */
         
