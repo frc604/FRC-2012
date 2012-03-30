@@ -5,6 +5,8 @@ import edu.wpi.first.wpilibj.Relay.Direction;
 /**
  * Port configuration.
  * 
+ * WARNING: Please note that ports 2 and 5 are taken as "Ready" and "Calibrated" indicators.
+ * 
  * @author  Michael Smith <mdsmtp@gmail.com>
  */
 public interface PortConfiguration {
