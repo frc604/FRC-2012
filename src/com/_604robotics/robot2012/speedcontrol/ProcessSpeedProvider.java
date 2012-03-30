@@ -1,6 +1,5 @@
 package com._604robotics.robot2012.speedcontrol;
 
-import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.PIDSource;
 import edu.wpi.first.wpilibj.Timer;
@@ -9,7 +8,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class ProcessSpeedProvider implements SpeedProvider {
     private final Timer spinUp = new Timer();
     
-    private final PIDController controller;
+    private final PIDDP controller;
     private final PIDSource source;
     private final PIDOutput output;
     private final ProcessSpeedProvider.DifferentialOutput diffOutput;
@@ -35,10 +34,13 @@ public class ProcessSpeedProvider implements SpeedProvider {
     }
     
     public ProcessSpeedProvider (double P, double I, double D, PIDSource source, PIDOutput output) {
+        this(P, I, D, 0, source, output);
+    }
+    public ProcessSpeedProvider (double P, double I, double D, double DP, PIDSource source, PIDOutput output) {
         this.source = source;
         this.output = output;
         this.diffOutput = new ProcessSpeedProvider.DifferentialOutput(this.output);
-        this.controller = new PIDController(P, I, D, this.source, this.diffOutput);
+        this.controller = new PIDDP(P, I, D, DP, this.source, this.diffOutput);
         this.spinUp.start();
     }
 
@@ -69,9 +71,16 @@ public class ProcessSpeedProvider implements SpeedProvider {
     public double getD () {
         return this.controller.getD();
     }
+    
+    public double getDP () {
+        return this.controller.getDP();
+    }
 
     public void setPID (double P, double I, double D) {
         this.controller.setPID(P, I, D);
+    }
+    public void setPIDDP (double P, double I, double D, double DP) {
+        this.controller.setPIDDP(P, I, D, DP);
     }
     
     public void apply() {
