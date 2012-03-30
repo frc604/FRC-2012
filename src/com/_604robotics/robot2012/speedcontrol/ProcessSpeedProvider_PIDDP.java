@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class ProcessSpeedProvider_PIDDP implements SpeedProvider {
     private final Timer spinUp = new Timer();
     
-    private final PIDController controller;
+    private final PIDDP controller;
     private final PIDSource source;
     private final PIDOutput output;
     private final ProcessSpeedProvider_PIDDP.DifferentialOutput diffOutput;
@@ -34,11 +34,11 @@ public class ProcessSpeedProvider_PIDDP implements SpeedProvider {
         }
     }
     
-    public ProcessSpeedProvider_PIDDP (double P, double I, double D, PIDSource source, PIDOutput output) {
+    public ProcessSpeedProvider_PIDDP (double P, double I, double D, double DP, PIDSource source, PIDOutput output) {
         this.source = source;
         this.output = output;
         this.diffOutput = new ProcessSpeedProvider_PIDDP.DifferentialOutput(this.output);
-        this.controller = new PIDController(P, I, D, this.source, this.diffOutput);
+        this.controller = new PIDDP(P, I, D, DP, this.source, this.diffOutput);
         this.spinUp.start();
     }
 
@@ -69,9 +69,17 @@ public class ProcessSpeedProvider_PIDDP implements SpeedProvider {
     public double getD () {
         return this.controller.getD();
     }
+    
+    public double getDP () {
+        return this.controller.getDP();
+    }
 
     public void setPID (double P, double I, double D) {
         this.controller.setPID(P, I, D);
+    }
+
+    public void setPIDDP (double P, double I, double D, double DP) {
+        this.controller.setPIDDP(P, I, D, DP);
     }
     
     public void apply() {
