@@ -14,12 +14,13 @@ import com._604robotics.robot2012.machine.PickupMachine;
 import com._604robotics.robot2012.machine.PickupMachine.PickupState;
 import com._604robotics.robot2012.machine.ShooterMachine;
 import com._604robotics.robot2012.machine.ShooterMachine.ShooterState;
+import com._604robotics.robot2012.speedcontrol.NaiveSpeedProvider;
 import com._604robotics.robot2012.speedcontrol.SpeedProvider;
-import com._604robotics.robot2012.speedcontrol.StupidSpeedProvider;
 import com._604robotics.robot2012.vision.Target;
 import com._604robotics.utils.UpDownPIDController.Gains;
 import com._604robotics.utils.*;
 import com._604robotics.utils.XboxController.Axis;
+import com.sun.squawk.util.MathUtils;
 import edu.wpi.first.wpilibj.RobotDrive.MotorType;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -88,6 +89,26 @@ public class Robot2012Orange extends SimpleRobot {
         } catch (Exception ex) {
             return def;
         }
+    }
+    
+    public static String repeatString(String what, int times) {
+        String ret = "";
+        for (int i = 0; i < times; i++)
+            ret += what;
+        return ret;
+    }
+    
+    public static String renderDebug(double x) {
+        if (Math.abs(x) > 15)
+            return repeatString("-", 31);
+        String ret = repeatString(" ", 15) + "^" + repeatString(" ", 15) + "\n";
+        int position = (int) MathUtils.round(x / 30 * 15);
+        for (int i = -15; i <= 15; i++)
+            ret += (i == position)
+                    ? '|'
+                    : ' ';
+        ret += "\n" + repeatString(" ", 15) + "^" + repeatString(" ", 15);
+        return ret;
     }
     
     /**
@@ -216,21 +237,23 @@ public class Robot2012Orange extends SimpleRobot {
         
         /* Sets up the speed provider for the shooter. */
         
-        speedProvider = new StupidSpeedProvider(shooterMotors);
+        //speedProvider = new StupidSpeedProvider(shooterMotors);
+        speedProvider = new NaiveSpeedProvider(shooterMotors, encoderShooter);
         //speedProvider = new ProcessSpeedProvider(-0.0001, 0D, -0.0008, encoderShooter, shooterMotors);
         
         /* Sets up the Machines. */
         
         pickupMachine = new PickupMachine(solenoidPickup);
         elevatorMachine = new ElevatorMachine(pidElevator, encoderElevator, solenoidShooter);
-        shooterMachine = new ShooterMachine(hopperMotor, firingProvider, speedProvider);
+        shooterMachine = new ShooterMachine(hopperMotor, firingProvider, speedProvider, elevatorMotors);
         
         /* Sets up debug outputs. */
         
-        SmartDashboard.getBoolean("Elevator Calibrated", false);
+        SmartDashboard.putString("Shooter Charged: ", "NO NO NO NO NO");
+        SmartDashboard.putBoolean("Elevator Calibrated", false);
         
-        SmartDashboard.putDouble("Shooter Preset: Fender", FiringConfiguration.FENDER_FIRING_SPEED);
-        SmartDashboard.putDouble("Shooter Preset: Key", FiringConfiguration.KEY_FIRING_SPEED);
+        SmartDashboard.putDouble("Shooter Preset: Fender", FiringConfiguration.FENDER_FIRING_POWER);
+        SmartDashboard.putDouble("Shooter Preset: Key", FiringConfiguration.KEY_FIRING_POWER);
         
         SmartDashboard.putDouble("Auton: Step 2", AutonomousConfiguration.STEP_2_SHOOT_TIME);
         SmartDashboard.putDouble("Auton: Step 3", AutonomousConfiguration.STEP_3_TURN_TIME);
@@ -518,6 +541,8 @@ public class Robot2012Orange extends SimpleRobot {
         driveTrain.setSafetyEnabled(true);
         compressorPump.start();
         
+        double rawXPos;
+        
         int settleState = 2;
         Timer settleTimer = new Timer();
         
@@ -719,9 +744,9 @@ public class Robot2012Orange extends SimpleRobot {
             System.out.println(targets.length);
             
             if (target == null)
-                SmartDashboard.putDouble("AIMING", 999999.999);
+                SmartDashboard.putDouble("Raw X Pos", 999999.999);
             else
-                SmartDashboard.putDouble("AIMING", target.x);
+                SmartDashboard.putDouble("Raw X Pos", target.x);
             
             /* Debug output. */
             

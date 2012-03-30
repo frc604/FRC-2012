@@ -20,8 +20,8 @@ public class ManualFiringProvider implements FiringProvider {
     
     public double getSpeed () {
         return (this.atFender)
-                ? getDouble("Shooter Preset: Fender", FiringConfiguration.FENDER_FIRING_SPEED)
-                : getDouble("Shooter Preset: Key", FiringConfiguration.KEY_FIRING_SPEED);
+                ? getDouble("Shooter Preset: Fender", FiringConfiguration.FENDER_FIRING_POWER)
+                : getDouble("Shooter Preset: Key", FiringConfiguration.KEY_FIRING_POWER);
     }
 
     public boolean isAtFender () {
