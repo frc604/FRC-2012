@@ -521,6 +521,8 @@ public class Robot2012Orange extends SimpleRobot {
         pidElevator.reset();
         
         while (isOperatorControl() && isEnabled()) {
+            ringLight.set(ActuatorConfiguration.RING_LIGHT.ON);
+            
             pidElevator.setUpGains(new Gains(getDouble("Elevator Up P", 0.0085), getDouble("Elevator Up I", 0D), getDouble("Elevator Up D", 0.018)));
             pidElevator.setDownGains(new Gains(getDouble("Elevator Down P", 0.0029), getDouble("Elevator Down I", 0.000003), getDouble("Elevator Down P", 0.007)));
             
