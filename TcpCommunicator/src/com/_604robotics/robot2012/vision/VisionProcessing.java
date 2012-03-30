@@ -14,6 +14,8 @@ import java.util.Arrays;
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 
+import logging.Logger;
+
 import com._604robotics.robot2012.points.Point2d;
 import com._604robotics.robot2012.vision.LinearRegression.RegressionResult;
 import com._604robotics.robot2012.vision.config.Config;
@@ -208,6 +210,8 @@ public class VisionProcessing {
 		if (conf.getBoolean("debug_SaveImagesToFiles")) {
 			new File("target/").mkdir();
 		}
+		
+		new Thread(imgSavr).start();
 	}
 	
 	/**
@@ -262,17 +266,36 @@ public class VisionProcessing {
 			try {
 				processImage(img);
 			} catch(Exception ex) {
-				ex.printStackTrace();
+				Logger.ex(ex);
 			}
 			
 			currentFrame++;
 			
 			if (conf.getBoolean("debug_SaveImagesToFiles")) {
+				imgSavr.currentFrame = currentFrame;
+				imgSavr.img = img;
+			}
+		}
+	}
+	
+	private static final ImgSavr imgSavr = new ImgSavr();
+	private static class ImgSavr implements Runnable {
+		int currentFrame;
+		private BufferedImage img;
+		private BufferedImage last = null;
+		public void run() {
+			while(true) {
 				try {
-					System.out.println("here");
-					ImageIO.write(img, "jpeg", new File("target/" + currentFrame + ".jpeg"));
-				} catch (IOException ex) {
-					ex.printStackTrace();
+					Logger.log("saving");
+					BufferedImage i = img;
+					if(i != last) {
+						ImageIO.write(i, "jpeg", new File("target/" + currentFrame + ".jpeg"));
+						last = i;
+					} else
+						Thread.sleep(5);
+					
+				} catch (Exception ex) {
+					Logger.ex(ex);
 				}
 			}
 		}
@@ -283,15 +306,17 @@ public class VisionProcessing {
 	 * loop of 50 pictures saved as target/[number].jpeg
 	 */
 	public void loopAndProcessPreSavedPics() throws IOException {
-		for (int i = 1; true; i++) {
+		
+		File[] list = new File("target/").listFiles();
+		for (int i = 0; true; i++) {
 			
-			if (i >= 577) {
-				i -= 577;
+			if (i >= list.length) {
+				i -= list.length;
 			}
 			
 			try {
-				processImage(ImageIO.read(new File("target/" + i + ".jpeg")));
-
+				processImage(ImageIO.read(list[i]));
+				
 				Thread.sleep(100);
 			} catch (Exception ex) {}
 			
@@ -321,7 +346,7 @@ public class VisionProcessing {
 			imageBuffer = new int[w*h];
 		Img img_copy = new Img(img.getRaster(), imageBuffer);
 		ri.computeResults(img_copy);
-		// System.out.println("result Time = " + (System.nanoTime()-time_i2)/1000000000);
+		// Logger.log("result Time = " + (System.nanoTime()-time_i2)/1000000000);
 		
 		// now go thru and compute targets and their AABBs
 		
@@ -398,9 +423,9 @@ public class VisionProcessing {
 				
 				targets[i] = new DistanceCalculations().getApproximationOfTarget(q);
 				if(conf.getBoolean("debug_Print"))
-					System.out.println(targets[i]);
+					Logger.log(targets[i]);
 				if(conf.getBoolean("debug_Print"))
-					System.out.println(q);
+					Logger.log(q);
 				
 				targetQuads[i] = q;
 				
@@ -432,7 +457,7 @@ public class VisionProcessing {
 		Arrays.sort(targets);
 		
 		if(conf.getBoolean("debug_Print"))
-			System.out.println(Arrays.toString(targets));
+			Logger.log(Arrays.toString(targets));
 		
 		if (conf.getBoolean("communicateToRobot")) {
 			comm.writePoints(targets);
@@ -440,11 +465,11 @@ public class VisionProcessing {
 		
 		
 		if(conf.getBoolean("debug_Print")) {
-			System.out.println("Time = " + (System.nanoTime() - time_i) / 1000000000);
+			Logger.log("Time = " + (System.nanoTime() - time_i) / 1000000000);
 			
-			System.out.println("--");
+			Logger.log("--");
 		}
-
+		
 		display.image = img;
 		
 		if (conf.getBoolean("debug_ShowDisplay")) {
@@ -467,6 +492,7 @@ public class VisionProcessing {
 			display.targetSides = null;
 			display.resultImage = null;
 			display.hasPainted = false;
+			display.targetCorners = null;
 		}
 		display.repaint();
 		

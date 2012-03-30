@@ -10,6 +10,8 @@ import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import logging.Logger;
+
 import com._604robotics.robot2012.vision.VisionProcessing;
 
 /**
@@ -112,7 +114,7 @@ public class Configger {
 					try {
 						Thread.sleep(100);
 					} catch (InterruptedException ex) {
-						ex.printStackTrace();
+						Logger.ex(ex);
 					}
 				}
 			}
@@ -129,7 +131,7 @@ public class Configger {
 				try {
 					VisionProcessing.defaultProcessing.conf.saveDefaultConfig();
 				} catch (IOException ex) {
-					ex.printStackTrace();
+					Logger.ex(ex);
 				}
 				
 				///lastConf = VisionProcessing.defaultProcessing.conf;
@@ -152,10 +154,11 @@ public class Configger {
 		Runnable r = new Runnable() {
 			public void run() {
 				try {
-					//vp.loopAndProcessPreSavedPics();
-					vp.loopAndProcessPics();
+					//TODO
+					vp.loopAndProcessPreSavedPics();
+					//vp.loopAndProcessPics();
 				} catch (Exception ex) {
-					ex.printStackTrace();
+					Logger.ex(ex);
 				}
 			}
 		};

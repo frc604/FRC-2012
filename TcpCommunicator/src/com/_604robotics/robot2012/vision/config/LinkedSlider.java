@@ -10,6 +10,8 @@ import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import logging.Logger;
+
 /**
  * A JSlider that displays its current position and name in JLabels next to it
  *
@@ -87,7 +89,7 @@ public abstract class LinkedSlider extends Box implements ChangeListener {
 			super(name, Math.log(initial*(exponent-1)+1)/max/Math.log(exponent), 1);
 			valMul = max;
 			
-			System.out.println(getValue());
+			Logger.log(""+getValue());
 			
 			updateValLabel();
 		}

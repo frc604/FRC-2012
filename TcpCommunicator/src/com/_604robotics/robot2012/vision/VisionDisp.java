@@ -7,6 +7,8 @@ import java.awt.image.BufferedImage;
 
 import javax.swing.JPanel;
 
+import logging.Logger;
+
 import com._604robotics.robot2012.points.Point2d;
 import com._604robotics.robot2012.vision.LinearRegression.BackwardsRegressionResult;
 import com._604robotics.robot2012.vision.LinearRegression.RegressionResult;
@@ -150,7 +152,8 @@ public class VisionDisp extends JPanel {
 			}
 		}
 		
-		System.out.println("Render time = "+(System.nanoTime() - timeStartRender)/1.0e6);
+		if(VisionProcessing.defaultProcessing.conf.getBoolean("debug_Print"))
+		Logger.log("Render time = "+(System.nanoTime() - timeStartRender)/1.0e6);
 		
 		// done painting
 		hasPainted = true;

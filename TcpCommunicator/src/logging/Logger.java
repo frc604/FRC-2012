@@ -1,0 +1,43 @@
+package logging;
+import java.io.File;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.FileHandler;
+import java.util.logging.Level;
+
+
+
+public class Logger {
+	private static java.util.logging.Logger logger = java.util.logging.Logger.getLogger("Vision");
+	static {
+		new File("logs").mkdir();
+		logger.setLevel(Level.ALL);
+		try {
+			logger.addHandler(new FileHandler("logs/vision_log_"+System.currentTimeMillis()+".log"));
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			System.err.println("This is very bad.");
+			
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException ex1) {
+			}
+		}
+	}
+	
+	public static void log(Object o) {
+		logger.info(o.toString());
+	}
+	public static void err(Object o) {
+		logger.severe(o.toString());
+	}
+	public static void warn(Object o) {
+		logger.warning(o.toString());
+	}
+	public static void ex(Exception ex) {
+		logger.throwing("?", "?", ex);
+	}
+	
+	public static void main(String[] args) {
+		Logger.log("Hai");
+	}
+}

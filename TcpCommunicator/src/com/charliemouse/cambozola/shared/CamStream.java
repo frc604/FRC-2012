@@ -11,9 +11,10 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
+
+import logging.Logger;
 
 /**
  * com/charliemouse/cambozola/shared/CamStream.java </br> Copyright (C) Andy Wilcock, 2001. </br> Available from
@@ -170,7 +171,7 @@ public class CamStream extends Thread {
 				tryIndex++;
 				
 				if (m_debug) {
-					System.err.println("// Connection URL = " + m_stream);
+					Logger.log("// Connection URL = " + m_stream);
 				}
 				//
 				// Better method - access via URL Connection
@@ -193,10 +194,10 @@ public class CamStream extends Thread {
 				ssplit = new StreamSplit(m_inputStream);
 				//
 				if (m_debug) {
-					System.err.println("// Request sent; Main Response headers:");
+					Logger.log("// Request sent; Main Response headers:");
 					for (Enumeration enm = headers.keys(); enm.hasMoreElements();) {
 						String hkey = (String) enm.nextElement();
-						System.err.println("//   " + hkey + " = " + headers.get(hkey));
+						Logger.log("//   " + hkey + " = " + headers.get(hkey));
 					}
 				}
 				//
@@ -212,7 +213,7 @@ public class CamStream extends Thread {
 					String response;
 					// noinspection deprecation
 					while ((response = m_inputStream.readLine()) != null) {
-						System.out.println(response);
+						Logger.log(response);
 					}
 					connectionError = "Failed to connect to server (denied?)";
 				}
@@ -228,9 +229,9 @@ public class CamStream extends Thread {
 					// Wait a while before retrying...
 					//
 					if (m_debug) {
-						System.err.println("// Waiting for " + retryDelay + " ms");
+						Logger.warn("// Waiting for " + retryDelay + " ms");
 					}
-					m_logger.severe(connectionError);
+					Logger.err(connectionError);
 					sleep(retryDelay);
 				}
 			} while (tryIndex < retryCount);
@@ -260,7 +261,7 @@ public class CamStream extends Thread {
 			//
 			if (ctype.startsWith("multipart/x-mixed-replace")) {
 				if (m_debug) {
-					System.err.println("// Reading up to boundary");
+					Logger.log("// Reading up to boundary");
 				}
 				ssplit.skipToBoundary(boundary);
 			}
@@ -274,10 +275,10 @@ public class CamStream extends Thread {
 					if (boundary != null) {
 						headers = ssplit.readHeaders();
 						if (m_debug) {
-							System.err.println("// Chunk Headers recieved:");
+							Logger.log("// Chunk Headers recieved:");
 							for (Enumeration enm = headers.keys(); enm.hasMoreElements();) {
 								String hkey = (String) enm.nextElement();
-								System.err.println("//   " + hkey + " = " + headers.get(hkey));
+								Logger.log("//   " + hkey + " = " + headers.get(hkey));
 							}
 						}
 						//
@@ -301,7 +302,7 @@ public class CamStream extends Thread {
 						boundary = ctype.substring(bidx + 9);
 						//
 						if (m_debug) {
-							System.err.println("// Skipping to boundary");
+							Logger.log("// Skipping to boundary");
 						}
 						ssplit.skipToBoundary(boundary);
 					} else {
@@ -318,7 +319,7 @@ public class CamStream extends Thread {
 						// Something we want to keep...
 						//
 						if (m_debug) {
-							System.err.println("// Reading to boundary");
+							Logger.log("// Reading to boundary");
 						}
 						
 						InputStream imgStream = ssplit.getStreamToReadToBoundary(boundary);
@@ -337,14 +338,14 @@ public class CamStream extends Thread {
 		} catch (Exception e) {
 			if (!m_collecting) {
 				if(m_logger == null)
-					e.printStackTrace();
+					Logger.ex(e);
 				else
-					m_logger.severe(e.toString());
+					Logger.err(e.toString());
 			} else if (!m_isDefunct) {
 				if(m_logger == null)
-					e.printStackTrace();
+					Logger.ex(e);
 				else
-					m_logger.severe(e.toString());
+					Logger.err(e.toString());
 			}
 		} finally {
 			unhook();

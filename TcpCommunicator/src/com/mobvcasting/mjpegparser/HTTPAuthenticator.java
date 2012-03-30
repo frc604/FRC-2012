@@ -3,6 +3,8 @@ package com.mobvcasting.mjpegparser;
 import java.net.Authenticator;
 import java.net.PasswordAuthentication;
 
+import logging.Logger;
+
 /**
  * From http://www.walking-productions.com/notslop/2010/04/20/motion-jpeg-in-flash-and-java/
  */
@@ -15,13 +17,13 @@ public class HTTPAuthenticator extends Authenticator {
 	}
 
 	protected PasswordAuthentication getPasswordAuthentication() {
-		System.out.println("Requesting Host  : " + getRequestingHost());
-		System.out.println("Requesting Port  : " + getRequestingPort());
-		System.out.println("Requesting Prompt : " + getRequestingPrompt());
-		System.out.println("Requesting Protocol: "
+		Logger.log("Requesting Host  : " + getRequestingHost());
+		Logger.log("Requesting Port  : " + getRequestingPort());
+		Logger.log("Requesting Prompt : " + getRequestingPrompt());
+		Logger.log("Requesting Protocol: "
 				+ getRequestingProtocol());
-		System.out.println("Requesting Scheme : " + getRequestingScheme());
-		System.out.println("Requesting Site  : " + getRequestingSite());
+		Logger.log("Requesting Scheme : " + getRequestingScheme());
+		Logger.log("Requesting Site  : " + getRequestingSite());
 		return new PasswordAuthentication(username, password.toCharArray());
 	}
 }

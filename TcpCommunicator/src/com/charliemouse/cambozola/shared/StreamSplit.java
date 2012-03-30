@@ -4,6 +4,8 @@ import java.io.*;
 import java.util.Hashtable;
 import java.net.URLConnection;
 
+import logging.Logger;
+
 /**
  ** com/charliemouse/cambozola/shared/CamStream.java </br> Copyright (C) Andy Wilcock, 2001. </br> Available from
  * http://www.charliemouse.com </br> </br>
@@ -189,7 +191,7 @@ public class StreamSplit {
 					try {
 						out.write(ch);
 					} catch (IOException ex) {
-						ex.printStackTrace();
+						Logger.ex(ex);
 					}
 				} while (true);
 
@@ -197,7 +199,7 @@ public class StreamSplit {
 					out.flush();
 					out.close();
 				} catch (IOException ex) {
-					ex.printStackTrace();
+					Logger.ex(ex);
 				}
 				
 				out = null;
