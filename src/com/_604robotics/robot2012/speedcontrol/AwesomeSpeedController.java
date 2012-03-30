@@ -24,7 +24,7 @@ public class AwesomeSpeedController {
     
     private boolean loaded = false;
     
-    private static class AddableDifferentialOutput implements PIDOutput {
+    private class AddableDifferentialOutput implements PIDOutput {
         private final PIDOutput out;
         private double process = 0D;
         private double add = 0;
@@ -35,6 +35,11 @@ public class AwesomeSpeedController {
         
         public void pidWrite (double output) {
             this.out.pidWrite((this.process += output) + add);
+            
+            if(this.process > maxSpeed)
+                this.process = maxSpeed;
+            else if(this.process < -maxSpeed)
+                this.process = -maxSpeed;
         }
         
         public void setProcess (double process) {
