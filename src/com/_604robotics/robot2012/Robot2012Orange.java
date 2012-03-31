@@ -338,9 +338,6 @@ public class Robot2012Orange extends SimpleRobot {
         
         Timer controlTimer = new Timer();
         controlTimer.start();
-
-        Timer calibrationTimer = new Timer();
-        calibrationTimer.start();
         
         elevatorMotors.set(0D);
         
@@ -377,7 +374,13 @@ public class Robot2012Orange extends SimpleRobot {
                     
                     driveTrain.tankDrive(0D, 0D);
                     
-                    if (elevatorMachine.crank(ElevatorState.HIGH)) {
+                    if (controlTimer.get() < AutonomousConfiguration.STEP_1_ELEVATOR_TIME) {
+                        if (elevatorMachine.crank(ElevatorState.HIGH)) {
+                            controlTimer.reset();
+                            step++;
+                        }
+                    } else {
+                        elevatorMachine.crank(999);
                         controlTimer.reset();
                         step++;
                     }
@@ -478,47 +481,8 @@ public class Robot2012Orange extends SimpleRobot {
             this.resetMotors(true);
         }
         
-        if (kinect) {
-            System.out.println("KINECT ON");
-            
-            ringLight.set(ActuatorConfiguration.RING_LIGHT.ON);
-            
-            while (isAutonomous() && isEnabled() && !abort) {
-                abort = leftKinect.getRawButton(ButtonConfiguration.Kinect.ABORT);
-
-                if (abort)
-                    break;
-                
-                double kinectDrivePow = .8;
-                
-                if (leftKinect.getRawButton(ButtonConfiguration.Kinect.DRIVE_ENABLED))
-                    driveTrain.tankDrive(leftKinect.getRawAxis(2) * -kinectDrivePow,rightKinect.getRawAxis(2) * -kinectDrivePow);
-                else
-                    driveTrain.tankDrive(0D, 0D);
-
-                if (leftKinect.getRawButton(ButtonConfiguration.Kinect.SHOOT) && elevatorMachine.crank(ElevatorState.HIGH)) {
-                    shooterMachine.crank(ShooterState.SHOOTING);
-                } else {
-                    if (leftKinect.getRawButton(ButtonConfiguration.Kinect.PICKUP_IN)) {
-                        if (elevatorMachine.crank(ElevatorState.MEDIUM))
-                            pickupMachine.crank(PickupState.IN);
-                    } else {
-                        if (pickupMachine.crank(PickupState.OUT))
-                            elevatorMachine.crank(ElevatorState.LOW);
-                    }
-                }
-
-                if (leftKinect.getRawButton(ButtonConfiguration.Kinect.SUCK) && pickupMachine.test(PickupState.OUT)) {
-                    pickupMotor.set(ActuatorConfiguration.PICKUP_POWER);
-                    hopperMotor.set(ActuatorConfiguration.HOPPER_POWER);
-                } else {
-                    pickupMotor.set(0D);
-                    hopperMotor.set(0D);
-                }
-                
-                this.resetMotors();
-            }
-        }
+        if (kinect)
+            kinectMode();
         
         ringLight.set(ActuatorConfiguration.RING_LIGHT.OFF);
         
@@ -528,6 +492,57 @@ public class Robot2012Orange extends SimpleRobot {
         hopperMotor.set(0D);
         
         compressorPump.stop();
+    }
+    
+    /**
+     * Kinect-controlled Hybrid mode.
+     */
+    public void kinectMode() {
+        boolean abort = false;
+        
+        System.out.println("KINECT ON");
+
+        ringLight.set(ActuatorConfiguration.RING_LIGHT.ON);
+
+        while (isAutonomous() && isEnabled() && !abort) {
+            abort = leftKinect.getRawButton(ButtonConfiguration.Kinect.ABORT);
+
+            if (abort) {
+                break;
+            }
+
+            double kinectDrivePow = .8;
+
+            if (leftKinect.getRawButton(ButtonConfiguration.Kinect.DRIVE_ENABLED)) {
+                driveTrain.tankDrive(leftKinect.getRawAxis(2) * -kinectDrivePow, rightKinect.getRawAxis(2) * -kinectDrivePow);
+            } else {
+                driveTrain.tankDrive(0D, 0D);
+            }
+
+            if (leftKinect.getRawButton(ButtonConfiguration.Kinect.SHOOT) && elevatorMachine.crank(ElevatorState.HIGH)) {
+                shooterMachine.crank(ShooterState.SHOOTING);
+            } else {
+                if (leftKinect.getRawButton(ButtonConfiguration.Kinect.PICKUP_IN)) {
+                    if (elevatorMachine.crank(ElevatorState.MEDIUM)) {
+                        pickupMachine.crank(PickupState.IN);
+                    }
+                } else {
+                    if (pickupMachine.crank(PickupState.OUT)) {
+                        elevatorMachine.crank(ElevatorState.LOW);
+                    }
+                }
+            }
+
+            if (leftKinect.getRawButton(ButtonConfiguration.Kinect.SUCK) && pickupMachine.test(PickupState.OUT)) {
+                pickupMotor.set(ActuatorConfiguration.PICKUP_POWER);
+                hopperMotor.set(ActuatorConfiguration.HOPPER_POWER);
+            } else {
+                pickupMotor.set(0D);
+                hopperMotor.set(0D);
+            }
+
+            this.resetMotors();
+        }
     }
 
     /**
@@ -544,8 +559,6 @@ public class Robot2012Orange extends SimpleRobot {
         
         driveTrain.setSafetyEnabled(true);
         compressorPump.start();
-        
-        double rawXPos;
         
         int settleState = 2;
         Timer settleTimer = new Timer();
