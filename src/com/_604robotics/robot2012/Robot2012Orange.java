@@ -239,9 +239,9 @@ public class Robot2012Orange extends SimpleRobot {
         /* Sets up the speed provider for the shooter. */
         
         //speedProvider = new StupidSpeedProvider(shooterMotors);
-        //speedProvider = new NaiveSpeedProvider(shooterMotors, encoderShooter);
+        /speedProvider = new NaiveSpeedProvider(shooterMotors, encoderShooter);
         //speedProvider = new ProcessSpeedProvider(-0.0001, 0D, -0.0008, encoderShooter, shooterMotors);
-        speedProvider = new AwesomeSpeedController(-0.0001, 0D, -0.0008, 0D, encoderShooter, shooterMotors);
+        //speedProvider = new AwesomeSpeedController(-0.0001, 0D, -0.0008, 0D, encoderShooter, shooterMotors);
          
         if (speedProvider instanceof AwesomeSpeedController) {
             SmartDashboard.putDouble("Shooter P", ((AwesomeSpeedController) speedProvider).getP());
@@ -480,21 +480,8 @@ public class Robot2012Orange extends SimpleRobot {
         
         if (kinect) {
             System.out.println("KINECT ON");
-        
-            while (isAutonomous() && isEnabled() && !abort) {
-                abort = leftKinect.getRawButton(ButtonConfiguration.Kinect.ABORT);
-                
-                if (abort)
-                    break;
-                
-                if (pickupMachine.crank(PickupState.OUT) && elevatorMachine.crank(ElevatorState.LOW))
-                    break;
-                
-                ringLight.set(ActuatorConfiguration.RING_LIGHT.ON);
-                this.resetMotors(true);
-            }
             
-            ringLight.set(ActuatorConfiguration.RING_LIGHT.OFF);
+            ringLight.set(ActuatorConfiguration.RING_LIGHT.ON);
             
             while (isAutonomous() && isEnabled() && !abort) {
                 abort = leftKinect.getRawButton(ButtonConfiguration.Kinect.ABORT);
@@ -532,6 +519,8 @@ public class Robot2012Orange extends SimpleRobot {
                 this.resetMotors();
             }
         }
+        
+        ringLight.set(ActuatorConfiguration.RING_LIGHT.OFF);
         
         this.resetMotors();
         
