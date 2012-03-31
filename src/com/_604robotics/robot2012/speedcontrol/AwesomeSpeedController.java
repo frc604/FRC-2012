@@ -104,7 +104,7 @@ public class AwesomeSpeedController implements SpeedProvider {
         this.loaded = true;
         double setpoint = this.getSetSpeed();
         
-        if (this.source.pidGet() > fac * setpoint) {
+        if (this.source.pidGet() > -fac * setpoint) {
             this.output.pidWrite(-maxSpeed);
         } else {
             diffOutput.add = -TurretSpeedGuestimator.guestimatePow(setpoint);
