@@ -138,6 +138,7 @@ public class Robot2012Orange extends SimpleRobot {
         leftKinect = new KinectStick(PortConfiguration.Kinect.LEFT);
         rightKinect = new KinectStick(PortConfiguration.Kinect.RIGHT);
         
+        manipulatorController.setDeadband(Axis.LEFT_STICK_Y, -0.2, 0.2);
         manipulatorController.setDeadband(Axis.RIGHT_STICK_Y, -0.2, 0.2);
         
         /* Set up the drive train. */
@@ -594,8 +595,11 @@ public class Robot2012Orange extends SimpleRobot {
             if (!elevatorLimitSwitch.get())
                 encoderElevator.reset();
             
-            if (Math.abs(manipulatorController.getAxis(Axis.RIGHT_STICK_Y)) > 0) 
+            if (Math.abs(manipulatorController.getAxis(Axis.RIGHT_STICK_Y)) > 0)
                 hopperMotor.set(manipulatorController.getAxis(Axis.RIGHT_STICK_Y));
+            
+            if (!manipulatorController.getButton(ButtonConfiguration.Manipulator.PICKUP) && Math.abs(manipulatorController.getAxis(Axis.LEFT_STICK_Y)) > 0)
+                pickupMotor.set(manipulatorController.getAxis(Axis.LEFT_STICK_Y));
             
             /* Controls the gear shift. */
             
@@ -774,8 +778,6 @@ public class Robot2012Orange extends SimpleRobot {
                     target = targets[i];
                 }
             }
-            
-            System.out.println(targets.length);
             
             if (target == null)
                 SmartDashboard.putDouble("Raw X Pos", 999999.999);
