@@ -1,18 +1,22 @@
 package com._604robotics.robot2012.speedcontrol;
 
+import com._604robotics.robot2012.configuration.FiringConfiguration;
 import com._604robotics.utils.DualVictor;
+import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Timer;
 
-public class StupidSpeedProvider implements SpeedProvider {
+public class NaiveSpeedProvider implements SpeedProvider {
     private final DualVictor motor;
+    private final Encoder encoder;
     private final Timer timer = new Timer();
     
     private boolean loaded = false;
     
     private double speed = 0D;
     
-    public StupidSpeedProvider (DualVictor motor) {
+    public NaiveSpeedProvider (DualVictor motor, Encoder encoder) {
         this.motor = motor;
+        this.encoder = encoder;
         this.timer.start();
     }
     
@@ -29,7 +33,12 @@ public class StupidSpeedProvider implements SpeedProvider {
     }
 
     public boolean isOnTarget (double tolerance) {
-        return this.timer.get() >= 1;
+        if (this.getSetSpeed() < 0.5 && this.encoder.getRate() >= FiringConfiguration.FENDER_FIRING_SPEED)
+            return true;
+        else if (this.getSetSpeed() > 0.5 && this.encoder.getRate() >= FiringConfiguration.KEY_FIRING_SPEED)
+            return true;
+        else
+            return false;
     }
     
     public void apply() {

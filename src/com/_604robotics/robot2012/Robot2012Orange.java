@@ -14,12 +14,14 @@ import com._604robotics.robot2012.machine.PickupMachine;
 import com._604robotics.robot2012.machine.PickupMachine.PickupState;
 import com._604robotics.robot2012.machine.ShooterMachine;
 import com._604robotics.robot2012.machine.ShooterMachine.ShooterState;
+import com._604robotics.robot2012.speedcontrol.AwesomeSpeedController;
+import com._604robotics.robot2012.speedcontrol.NaiveSpeedProvider;
 import com._604robotics.robot2012.speedcontrol.SpeedProvider;
-import com._604robotics.robot2012.speedcontrol.StupidSpeedProvider;
 import com._604robotics.robot2012.vision.Target;
 import com._604robotics.utils.UpDownPIDController.Gains;
 import com._604robotics.utils.*;
 import com._604robotics.utils.XboxController.Axis;
+import com.sun.squawk.util.MathUtils;
 import edu.wpi.first.wpilibj.RobotDrive.MotorType;
 import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -69,7 +71,7 @@ public class Robot2012Orange extends SimpleRobot {
     UpDownPIDController pidElevator;
 
     StrangeMachine pickupMachine;
-    StrangeMachine elevatorMachine;
+    ElevatorMachine elevatorMachine;
     ShooterMachine shooterMachine;
     
     SendableChooser inTheMiddle;
@@ -88,6 +90,26 @@ public class Robot2012Orange extends SimpleRobot {
         } catch (Exception ex) {
             return def;
         }
+    }
+    
+    public static String repeatString(String what, int times) {
+        String ret = "";
+        for (int i = 0; i < times; i++)
+            ret += what;
+        return ret;
+    }
+    
+    public static String renderDebug(double x) {
+        if (Math.abs(x) > 15)
+            return repeatString("-", 31);
+        String ret = repeatString(" ", 15) + "^" + repeatString(" ", 15) + "\n";
+        int position = (int) MathUtils.round(x / 30 * 15);
+        for (int i = -15; i <= 15; i++)
+            ret += (i == position)
+                    ? '|'
+                    : ' ';
+        ret += "\n" + repeatString(" ", 15) + "^" + repeatString(" ", 15);
+        return ret;
     }
     
     /**
@@ -216,21 +238,33 @@ public class Robot2012Orange extends SimpleRobot {
         
         /* Sets up the speed provider for the shooter. */
         
-        speedProvider = new StupidSpeedProvider(shooterMotors);
+        //speedProvider = new StupidSpeedProvider(shooterMotors);
+        //speedProvider = new NaiveSpeedProvider(shooterMotors, encoderShooter);
         //speedProvider = new ProcessSpeedProvider(-0.0001, 0D, -0.0008, encoderShooter, shooterMotors);
+        speedProvider = new AwesomeSpeedController(-0.0001, 0D, -0.0008, 0D, encoderShooter, shooterMotors);
+         
+        if (speedProvider instanceof AwesomeSpeedController) {
+            SmartDashboard.putDouble("Shooter P", ((AwesomeSpeedController) speedProvider).getP());
+            SmartDashboard.putDouble("Shooter I", ((AwesomeSpeedController) speedProvider).getI());
+            SmartDashboard.putDouble("Shooter D", ((AwesomeSpeedController) speedProvider).getD());
+            SmartDashboard.putDouble("Shooter DP", ((AwesomeSpeedController) speedProvider).getDP());
+            SmartDashboard.putDouble("Shooter fac", ((AwesomeSpeedController) speedProvider).fac);
+            SmartDashboard.putDouble("Shooter maxSpeed", ((AwesomeSpeedController) speedProvider).maxSpeed);
+        }
         
         /* Sets up the Machines. */
         
         pickupMachine = new PickupMachine(solenoidPickup);
         elevatorMachine = new ElevatorMachine(pidElevator, encoderElevator, solenoidShooter);
-        shooterMachine = new ShooterMachine(hopperMotor, firingProvider, speedProvider);
+        shooterMachine = new ShooterMachine(hopperMotor, firingProvider, speedProvider, elevatorMotors);
         
         /* Sets up debug outputs. */
         
-        SmartDashboard.getBoolean("Elevator Calibrated", false);
+        SmartDashboard.putString("Shooter Charged: ", "NO NO NO NO NO");
+        SmartDashboard.putBoolean("Elevator Calibrated", false);
         
-        SmartDashboard.putDouble("Shooter Preset: Fender", FiringConfiguration.FENDER_FIRING_SPEED);
-        SmartDashboard.putDouble("Shooter Preset: Key", FiringConfiguration.KEY_FIRING_SPEED);
+        SmartDashboard.putDouble("Shooter Preset: Fender", FiringConfiguration.FENDER_FIRING_POWER);
+        SmartDashboard.putDouble("Shooter Preset: Key", FiringConfiguration.KEY_FIRING_POWER);
         
         SmartDashboard.putDouble("Auton: Step 2", AutonomousConfiguration.STEP_2_SHOOT_TIME);
         SmartDashboard.putDouble("Auton: Step 3", AutonomousConfiguration.STEP_3_TURN_TIME);
@@ -312,12 +346,16 @@ public class Robot2012Orange extends SimpleRobot {
         
         gyroHeading.reset();
         
+        elevatorMachine.setHoodPosition(ActuatorConfiguration.SOLENOID_SHOOTER.UPPER_ANGLE);
+        
         while (isAutonomous() && isEnabled()) {
             kinect = leftKinect.getRawButton(ButtonConfiguration.Kinect.ENABLE);
             abort = leftKinect.getRawButton(ButtonConfiguration.Kinect.ABORT);
             
             if (kinect || abort)
                 break;
+            
+            encoderShooter.sample();
             
             if (step > getDouble("Auton: Max Step", AutonomousConfiguration.MAX_STEP) && step < 6) {
                 SmartDashboard.putInt("STOPPED AT", step);
@@ -349,8 +387,8 @@ public class Robot2012Orange extends SimpleRobot {
                     /* Shoot! */
                     
                     driveTrain.tankDrive(0D, 0D);
+                    elevatorMachine.setHoodPosition(ActuatorConfiguration.SOLENOID_SHOOTER.LOWER_ANGLE);
                     
-                    // TODO - sense drops in encoder values as shot balls
                     if (controlTimer.get() < AutonomousConfiguration.STEP_2_SHOOT_TIME)
                         shooterMachine.crank(ShooterState.SHOOTING);
                     else if (((String) inTheMiddle.getSelected()).equals("Yes"))
@@ -518,11 +556,17 @@ public class Robot2012Orange extends SimpleRobot {
         driveTrain.setSafetyEnabled(true);
         compressorPump.start();
         
+        double rawXPos;
+        
         int settleState = 2;
         Timer settleTimer = new Timer();
         
         Target[] targets;
         Target target;
+        
+        AwesomeSpeedController ctrl = (speedProvider instanceof AwesomeSpeedController)
+                                        ? ((AwesomeSpeedController) speedProvider)
+                                        : null;
         
         manipulatorController.resetToggles();
         driveController.resetToggles();
@@ -532,6 +576,12 @@ public class Robot2012Orange extends SimpleRobot {
         while (isOperatorControl() && isEnabled()) {
             ringLight.set(ActuatorConfiguration.RING_LIGHT.ON);
             encoderShooter.sample();
+            
+            if (ctrl != null) {
+                ctrl.setPIDDP(getDouble("Shooter P", ctrl.getP()), getDouble("Shooter I", ctrl.getI()), getDouble("Shooter D", ctrl.getD()), getDouble("Shooter DP", ctrl.getDP()));
+                ctrl.fac = getDouble("Shooter fac", ctrl.fac);
+                ctrl.maxSpeed = getDouble("Shooter maxSpeed", ctrl.maxSpeed);
+            }
             
             pidElevator.setUpGains(new Gains(getDouble("Elevator Up P", 0.0085), getDouble("Elevator Up I", 0D), getDouble("Elevator Up D", 0.018)));
             pidElevator.setDownGains(new Gains(getDouble("Elevator Down P", 0.0029), getDouble("Elevator Down I", 0.000003), getDouble("Elevator Down P", 0.007)));
@@ -568,10 +618,17 @@ public class Robot2012Orange extends SimpleRobot {
             
             /* Manually set whether or not we're at the fender. */
             
-            if (manipulatorController.getToggle(ButtonConfiguration.Manipulator.AT_FENDER))
+            if (manipulatorController.getToggle(ButtonConfiguration.Manipulator.AT_FENDER)) {
+                elevatorMachine.setHoodPosition(ActuatorConfiguration.SOLENOID_SHOOTER.LOWER_ANGLE);
+                if (elevatorMachine.test(ElevatorState.HIGH))
+                    solenoidShooter.set(ActuatorConfiguration.SOLENOID_SHOOTER.LOWER_ANGLE);
                 firingProvider.setAtFender(true);
-            else if (manipulatorController.getToggle(ButtonConfiguration.Manipulator.AT_KEY))
+            } else if (manipulatorController.getToggle(ButtonConfiguration.Manipulator.AT_KEY)) {
+                elevatorMachine.setHoodPosition(ActuatorConfiguration.SOLENOID_SHOOTER.UPPER_ANGLE);
+                if (elevatorMachine.test(ElevatorState.HIGH))
+                    solenoidShooter.set(ActuatorConfiguration.SOLENOID_SHOOTER.UPPER_ANGLE);
                 firingProvider.setAtFender(false);
+            }
             
             /* Toggle the "default" height between "up high" and "down low". */
             
@@ -719,9 +776,9 @@ public class Robot2012Orange extends SimpleRobot {
             System.out.println(targets.length);
             
             if (target == null)
-                SmartDashboard.putDouble("AIMING", 999999.999);
+                SmartDashboard.putDouble("Raw X Pos", 999999.999);
             else
-                SmartDashboard.putDouble("AIMING", target.x);
+                SmartDashboard.putDouble("Raw X Pos", target.x);
             
             /* Debug output. */
             

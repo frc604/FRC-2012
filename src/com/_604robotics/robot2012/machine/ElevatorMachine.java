@@ -19,7 +19,7 @@ public class ElevatorMachine implements StrangeMachine {
     private int lastState = ElevatorState.MEDIUM;
     private boolean withinTolerance = false;
     
-    private DoubleSolenoid.Value hoodPosition = ActuatorConfiguration.SOLENOID_SHOOTER.UPPER_ANGLE;
+    private DoubleSolenoid.Value hoodPosition = ActuatorConfiguration.SOLENOID_SHOOTER.LOWER_ANGLE;
 
     /**
      * Various possible states the elevator can be in.
@@ -71,7 +71,6 @@ public class ElevatorMachine implements StrangeMachine {
             this.controller.reset();
             
             if (state == ElevatorState.HIGH) {
-                System.out.println(this.hoodPosition == ActuatorConfiguration.SOLENOID_SHOOTER.UPPER_ANGLE);
                 this.hood.set(this.hoodPosition);
             } else if (this.lastState == ElevatorState.HIGH) {
                 this.hoodPosition = this.hood.get();
@@ -107,5 +106,9 @@ public class ElevatorMachine implements StrangeMachine {
         }
         
         return ret;
+    }
+    
+    public void setHoodPosition (DoubleSolenoid.Value hoodPosition) {
+        this.hoodPosition = hoodPosition;
     }
 }

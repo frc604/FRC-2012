@@ -39,15 +39,15 @@ public interface ActuatorConfiguration {
         public static final int OKAY_TO_TURN = 1300;
         
         public interface TOLERANCE {
-            public static final int HIGH = 1480;
-            public static final int MEDIUM_UPPER = 671; // +8
+            public static final int HIGH = 1420;
+            public static final int MEDIUM_UPPER = 680; // +8
             public static final int MEDIUM_LOWER = 631; // -32
             public static final int LOW = 25;
         }
         
         public interface DEADBAND {
-            public static final int HIGH = 1450;
-            public static final int MEDIUM_UPPER = 701; // +28
+            public static final int HIGH = 1400;
+            public static final int MEDIUM_UPPER = 710; // +28
             public static final int MEDIUM_LOWER = 611; // -52
             public static final int LOW = 64;
         }
