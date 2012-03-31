@@ -98,7 +98,7 @@ public class AwesomeSpeedController implements SpeedProvider {
         System.out.println(this.getSetSpeed());
         
         this.loaded = true;
-        double setpoint = controller.getSetpoint();
+        double setpoint = this.getSetSpeed();
         
         if (this.source.pidGet() < fac * setpoint) {
             this.output.pidWrite(-maxSpeed);
