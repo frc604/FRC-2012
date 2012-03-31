@@ -52,6 +52,9 @@ public class AwesomeSpeedController implements SpeedProvider {
         this.output = output;
         this.diffOutput = new AddableDifferentialOutput(this.output);
         this.controller = new PIDDP(P, I, D, DP, this.source, this.diffOutput);
+        
+        this.controller.setMaximumInput(0);
+        this.controller.setMinimumInput(540);
     }
 
     public double getMotorPower() {
