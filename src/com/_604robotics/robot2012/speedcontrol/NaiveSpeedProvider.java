@@ -33,8 +33,6 @@ public class NaiveSpeedProvider implements SpeedProvider {
     }
 
     public boolean isOnTarget (double tolerance) {
-        System.out.println(this.encoder.getRate());
-        
         if (this.getSetSpeed() < 0.5 && this.encoder.getRate() >= FiringConfiguration.FENDER_FIRING_SPEED)
             return true;
         else if (this.getSetSpeed() > 0.5 && this.encoder.getRate() >= FiringConfiguration.KEY_FIRING_SPEED)

@@ -34,7 +34,6 @@ public class StupidSpeedProvider implements SpeedProvider {
     
     public void apply() {
         this.loaded = true;
-        System.out.println(this.getMotorPower());
         this.motor.set(this.getMotorPower());
     }
 

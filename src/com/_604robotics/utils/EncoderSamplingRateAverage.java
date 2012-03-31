@@ -240,7 +240,6 @@ public class EncoderSamplingRateAverage extends Encoder {
     public void sample () {
         final long now = System.currentTimeMillis();
         if (now - this.lastMeasured >= this.samplingRate) {
-            System.out.println("lastCount = " + this.lastCount + ", lastMeasured = " + this.lastMeasured + ", samplingRate = " + this.samplingRate + ", startClicks = " + this.startClicks);
             final int clicks = this.get();
             this.lastMeasured = now;
             this.lastCount = clicks - this.startClicks;

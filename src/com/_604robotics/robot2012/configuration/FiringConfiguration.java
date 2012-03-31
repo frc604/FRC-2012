@@ -12,7 +12,9 @@ public interface FiringConfiguration {
     public static final double SHOOTER_HEIGHT = 0D;
         // TODO: Configure this.
     
-    public static final double FENDER_FIRING_POWER = -0.362;
+    public static final boolean USING_SPEEDS = true;
+    
+    public static final double FENDER_FIRING_POWER = -0.32;
         // TODO: Configure this.
     public static final double KEY_FIRING_POWER = -1D;
         // TODO: Configure this.

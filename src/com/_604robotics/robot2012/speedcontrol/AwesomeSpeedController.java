@@ -12,7 +12,7 @@ import edu.wpi.first.wpilibj.PIDSource;
  *
  * @author Kevin Parker <kevin.m.parker@gmail.com>
  */
-public class AwesomeSpeedController {
+public class AwesomeSpeedController implements SpeedProvider {
     
     public double maxSpeed = 1;
     public double fac = .9;
@@ -95,6 +95,8 @@ public class AwesomeSpeedController {
     }
     
     public void apply() {
+        System.out.println(this.getSetSpeed());
+        
         this.loaded = true;
         double setpoint = controller.getSetpoint();
         
