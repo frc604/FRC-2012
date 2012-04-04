@@ -34,16 +34,22 @@ public class AwesomeSpeedController implements SpeedProvider {
         }
         
         public void pidWrite (double output) {
-            this.out.pidWrite((this.process += output) + add);
+            this.process += output;
             
             if(this.process > maxSpeed)
                 this.process = maxSpeed;
             else if(this.process < -maxSpeed)
                 this.process = -maxSpeed;
+            
+            this.out.pidWrite(this.process + add);
         }
         
         public void setProcess (double process) {
             this.process = process;
+        }
+        
+        public double getCurrent () {
+            return process + add;
         }
     }
     
@@ -58,7 +64,7 @@ public class AwesomeSpeedController implements SpeedProvider {
     }
 
     public double getMotorPower() {
-        return this.controller.get();
+        return this.diffOutput.getCurrent();
     }
 
     public void setSetSpeed(double setSpeed) {
