@@ -12,6 +12,8 @@ public class AwesomeSpeedController implements SpeedProvider {
     public double maxSpeed = 1;
     public double fac = .9;
     
+    private double currentValue = 0;
+    
     private final PIDDP controller;
     private final PIDSource source;
     private final PIDOutput output;
@@ -20,13 +22,9 @@ public class AwesomeSpeedController implements SpeedProvider {
     private boolean loaded = false;
     
     private class AddableDifferentialOutput implements PIDOutput {
-        private final PIDOutput out;
         private double process = 0D;
         private double add = 0;
         
-        public AddableDifferentialOutput (PIDOutput out) {
-            this.out = out;
-        }
         
         public void pidWrite (double output) {
             this.process += output;
@@ -36,7 +34,9 @@ public class AwesomeSpeedController implements SpeedProvider {
             else if(this.process < -maxSpeed)
                 this.process = -maxSpeed;
             
-            this.out.pidWrite(this.process + add);
+            System.out.println("Process = "+this.process);
+            
+            currentValue = this.process + add;
         }
         
         public void setProcess (double process) {
@@ -51,7 +51,7 @@ public class AwesomeSpeedController implements SpeedProvider {
     public AwesomeSpeedController(double P, double I, double D, double DP, PIDSource source, PIDOutput output) {
         this.source = source;
         this.output = output;
-        this.diffOutput = new AddableDifferentialOutput(this.output);
+        this.diffOutput = new AddableDifferentialOutput();
         this.controller = new PIDDP(P, I, D, DP, this.source, this.diffOutput);
         
         //this.controller.setMaximumInput(0);
@@ -99,17 +99,19 @@ public class AwesomeSpeedController implements SpeedProvider {
     }
     
     public void apply() {
-        System.out.println("Awesome speed = " + getSetSpeed());
-        System.out.println(this.getSetSpeed());
+        //System.out.println("Awesome speed = " + getSetSpeed());
+        //System.out.println(this.getSetSpeed());
         
         this.loaded = true;
         double setpoint = this.getSetSpeed();
         
-        if (this.source.pidGet() > -fac * setpoint) {
+        if (Math.abs(this.source.pidGet()) < fac * setpoint) {
             this.output.pidWrite(-maxSpeed);
         } else {
             diffOutput.add = -TurretSpeedGuestimator.guestimatePow(setpoint);
             this.controller.enable();
+            
+            output.pidWrite(currentValue);
         }
     }
 

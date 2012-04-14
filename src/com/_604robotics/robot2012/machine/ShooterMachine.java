@@ -65,14 +65,14 @@ public class ShooterMachine implements StrangeMachine {
                 this.shooter.apply();
                 
                 if (this.shooter.isOnTarget(ActuatorConfiguration.SHOOTER_SPEED_TOLERANCE)) {
-                    System.out.println("SHOOTING NOW");
+                    //System.out.println("SHOOTING NOW");
                     SmartDashboard.putString("Shooter Charged: ", "YES YES YES YES YES");
                     if (DriverStation.getInstance().isAutonomous()) {
                         this.hopper.set(ActuatorConfiguration.HOPPER_POWER);
-                        System.out.println("HOPPER POWERED: " + this.hopper.get());
+                        //System.out.println("HOPPER POWERED: " + this.hopper.get());
                     }
                 } else {
-                    System.out.println("CHARGING UP");
+                    //System.out.println("CHARGING UP");
                     SmartDashboard.putString("Shooter Charged: ", "NO NO NO NO NO");
                 }
                 
