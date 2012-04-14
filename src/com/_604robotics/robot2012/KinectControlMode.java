@@ -7,16 +7,28 @@ import com._604robotics.robot2012.machine.PickupMachine.PickupState;
 import com._604robotics.robot2012.machine.ShooterMachine.ShooterState;
 
 
+/**
+ *
+ *
+ * @author Kevin Parker <kevin.m.parker@gmail.com>
+ */
 public class KinectControlMode extends ControlMode {
 	
-	boolean abort = false;
+	HybridControlMode hybrid;
 	
+	/**
+	 * @param hybrid
+	 */
+	public KinectControlMode(HybridControlMode hybrid) {
+		super();
+		this.hybrid = hybrid;
+	}
 
 	public void step() {
-		abort = theRobot.leftKinect.getRawButton(ButtonConfiguration.Kinect.ABORT);
+		hybrid.abort |= theRobot.leftKinect.getRawButton(ButtonConfiguration.Kinect.ABORT);
 		
-		if (abort) {
-			break;
+		if (hybrid.abort) {
+			return;
 		}
 		
 		double kinectDrivePow = .8;
@@ -52,7 +64,6 @@ public class KinectControlMode extends ControlMode {
 	}
 
 	public void init() {
-		abort = false;
 		
 		System.out.println("KINECT ON");
 		

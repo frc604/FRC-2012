@@ -13,142 +13,83 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 
+/**
+ *
+ *
+ * @author Kevin Parker <kevin.m.parker@gmail.com>
+ */
 public class HybridControlMode extends ControlMode {
-	
-	int step = 1;
-	
-	double drivePower;
-	double gyroAngle;
-	
-	boolean turnedAround = false;
 	
 	boolean kinect = false;
 	boolean abort = false;
+	boolean kinectInitted = false;
 
-	Timer controlTimer;
+	AutonControlMode auton = new ShootAndDoABunchOfOtherCrapAutonControlMode();
+	KinectControlMode kinectMode = new KinectControlMode(this);
+	
 	
 	public void step() {
 		kinect = theRobot.leftKinect.getRawButton(ButtonConfiguration.Kinect.ENABLE);
 		abort = theRobot.leftKinect.getRawButton(ButtonConfiguration.Kinect.ABORT);
 		
-		if (kinect || abort)
-			break;
+		if (abort) {
+
+			theRobot.ringLight.set(ActuatorConfiguration.RING_LIGHT.OFF);
+			return;	//TODO - should break somehow...
+		}
 		
-		theRobot.encoderShooter.sample();
-		
-		if (step > SmarterDashboard.getDouble("Auton: Max Step", AutonomousConfiguration.MAX_STEP) && step < 6) {
-			SmartDashboard.putInt("STOPPED AT", step);
-			this.resetMotors(true);
+		if(!kinect) {
 			
-			continue;
+			theRobot.encoderShooter.sample();
+			
+			if (auton.step > SmarterDashboard.getDouble("Auton: Max Step", AutonomousConfiguration.MAX_STEP) && auton.step < 6) {
+				SmartDashboard.putInt("STOPPED AT", auton.step);
+				this.resetMotors(true);
+
+				System.out.println("WAITING FOR KINECT");
+				
+				return; // TODO - isn't there a better way to "wait"?
+			} else {
+				SmartDashboard.putInt("STOPPED AT", -1);
+			}
+			
+			/* Handle the main logic. */
+			
+			SmartDashboard.putInt("CURRENT STEP", auton.step);
+			SmartDashboard.putDouble("CONTROL TIMER", auton.controlTimer.get());
+			
+			
+			auton.step();
+			
+			
+			this.resetMotors();
 		} else {
-			SmartDashboard.putInt("STOPPED AT", -1);
+			if(!kinectInitted) {
+				theRobot.speedProvider.reset();
+				
+				theRobot.driveTrain.setSafetyEnabled(false);
+				/* TODO - XXX
+				System.out.println("BROKEN OUT OF AUTON");
+				
+				/*"isAutonomous(): " + isAutonomous() + ", isEnabled(): " + isEnabled() + ", "+ * /
+				System.out.println("abort: " + abort + ", kinect: " + kinect);
+				*/
+				
+				
+				this.resetMotors();
+				
+				theRobot.pickupMotor.set(0D);
+				theRobot.hopperMotor.set(0D);
+				
+				theRobot.compressorPump.stop();
+				
+				kinectMode.init();
+				
+				kinectInitted = true;
+			}
+			
+			kinectMode.step();
 		}
-		
-		/* Handle the main logic. */
-		
-		SmartDashboard.putInt("CURRENT STEP", step);
-		SmartDashboard.putDouble("CONTROL TIMER", controlTimer.get());
-		
-		switch (step) {
-		case 1:
-			/* Put the elevator up. */
-			
-			theRobot.driveTrain.tankDrive(0D, 0D);
-			
-			if (controlTimer.get() < AutonomousConfiguration.STEP_1_ELEVATOR_TIME) {
-				if (theRobot.elevatorMachine.crank(ElevatorState.HIGH)) {
-					controlTimer.reset();
-					step++;
-				}
-			} else {
-				theRobot.elevatorMachine.crank(999);
-				controlTimer.reset();
-				step++;
-			}
-			
-			break;
-		case 2:
-			/* Shoot! */
-			
-			theRobot.driveTrain.tankDrive(0D, 0D);
-			theRobot.elevatorMachine.setHoodPosition(ActuatorConfiguration.SOLENOID_SHOOTER.LOWER_ANGLE);
-			
-			if (controlTimer.get() < AutonomousConfiguration.STEP_2_SHOOT_TIME)
-				theRobot.shooterMachine.crank(ShooterState.SHOOTING);
-			else if (((String) theRobot.inTheMiddle.getSelected()).equals("Yes"))
-				step++;
-			else
-				step = 6;
-			
-			break;
-		case 3:
-			/* 
-			 * Turn around and face the bridge, and put the elevator
-			 * down.
-			 */
-			
-			if (controlTimer.get() <= SmarterDashboard.getDouble("Auton: Step 3", AutonomousConfiguration.STEP_3_TURN_TIME)) {
-				theRobot.elevatorMachine.crank(ElevatorState.MEDIUM);
-				gyroAngle = theRobot.gyroHeading.getAngle();
-				
-				if (turnedAround || (gyroAngle > 179 && gyroAngle < 181)) {
-					turnedAround = true;
-					theRobot.driveTrain.tankDrive(0D, 0D);
-				} else {
-					drivePower = Math.max(0.2, 1 - gyroAngle / 180);
-					theRobot.driveTrain.tankDrive(drivePower, drivePower * -1);
-				}
-			} else {
-				theRobot.driveTrain.tankDrive(0D, 0D);
-				
-				controlTimer.reset();
-				if(theRobot.elevatorMachine.crank(ElevatorState.MEDIUM))
-					step++;
-			}
-			
-			break;
-		case 4:
-			/* Drive forward and stop, then smash down the bridge. */
-			
-			if (controlTimer.get() <= AutonomousConfiguration.STEP_4_DRIVE_TIME) {
-				SmartDashboard.putString("STAGE", "DRIVING");
-				drivePower = Math.min(-0.2, (1 - controlTimer.get() / SmarterDashboard.getDouble("Auton: Step 4", AutonomousConfiguration.STEP_4_DRIVE_TIME)) * -1);
-				SmartDashboard.putDouble("AUTON DRIVE POWER", drivePower);
-				theRobot.driveTrain.tankDrive(drivePower, drivePower);
-			} else {
-				SmartDashboard.putString("STAGE", "SMASHING!");
-				theRobot.driveTrain.tankDrive(0D, 0D);
-				theRobot.pickupMachine.crank(PickupState.OUT);
-				
-				controlTimer.reset();
-				step++;
-			}
-			
-			break;
-		case 5:
-			/* Wait a bit. */
-			
-			theRobot.driveTrain.tankDrive(0D, 0D);
-			
-			if (controlTimer.get() >= SmarterDashboard.getDouble("Auton: Step 5", AutonomousConfiguration.STEP_5_WAIT_TIME)) 
-				step++;
-			
-			break;
-		case 6:
-			/* Pull in the pickup and put the elevator down. */
-			
-			if (theRobot.elevatorMachine.test(ElevatorState.PICKUP_OKAY)) {
-				if (theRobot.pickupMachine.crank(PickupState.IN))
-					theRobot.elevatorMachine.crank(ElevatorState.MEDIUM);
-			} else {
-				theRobot.elevatorMachine.crank(ElevatorState.MEDIUM);
-			}
-			
-			break;
-		}
-		
-		this.resetMotors();
 	}
 	
 	public void init() {
@@ -161,7 +102,6 @@ public class HybridControlMode extends ControlMode {
 		
 		
 		/* Reset stuff. */
-		turnedAround = false;
 		
 		kinect = false;
 		abort = false;
@@ -172,9 +112,6 @@ public class HybridControlMode extends ControlMode {
 		
 		/* Set stuff up. */
 		
-		controlTimer = new Timer();
-		controlTimer.start();
-		
 		
 		
 		theRobot.elevatorMotors.set(0D);
@@ -182,30 +119,18 @@ public class HybridControlMode extends ControlMode {
 		theRobot.gyroHeading.reset();
 		
 		theRobot.elevatorMachine.setHoodPosition(ActuatorConfiguration.SOLENOID_SHOOTER.UPPER_ANGLE);	
+		auton.init();
 	}
 	
 	public void disable() {
-
+		kinectMode.disable();
+		auton.disable();
+		
+		kinectInitted = false;
+		
 		theRobot.speedProvider.reset();
 		
 		theRobot.driveTrain.setSafetyEnabled(false);
-		
-		System.out.println("BROKEN OUT OF AUTON");
-		System.out.println("isAutonomous(): " + isAutonomous() + ", isEnabled(): " + isEnabled() + ", abort: " + abort + ", kinect: " + kinect);
-		
-		while (isAutonomous() && isEnabled() && !abort && !kinect) {
-			kinect = theRobot.leftKinect.getRawButton(ButtonConfiguration.Kinect.ENABLE);
-			abort = theRobot.leftKinect.getRawButton(ButtonConfiguration.Kinect.ABORT);
-			
-			System.out.println("WAITING FOR KINECT");
-			
-			this.resetMotors(true);
-		}
-		
-		if (kinect)
-			kinectMode();
-		
-		theRobot.ringLight.set(ActuatorConfiguration.RING_LIGHT.OFF);
 		
 		this.resetMotors();
 		
@@ -215,7 +140,7 @@ public class HybridControlMode extends ControlMode {
 		theRobot.compressorPump.stop();
 	}
 	
-
+	
 	/**
 	 * Resets the motors.
 	 * 
@@ -237,27 +162,5 @@ public class HybridControlMode extends ControlMode {
 	 */
 	public void resetMotors() {
 		this.resetMotors(false);
-	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-
-	/**
-	 * Kinect-controlled Hybrid mode.
-	 */
-	public void kinectMode() {
-		
-		
-		while (isAutonomous() && isEnabled() && !abort) {
-
-			this.resetMotors(false);
-		}
 	}
 }
