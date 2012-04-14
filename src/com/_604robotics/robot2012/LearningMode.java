@@ -1,5 +1,6 @@
 package com._604robotics.robot2012;
 
+import com._604robotics.robot2012.learning.AveragingTutor;
 import com._604robotics.robot2012.learning.Tutor;
 import com._604robotics.robot2012.vision.Target;
 import com._604robotics.utils.XboxController.Axis;
@@ -11,7 +12,7 @@ import com._604robotics.utils.XboxController.Button;
  * @author  Michael Smith <mdsmtp@gmail.com>
  */
 public class LearningMode extends ControlMode {
-    private final Tutor tutor; // TODO: Implement!
+    private final Tutor tutor = new AveragingTutor();
     
     public void init() {
         
@@ -56,6 +57,9 @@ public class LearningMode extends ControlMode {
         } else if (theRobot.driveController.getButton(Button.X)) {
             tutor.feedback(0);
             System.out.println("Juuust right.");
+        } else if (theRobot.driveController.getToggle(Button.LT)) {
+            tutor.record();
+            System.out.println("Recorded.");
         } else if (Math.abs(rightStickY) > 0.2) {
             theRobot.hopperMotor.set(rightStickY);
         }

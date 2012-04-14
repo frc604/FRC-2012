@@ -11,48 +11,45 @@ public class AveragingTutor implements Tutor {
     private final Vector bounds = new Vector();
     
     private double distance = 0D;
+    private double lastShot = 0D;
     
     private double minTest = 0;
     private double maxTest = 1;
     
     private double minGood = NaN;
     private double maxGood = NaN;
-    
-    public static void main(String[] args) {
-        Scanner s = new Scanner(System.in);
 
-        Tuner t = new Tuner();
+    private static double min (double a, double b) {
+        if (a != a) {
+            return b;
+        }
+        if (b != b) {
+            return a;
+        }
 
-        do {
-
-            double val = t.getNextTest();
-
-            System.out.println("Trying " + val);
-
-
-            String str = s.nextLine();
-
-            if (str.equals("good")) {
-                t.goodRobot(val);
-            } else if (str.equals("low")) {
-                t.badRobotLow(val);
-            } else if (str.equals("high")) {
-                t.badRobotHigh(val);
-            } else {
-                System.out.println("???");
-            }
-        } while (!(t.getTolerance() < .01));
-
-        System.out.println("Done!!!");
-
-        System.out.println("Bounds = [" + t.minGood + " -> " + t.maxGood + "]");
+        return Math.min(a, b);
     }
 
-    public void configure(double distance) {
+    private static double max (double a, double b) {
+        if (a != a) {
+            return b;
+        }
+        if (b != b) {
+            return a;
+        }
+
+        return Math.max(a, b);
+    }
+    
+    public void configure (double distance) {
         this.distance = distance;
     }
+    
+    public void record () {
+        this.bounds.addElement(new Bounds(distance, minGood, maxGood));
+    }
 
-    public double shoot() {
+    public double shoot () {
         double avg = .5 * (minTest + maxTest);
 
         /*
@@ -65,71 +62,39 @@ public class AveragingTutor implements Tutor {
 
             if (dLow > dHigh) {
                 System.out.println(" -----> New Tolerance: " + dLow);
-                return .5 * (minTest + minGood); // avg between bottom test and bottom good
+                
+                lastShot = .5 * (minTest + minGood); // avg between bottom test and bottom good;
+                return lastShot;
             } else {
                 System.out.println(" -----> New Tolerance: " + dHigh);
-                return .5 * (maxTest + maxGood); // avg between top test and top good
+                
+                lastShot = .5 * (maxTest + maxGood); // avg between top test and top good
+                return lastShot;
             }
         }
 
         System.out.println(" -----> New Tolerance: " + (maxTest - minTest));
 
-        return avg;
+        lastShot = avg;
+        return lastShot;
     }
 
-    public void feedback(int term) {
+    public void feedback (int term) {
+        switch (term) {
+            case 0:
+                minGood = min(lastShot, minGood);
+                maxGood = max(lastShot, maxGood);
+                break;
+            case -1:
+                minTest = lastShot;
+                break;
+            case 1:
+                maxTest = lastShot;
+                break;
+        }
     }
 
-    public Bounds[] getData() {
+    public Vector getData () {
         return this.bounds;
-    }
-
-    public static class Tuner {
-
-        /**
-         * @return the previous tolerance
-         */
-        public double getTolerance() {
-            return prevTolerance;
-        }
-
-        public double getNextTest() {
-             // average of values
-        }
-
-        public void goodRobot(double value) {
-            minGood = min(value, minGood);
-            maxGood = max(value, maxGood);
-        }
-
-        public void badRobotLow(double value) {
-            minTest = value;
-        }
-
-        public void badRobotHigh(double value) {
-            maxTest = value;
-        }
-
-        private double min(double a, double b) {
-            if (a != a) {
-                return b;
-            }
-            if (b != b) {
-                return a;
-            }
-
-            return Math.min(a, b);
-        }
-
-        private double max(double a, double b) {
-            if (a != a) {
-                return b;
-            }
-            if (b != b) {
-                return a;
-            }
-
-            return Math.max(a, b);
-        }
     }
 }
