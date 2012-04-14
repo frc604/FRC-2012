@@ -35,10 +35,10 @@ public class HybridControlMode extends ControlMode {
             if (autonRunning)
     			autonRunning = auton.step();
             else
-    			this.resetMotors();
+				theRobot.speedProvider.reset();
+            this.resetMotors();
 		} else {
 			if(!kinectInitted) {
-				theRobot.speedProvider.reset();
 				
 				theRobot.driveTrain.setSafetyEnabled(false);
 				/* TODO - XXX
