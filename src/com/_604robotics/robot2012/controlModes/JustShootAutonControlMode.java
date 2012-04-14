@@ -2,7 +2,7 @@ package com._604robotics.robot2012.controlModes;
 
 public class JustShootAutonControlMode extends ControlMode {
 
-    public void step() {
+    public boolean step() {
         // TODO Auto-generated method stub
     }
 

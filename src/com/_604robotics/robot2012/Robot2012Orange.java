@@ -20,20 +20,17 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * @author  Alan Li <alanpusongli@gmail.com>
  */
 public class Robot2012Orange extends SimpleRobot {
-	
-	// local reference to theRobot
 	TheRobot theRobot = TheRobot.theRobot;
 
 	TeleopControlMode teleop = new TeleopControlMode();
 	HybridControlMode hybrid = new HybridControlMode();
-	
 	
 	/**
 	 * Constructor.
 	 * 
 	 * Disables the built-in watchdog, since it's not really needed anymore.
 	 */
-	public Robot2012Orange() {
+	public Robot2012Orange () {
 		DriverStation.getInstance().setDigitalOut(2, false);
 		DriverStation.getInstance().setDigitalOut(5, false);
 		
@@ -46,11 +43,7 @@ public class Robot2012Orange extends SimpleRobot {
 	 * Sets up all the controllers, sensors, actuators, etc.
 	 */
 	public void robotInit () {
-		/* Set up the controllers. */
 		TheRobot.init();
-		
-		
-		/* Done booting! */
 		System.out.println("All done booting!");
 	}
 	
@@ -62,11 +55,13 @@ public class Robot2012Orange extends SimpleRobot {
 	 * Else, or then, go ahead and try to score.
 	 */
 	public void autonomous() {
-		
+        hybrid.init();
+        
 		while (isAutonomous() && isEnabled()) {
 			hybrid.step();
-		}
-		
+        }
+        
+        hybrid.disable();
 	}
 	
 	
@@ -82,8 +77,10 @@ public class Robot2012Orange extends SimpleRobot {
 		teleop.init();
 		
 		while (isOperatorControl() && isEnabled()) {
-			
-		}
+            teleop.step();
+        }
+        
+        teleop.disable();
 	}
 	
 	/**
@@ -94,26 +91,18 @@ public class Robot2012Orange extends SimpleRobot {
 	public void disabled() {
 		theRobot.compressorPump.stop();
 		theRobot.driveTrain.setSafetyEnabled(false);
-		
-		boolean didIJustRecalibrateElevator = false;
-		
+        
 		Timer lastRecalibrated = new Timer();
-		
 		lastRecalibrated.start();
 		
 		while (!isEnabled()) {
 			if (!theRobot.elevatorLimitSwitch.get()) {
-				if(!didIJustRecalibrateElevator)
-					System.out.println("CALIBRATED ELEVATOR");
-				didIJustRecalibrateElevator = true;
 				DriverStation.getInstance().setDigitalOut(5, true);
 				SmartDashboard.getBoolean("Elevator Calibrated", true);
-				if (!didIJustRecalibrateElevator || lastRecalibrated.get() >= 1)
+				if (lastRecalibrated.get() >= 1)
 					theRobot.encoderElevator.reset();
 				else
 					lastRecalibrated.reset();
-			} else {
-				didIJustRecalibrateElevator = false;
 			}
 		}
 	}

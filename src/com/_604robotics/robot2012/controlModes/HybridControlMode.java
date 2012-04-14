@@ -3,39 +3,30 @@ package com._604robotics.robot2012.controlModes;
 import com._604robotics.robot2012.configuration.ActuatorConfiguration;
 import com._604robotics.robot2012.configuration.AutonomousConfiguration;
 import com._604robotics.robot2012.configuration.ButtonConfiguration;
-import com._604robotics.robot2012.machine.ElevatorMachine.ElevatorState;
-import com._604robotics.robot2012.machine.PickupMachine.PickupState;
-import com._604robotics.robot2012.machine.ShooterMachine.ShooterState;
 import com._604robotics.utils.SmarterDashboard;
-
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
 
 /**
  *
- *
- * @author Kevin Parker <kevin.m.parker@gmail.com>
+ * @author  Michael Smith <mdsmtp@gmail.com>
+ * @author  Kevin Parker <kevin.m.parker@gmail.com>
  */
 public class HybridControlMode extends ControlMode {
+    private final AutonControlMode auton = new AutonControlMode();
+	private final KinectControlMode kinectMode = new KinectControlMode(this);
+    
+	private boolean kinect = false;
+	private boolean abort = false;
+	private boolean kinectInitted = false;
 	
-	boolean kinect = false;
-	boolean abort = false;
-	boolean kinectInitted = false;
-
-	AutonControlMode auton = new ShootAndDoABunchOfOtherCrapAutonControlMode();
-	KinectControlMode kinectMode = new KinectControlMode(this);
-	
-	
-	public void step() {
+	public boolean step() {
 		kinect = theRobot.leftKinect.getRawButton(ButtonConfiguration.Kinect.ENABLE);
 		abort = theRobot.leftKinect.getRawButton(ButtonConfiguration.Kinect.ABORT);
 		
 		if (abort) {
-
 			theRobot.ringLight.set(ActuatorConfiguration.RING_LIGHT.OFF);
-			return;	//TODO - should break somehow...
+			return false;
 		}
 		
 		if(!kinect) {

@@ -1,5 +1,6 @@
-package com._604robotics.robot2012;
+package com._604robotics.robot2012.controlModes;
 
+import com._604robotics.robot2012.controlModes.ControlMode;
 import com._604robotics.robot2012.learning.AveragingTutor;
 import com._604robotics.robot2012.learning.Tutor;
 import com._604robotics.robot2012.vision.Target;
