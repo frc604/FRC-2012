@@ -87,11 +87,11 @@ public class TheRobot {
 	
 	public CameraFiringProvider firingProvider;
 	public SpeedProvider speedProvider;
-    
-    private TheRobot() {
+	
+	private TheRobot() {
 		
 	}
-    
+	
 	public static void init() {
 		if(!initialized)
 			theRobot.initialize();
