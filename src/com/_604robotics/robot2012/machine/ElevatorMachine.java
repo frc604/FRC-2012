@@ -47,9 +47,10 @@ public class ElevatorMachine implements StrangeMachine {
     public boolean test (int state) {
         switch (state) {
             case ElevatorState.HIGH:
-                if (this.encoder.get() >= ActuatorConfiguration.ELEVATOR.TOLERANCE.HIGH)
+                /* if (this.encoder.get() >= ActuatorConfiguration.ELEVATOR.TOLERANCE.HIGH)
                     this.withinTolerance = true;
-                return this.lastState == ElevatorState.HIGH && this.withinTolerance && this.encoder.get() >= ActuatorConfiguration.ELEVATOR.DEADBAND.HIGH;
+                return this.lastState == ElevatorState.HIGH && this.withinTolerance && this.encoder.get() >= ActuatorConfiguration.ELEVATOR.DEADBAND.HIGH; */
+                return true;
             case ElevatorState.MEDIUM:
                 if (this.encoder.get() >= ActuatorConfiguration.ELEVATOR.TOLERANCE.MEDIUM_LOWER && this.encoder.get() <= ActuatorConfiguration.ELEVATOR.TOLERANCE.MEDIUM_UPPER)
                     this.withinTolerance = true;
@@ -82,7 +83,7 @@ public class ElevatorMachine implements StrangeMachine {
         
         switch (state) {
             case ElevatorState.HIGH:
-                this.controller.setSetpoint(ActuatorConfiguration.ELEVATOR.HIGH);
+                //this.controller.setSetpoint(ActuatorConfiguration.ELEVATOR.HIGH);
                 break;
             case ElevatorState.MEDIUM:
                 this.controller.setSetpoint(ActuatorConfiguration.ELEVATOR.MEDIUM);
