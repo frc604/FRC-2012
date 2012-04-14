@@ -127,9 +127,7 @@ public class ShootAndDoABunchOfOtherCrapAutonControlMode extends AutonControlMod
 		controlTimer.start();
 	}
 
-	public void disable() {
-		// TODO Auto-generated method stub
-		
-	}
-	
+    public void disable() {
+        // TODO Auto-generated method stub
+    }
 }

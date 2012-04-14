@@ -70,8 +70,7 @@ public class KinectControlMode extends ControlMode {
 		theRobot.ringLight.set(ActuatorConfiguration.RING_LIGHT.ON);
 	}
 
-	public void disable() {
-		
-	}
-	
+    public void disable() {
+        
+    }
 }
