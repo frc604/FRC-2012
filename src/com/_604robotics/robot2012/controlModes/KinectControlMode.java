@@ -24,11 +24,11 @@ public class KinectControlMode extends ControlMode {
 		this.hybrid = hybrid;
 	}
 
-	public void step() {
+	public boolean step() {
 		hybrid.abort |= theRobot.leftKinect.getRawButton(ButtonConfiguration.Kinect.ABORT);
 		
 		if (hybrid.abort) {
-			return;
+			return false;
 		}
 		
 		double kinectDrivePow = .8;
@@ -61,6 +61,8 @@ public class KinectControlMode extends ControlMode {
 			theRobot.pickupMotor.set(0D);
 			theRobot.hopperMotor.set(0D);
 		}
+		
+		return true;
 	}
 
 	public void init() {

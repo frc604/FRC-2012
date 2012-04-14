@@ -4,6 +4,8 @@ public class JustShootAutonControlMode extends ControlMode {
 
     public boolean step() {
         // TODO Auto-generated method stub
+    	
+    	return false;
     }
 
     public void init() {

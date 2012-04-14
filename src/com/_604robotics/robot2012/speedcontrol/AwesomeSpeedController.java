@@ -48,7 +48,7 @@ public class AwesomeSpeedController implements SpeedProvider {
         }
     }
     
-    public AwesomeSpeedController (double P, double I, double D, double DP, PIDSource source, PIDOutput output) {
+    public AwesomeSpeedController(double P, double I, double D, double DP, PIDSource source, PIDOutput output) {
         this.source = source;
         this.output = output;
         this.diffOutput = new AddableDifferentialOutput(this.output);

@@ -19,7 +19,7 @@ public class LearningMode extends ControlMode {
         
     }
     
-    public void step() {
+    public boolean step() {
         double leftStickY = theRobot.driveController.getAxis(Axis.LEFT_STICK_Y);
         double rightStickY = theRobot.driveController.getAxis(Axis.RIGHT_STICK_Y);
     
@@ -74,6 +74,8 @@ public class LearningMode extends ControlMode {
 
         theRobot.solenoidShifter.reload();
         theRobot.solenoidHopper.reload();
+        
+        return true;
     }
     
     public void disable() {

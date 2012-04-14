@@ -16,7 +16,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  *
  * @author Kevin Parker <kevin.m.parker@gmail.com>
  */
-public class AutonControlMode extends AutonControlMode {
+public class AutonControlMode extends ControlMode {
 	
 
 	int step = 1;
@@ -25,7 +25,7 @@ public class AutonControlMode extends AutonControlMode {
 	double gyroAngle;
 	boolean turnedAround = false;
 	
-	public void step() {
+	public boolean step() {
 		switch (step) {
 		case 1:
 			/* Put the elevator up. */
@@ -123,6 +123,8 @@ public class AutonControlMode extends AutonControlMode {
 			
 			break;
 		}
+		
+		return true;
 	}
 
 	public void init() {

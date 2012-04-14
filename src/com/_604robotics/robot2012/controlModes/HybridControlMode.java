@@ -17,7 +17,7 @@ public class HybridControlMode extends ControlMode {
 	private final KinectControlMode kinectMode = new KinectControlMode(this);
     
 	private boolean kinect = false;
-	private boolean abort = false;
+	boolean abort = false;
 	private boolean kinectInitted = false;
 	
 	public boolean step() {
@@ -39,7 +39,7 @@ public class HybridControlMode extends ControlMode {
 
 				System.out.println("WAITING FOR KINECT");
 				
-				return; // TODO - isn't there a better way to "wait"?
+				return true; // TODO - isn't there a better way to "wait"?
 			} else {
 				SmartDashboard.putInt("STOPPED AT", -1);
 			}
@@ -79,8 +79,11 @@ public class HybridControlMode extends ControlMode {
 				kinectInitted = true;
 			}
 			
-			kinectMode.step();
+			if(!kinectMode.step())
+				return false;
 		}
+		
+		return true;
 	}
 	
 	public void init() {
