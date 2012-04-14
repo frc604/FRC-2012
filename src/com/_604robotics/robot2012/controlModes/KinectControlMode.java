@@ -15,6 +15,8 @@ import com._604robotics.robot2012.machine.ShooterMachine.ShooterState;
 public class KinectControlMode extends ControlMode {
 	
 	HybridControlMode hybrid;
+    
+    boolean abort = false;
 	
 	/**
 	 * @param hybrid
@@ -25,9 +27,9 @@ public class KinectControlMode extends ControlMode {
 	}
 
 	public boolean step() {
-		hybrid.abort |= theRobot.leftKinect.getRawButton(ButtonConfiguration.Kinect.ABORT);
+		abort |= theRobot.leftKinect.getRawButton(ButtonConfiguration.Kinect.ABORT);
 		
-		if (hybrid.abort) {
+		if (abort) {
 			return false;
 		}
 		
