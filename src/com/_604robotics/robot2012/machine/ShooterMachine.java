@@ -1,11 +1,13 @@
 package com._604robotics.robot2012.machine;
 
-import com._604robotics.utils.StrangeMachine;
 import com._604robotics.robot2012.configuration.ActuatorConfiguration;
 import com._604robotics.robot2012.firing.FiringProvider;
 import com._604robotics.robot2012.speedcontrol.SpeedProvider;
 import com._604robotics.utils.DualVictor;
+import com._604robotics.utils.StrangeMachine;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Victor;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * Machine to control the shooter/hopper system during firing.
@@ -16,6 +18,7 @@ public class ShooterMachine implements StrangeMachine {
     private final Victor hopper;
     private final FiringProvider provider;
     private final SpeedProvider shooter;
+    private final DualVictor elevator;
     
     /**
      * The possible states the shooter could be in.
@@ -30,10 +33,11 @@ public class ShooterMachine implements StrangeMachine {
      * @param   shooter     The motors of the shooter to control.
      * @param   hopper      The motor of the hopper to control.
      */
-    public ShooterMachine (Victor hopper, FiringProvider provider, SpeedProvider shooter) {
+    public ShooterMachine (Victor hopper, FiringProvider provider, SpeedProvider shooter, DualVictor elevator) {
         this.hopper = hopper;
         this.provider = provider;
         this.shooter = shooter;
+        this.elevator = elevator;
     }
     
     /**
@@ -62,16 +66,20 @@ public class ShooterMachine implements StrangeMachine {
                 
                 if (this.shooter.isOnTarget(ActuatorConfiguration.SHOOTER_SPEED_TOLERANCE)) {
                     System.out.println("SHOOTING NOW");
-                    this.hopper.set(ActuatorConfiguration.HOPPER_POWER);
+                    SmartDashboard.putString("Shooter Charged: ", "YES YES YES YES YES");
+                    if (DriverStation.getInstance().isAutonomous()) {
+                        this.hopper.set(ActuatorConfiguration.HOPPER_POWER);
+                        System.out.println("HOPPER POWERED: " + this.hopper.get());
+                    }
                 } else {
                     System.out.println("CHARGING UP");
-                    this.shooter.reset();
+                    SmartDashboard.putString("Shooter Charged: ", "NO NO NO NO NO");
                 }
+                
+                this.elevator.set(0.15);
                 
                 return true;
         }
-        
-        this.shooter.reset();
         
         return false;
     }

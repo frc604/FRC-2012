@@ -5,6 +5,8 @@ import edu.wpi.first.wpilibj.Relay.Direction;
 /**
  * Port configuration.
  * 
+ * WARNING: Please note that ports 2 and 5 are taken as "Ready" and "Calibrated" indicators.
+ * 
  * @author  Michael Smith <mdsmtp@gmail.com>
  */
 public interface PortConfiguration {
@@ -27,7 +29,7 @@ public interface PortConfiguration {
         
         public static final int SHOOTER_LEFT = 2;
         public static final int SHOOTER_RIGHT = 3;
-        public static final int HOPPER = 5;
+        public static final int HOPPER = 6;
         public static final int PICKUP = 4;
     }
     
@@ -37,16 +39,16 @@ public interface PortConfiguration {
     }
     
     public interface Sensors {
-        public static final int GYRO_HEADING = 2;
-        
+        public static final int GYRO_HEADING = 1;
         public static final int ELEVATOR_LIMIT_SWITCH = 1;
     }
     
     public interface Encoders {
-        public static final int SHOOTER = 3;
+        public static final int SHOOTER_A = 3;
+        public static final int SHOOTER_B = 4;
         
-        public static final int ELEVATOR_A = 11;
-        public static final int ELEVATOR_B = 12;
+        public static final int ELEVATOR_A = 12;
+        public static final int ELEVATOR_B = 11;
     }
     
     public interface Pneumatics {
@@ -59,8 +61,8 @@ public interface PortConfiguration {
         }
         
         public interface SHOOTER_SOLENOID {
-            public static final int LOWER_ANGLE = 5; // FORWARD
-            public static final int UPPER_ANGLE = 6; // REVERSE
+            public static final int LOWER_ANGLE = 6; // FORWARD
+            public static final int UPPER_ANGLE = 5; // REVERSE
         }
         
         public interface PICKUP_SOLENOID {

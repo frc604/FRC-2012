@@ -1,7 +1,8 @@
 package com._604robotics.robot2012.machine;
 
-import com._604robotics.utils.StrangeMachine;
 import com._604robotics.robot2012.configuration.ActuatorConfiguration;
+import com._604robotics.utils.StrangeMachine;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.PIDController;
 
@@ -13,9 +14,12 @@ import edu.wpi.first.wpilibj.PIDController;
 public class ElevatorMachine implements StrangeMachine {
     private final PIDController controller;
     private final Encoder encoder;
+    private final DoubleSolenoid hood;
     
     private int lastState = ElevatorState.MEDIUM;
     private boolean withinTolerance = false;
+    
+    private DoubleSolenoid.Value hoodPosition = ActuatorConfiguration.SOLENOID_SHOOTER.LOWER_ANGLE;
 
     /**
      * Various possible states the elevator can be in.
@@ -34,9 +38,10 @@ public class ElevatorMachine implements StrangeMachine {
      * @param   encoder     The encoder monitoring the elevator's vertical
      *                      position.
      */
-    public ElevatorMachine (PIDController controller, Encoder encoder) {
+    public ElevatorMachine (PIDController controller, Encoder encoder, DoubleSolenoid hood) {
         this.controller = controller;
         this.encoder = encoder;
+        this.hood = hood;
     }
     
     public boolean test (int state) {
@@ -64,6 +69,14 @@ public class ElevatorMachine implements StrangeMachine {
         if (this.lastState != state) {
             this.withinTolerance = false;
             this.controller.reset();
+            
+            if (state == ElevatorState.HIGH) {
+                this.hood.set(this.hoodPosition);
+            } else if (this.lastState == ElevatorState.HIGH) {
+                this.hoodPosition = this.hood.get();
+                this.hood.set(ActuatorConfiguration.SOLENOID_SHOOTER.LOWER_ANGLE);
+            }
+            
             this.lastState = state;
         }
         
@@ -93,5 +106,9 @@ public class ElevatorMachine implements StrangeMachine {
         }
         
         return ret;
+    }
+    
+    public void setHoodPosition (DoubleSolenoid.Value hoodPosition) {
+        this.hoodPosition = hoodPosition;
     }
 }
