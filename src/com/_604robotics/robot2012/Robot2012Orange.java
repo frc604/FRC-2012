@@ -1,6 +1,3 @@
-// TOOD: Not let Mrs. Arrington leave without the envelope.
-// TODO: get an alternative power adapter (no surge protector)
-
 package com._604robotics.robot2012;
 
 import com._604robotics.robot2012.camera.CameraInterface;
