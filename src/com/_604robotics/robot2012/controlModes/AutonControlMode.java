@@ -30,7 +30,7 @@ public class AutonControlMode extends ControlMode {
             SmartDashboard.putInt("STOPPED AT", step);
             theRobot.driveTrain.tankDrive(0D, 0D);
 
-            return true;
+            return false;
         } else {
             SmartDashboard.putInt("STOPPED AT", -1);
         }
