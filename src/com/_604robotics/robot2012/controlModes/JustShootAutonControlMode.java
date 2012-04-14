@@ -1,6 +1,6 @@
-package com._604robotics.robot2012;
+package com._604robotics.robot2012.controlModes;
 
-public class ShootAndDoABunchOfOtherCrapAutonControlMode extends ControlMode {
+public class JustShootAutonControlMode extends ControlMode {
 
     public void step() {
         // TODO Auto-generated method stub

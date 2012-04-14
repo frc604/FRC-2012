@@ -1,55 +1,25 @@
-package com._604robotics.robot2012;
+package com._604robotics.robot2012.controlModes;
 
 import com._604robotics.robot2012.configuration.ActuatorConfiguration;
 import com._604robotics.robot2012.configuration.AutonomousConfiguration;
-import com._604robotics.robot2012.configuration.ButtonConfiguration;
 import com._604robotics.robot2012.machine.ElevatorMachine.ElevatorState;
 import com._604robotics.robot2012.machine.PickupMachine.PickupState;
 import com._604robotics.robot2012.machine.ShooterMachine.ShooterState;
 import com._604robotics.utils.SmarterDashboard;
 
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 
-public class HybridControlMode extends ControlMode {
+/**
+ *
+ *
+ * @author Kevin Parker <kevin.m.parker@gmail.com>
+ */
+public class ShootAndDoABunchOfOtherCrapAutonControlMode extends AutonControlMode {
 	
-	int step = 1;
-	
-	double drivePower;
-	double gyroAngle;
-	
-	boolean turnedAround = false;
-	
-	boolean kinect = false;
-	boolean abort = false;
-
-	Timer controlTimer;
 	
 	public void step() {
-		kinect = theRobot.leftKinect.getRawButton(ButtonConfiguration.Kinect.ENABLE);
-		abort = theRobot.leftKinect.getRawButton(ButtonConfiguration.Kinect.ABORT);
-		
-		if (kinect || abort)
-			break;
-		
-		theRobot.encoderShooter.sample();
-		
-		if (step > SmarterDashboard.getDouble("Auton: Max Step", AutonomousConfiguration.MAX_STEP) && step < 6) {
-			SmartDashboard.putInt("STOPPED AT", step);
-			this.resetMotors(true);
-			
-			continue;
-		} else {
-			SmartDashboard.putInt("STOPPED AT", -1);
-		}
-		
-		/* Handle the main logic. */
-		
-		SmartDashboard.putInt("CURRENT STEP", step);
-		SmartDashboard.putDouble("CONTROL TIMER", controlTimer.get());
-		
 		switch (step) {
 		case 1:
 			/* Put the elevator up. */
@@ -147,117 +117,17 @@ public class HybridControlMode extends ControlMode {
 			
 			break;
 		}
-		
-		this.resetMotors();
 	}
-	
+
 	public void init() {
-		theRobot.driveTrain.setSafetyEnabled(true);
-		
-		DriverStation.getInstance().setDigitalOut(2, false);
-		DriverStation.getInstance().setDigitalOut(5, false);
-		
-		theRobot.compressorPump.start();
-		
-		
-		/* Reset stuff. */
+		step = 1;
 		turnedAround = false;
-		
-		kinect = false;
-		abort = false;
-		
-		
-		theRobot.firingProvider.setAtFender(false);
-		// TODO: Make this better.
-		
-		/* Set stuff up. */
 		
 		controlTimer = new Timer();
 		controlTimer.start();
-		
-		
-		
-		theRobot.elevatorMotors.set(0D);
-		
-		theRobot.gyroHeading.reset();
-		
-		theRobot.elevatorMachine.setHoodPosition(ActuatorConfiguration.SOLENOID_SHOOTER.UPPER_ANGLE);	
 	}
-	
-	public void disable() {
 
-		theRobot.speedProvider.reset();
-		
-		theRobot.driveTrain.setSafetyEnabled(false);
-		
-		System.out.println("BROKEN OUT OF AUTON");
-		System.out.println("isAutonomous(): " + isAutonomous() + ", isEnabled(): " + isEnabled() + ", abort: " + abort + ", kinect: " + kinect);
-		
-		while (isAutonomous() && isEnabled() && !abort && !kinect) {
-			kinect = theRobot.leftKinect.getRawButton(ButtonConfiguration.Kinect.ENABLE);
-			abort = theRobot.leftKinect.getRawButton(ButtonConfiguration.Kinect.ABORT);
-			
-			System.out.println("WAITING FOR KINECT");
-			
-			this.resetMotors(true);
-		}
-		
-		if (kinect)
-			kinectMode();
-		
-		theRobot.ringLight.set(ActuatorConfiguration.RING_LIGHT.OFF);
-		
-		this.resetMotors();
-		
-		theRobot.pickupMotor.set(0D);
-		theRobot.hopperMotor.set(0D);
-		
-		theRobot.compressorPump.stop();
-	}
-	
-
-	/**
-	 * Resets the motors.
-	 * 
-	 * @param   driveToo    Reset the drive train too?
-	 */
-	public void resetMotors (boolean driveToo) {
-		if (driveToo)
-			theRobot.driveTrain.tankDrive(0D, 0D);
-		
-		
-		theRobot.elevatorMotors.reload();
-		theRobot.shooterMotors.reload();
-		theRobot.hopperMotor.reload();
-		theRobot.ringLight.reload();
-	}
-	
-	/**
-	 * Resets the motors, but not the drive train.
-	 */
-	public void resetMotors() {
-		this.resetMotors(false);
-	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-
-	/**
-	 * Kinect-controlled Hybrid mode.
-	 */
-	public void kinectMode() {
-		
-		
-		while (isAutonomous() && isEnabled() && !abort) {
-
-			this.resetMotors(false);
-		}
-	}
+    public void disable() {
+        // TODO Auto-generated method stub
+    }
 }

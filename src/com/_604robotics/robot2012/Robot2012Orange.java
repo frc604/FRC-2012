@@ -1,5 +1,8 @@
 package com._604robotics.robot2012;
 
+import com._604robotics.robot2012.controlModes.HybridControlMode;
+import com._604robotics.robot2012.controlModes.TeleopControlMode;
+
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.SimpleRobot;
 import edu.wpi.first.wpilibj.Timer;
