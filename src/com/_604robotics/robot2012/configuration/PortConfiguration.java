@@ -45,7 +45,7 @@ public interface PortConfiguration {
     
     public interface Encoders {
         public static final int SHOOTER_A = 3;
-        public static final int SHOOTER_B = 4;
+        public static final int SHOOTER_B = 5;
         
         public static final int ELEVATOR_A = 12;
         public static final int ELEVATOR_B = 11;
@@ -53,7 +53,7 @@ public interface PortConfiguration {
     
     public interface Pneumatics {
         public static final int COMPRESSOR = 6;
-        public static final int PRESSURE_SWITCH = 5;
+        public static final int PRESSURE_SWITCH = 7;
 
         public interface SHIFTER_SOLENOID {
             public static final int LOW_GEAR = 8; // FORWARD
