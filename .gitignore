@@ -1,5 +1,5 @@
-/nbproject/private/
-/build/
-/JustMoveMotor/build/
-/j2meclasses/
-/suite/
+/nbproject/private/*
+/build/*
+/JustMoveMotor/build/*
+/j2meclasses/*
+/suite/*
