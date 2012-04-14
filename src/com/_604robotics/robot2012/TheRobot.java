@@ -42,9 +42,56 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 
 public class TheRobot {
-	private static boolean initialized = false;
 	public static final TheRobot theRobot = new TheRobot();
+	private static boolean initialized = false;
 	
+	XboxController driveController;
+	XboxController manipulatorController;
+	
+	KinectStick leftKinect;
+	KinectStick rightKinect;
+	
+	RobotDrive driveTrain;
+	
+	DualVictor elevatorMotors;
+	
+	DualVictor shooterMotors;
+	SpringableVictor hopperMotor;
+	SpringableVictor pickupMotor;
+	
+	SpringableRelay ringLight;
+	
+	EncoderPIDSource encoderElevator;
+	EncoderSamplingRate encoderShooter;
+	
+	DigitalInput elevatorLimitSwitch;
+	
+	Gyro360 gyroHeading;
+	
+	Compressor compressorPump;
+	
+	SpringableDoubleSolenoid solenoidShifter;
+	DoubleSolenoid solenoidShooter;
+	DoubleSolenoid solenoidPickup;
+	SpringableDoubleSolenoid solenoidHopper;
+	
+	UpDownPIDController pidElevator;
+	
+	StrangeMachine pickupMachine;
+	ElevatorMachine elevatorMachine;
+	ShooterMachine shooterMachine;
+	
+	SendableChooser inTheMiddle;
+	
+	CameraInterface cameraInterface;
+	
+	CameraFiringProvider firingProvider;
+	SpeedProvider speedProvider;
+    
+    private TheRobot() {
+		
+	}
+    
 	public static void init() {
 		if(!initialized)
 			theRobot.initialize();
@@ -196,54 +243,4 @@ public class TheRobot {
 		
 		SmartDashboard.putDouble("fac", encoderShooter.getFac());
 	}
-	
-	XboxController driveController;
-	XboxController manipulatorController;
-	
-	KinectStick leftKinect;
-	KinectStick rightKinect;
-	
-	RobotDrive driveTrain;
-	
-	DualVictor elevatorMotors;
-	
-	DualVictor shooterMotors;
-	SpringableVictor hopperMotor;
-	SpringableVictor pickupMotor;
-	
-	SpringableRelay ringLight;
-	
-	EncoderPIDSource encoderElevator;
-	EncoderSamplingRate encoderShooter;
-	
-	DigitalInput elevatorLimitSwitch;
-	
-	Gyro360 gyroHeading;
-	
-	Compressor compressorPump;
-	
-	SpringableDoubleSolenoid solenoidShifter;
-	DoubleSolenoid solenoidShooter;
-	DoubleSolenoid solenoidPickup;
-	SpringableDoubleSolenoid solenoidHopper;
-	
-	UpDownPIDController pidElevator;
-	
-	StrangeMachine pickupMachine;
-	ElevatorMachine elevatorMachine;
-	ShooterMachine shooterMachine;
-	
-	SendableChooser inTheMiddle;
-	
-	CameraInterface cameraInterface;
-	
-	CameraFiringProvider firingProvider;
-	SpeedProvider speedProvider;
-	
-	
-	private TheRobot() {
-		
-	}
-	
-	
 }
