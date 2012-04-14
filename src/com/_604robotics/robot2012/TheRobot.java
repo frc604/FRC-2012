@@ -45,48 +45,48 @@ public class TheRobot {
 	public static final TheRobot theRobot = new TheRobot();
 	private static boolean initialized = false;
 	
-	XboxController driveController;
-	XboxController manipulatorController;
+	public XboxController driveController;
+	public XboxController manipulatorController;
 	
-	KinectStick leftKinect;
-	KinectStick rightKinect;
+	public KinectStick leftKinect;
+	public KinectStick rightKinect;
 	
-	RobotDrive driveTrain;
+	public RobotDrive driveTrain;
 	
-	DualVictor elevatorMotors;
+	public DualVictor elevatorMotors;
 	
-	DualVictor shooterMotors;
-	SpringableVictor hopperMotor;
-	SpringableVictor pickupMotor;
+	public DualVictor shooterMotors;
+	public SpringableVictor hopperMotor;
+	public SpringableVictor pickupMotor;
 	
-	SpringableRelay ringLight;
+	public SpringableRelay ringLight;
 	
-	EncoderPIDSource encoderElevator;
-	EncoderSamplingRate encoderShooter;
+	public EncoderPIDSource encoderElevator;
+	public EncoderSamplingRate encoderShooter;
 	
-	DigitalInput elevatorLimitSwitch;
+	public DigitalInput elevatorLimitSwitch;
 	
-	Gyro360 gyroHeading;
+	public Gyro360 gyroHeading;
 	
-	Compressor compressorPump;
+	public Compressor compressorPump;
 	
-	SpringableDoubleSolenoid solenoidShifter;
-	DoubleSolenoid solenoidShooter;
-	DoubleSolenoid solenoidPickup;
-	SpringableDoubleSolenoid solenoidHopper;
+	public SpringableDoubleSolenoid solenoidShifter;
+	public DoubleSolenoid solenoidShooter;
+	public DoubleSolenoid solenoidPickup;
+	public SpringableDoubleSolenoid solenoidHopper;
 	
-	UpDownPIDController pidElevator;
+	public UpDownPIDController pidElevator;
 	
-	StrangeMachine pickupMachine;
-	ElevatorMachine elevatorMachine;
-	ShooterMachine shooterMachine;
+	public StrangeMachine pickupMachine;
+	public ElevatorMachine elevatorMachine;
+	public ShooterMachine shooterMachine;
 	
-	SendableChooser inTheMiddle;
+	public SendableChooser inTheMiddle;
 	
-	CameraInterface cameraInterface;
+	public CameraInterface cameraInterface;
 	
-	CameraFiringProvider firingProvider;
-	SpeedProvider speedProvider;
+	public CameraFiringProvider firingProvider;
+	public SpeedProvider speedProvider;
     
     private TheRobot() {
 		

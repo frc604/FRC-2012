@@ -1,4 +1,4 @@
-package com._604robotics.robot2012;
+package com._604robotics.robot2012.controlModes;
 
 import com._604robotics.robot2012.configuration.ActuatorConfiguration;
 import com._604robotics.robot2012.configuration.AutonomousConfiguration;

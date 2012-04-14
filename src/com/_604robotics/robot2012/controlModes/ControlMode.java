@@ -1,4 +1,6 @@
-package com._604robotics.robot2012;
+package com._604robotics.robot2012.controlModes;
+
+import com._604robotics.robot2012.TheRobot;
 
 
 public abstract class ControlMode {

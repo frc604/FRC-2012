@@ -1,4 +1,4 @@
-package com._604robotics.robot2012;
+package com._604robotics.robot2012.controlModes;
 
 public class JustShootAutonControlMode extends ControlMode {
 
