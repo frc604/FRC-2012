@@ -28,7 +28,7 @@ public class TeleopControlMode extends ControlMode {
     boolean upHigh = false;
     boolean pickupIn = true;
 
-    public void step() {
+    public boolean step() {
         theRobot.ringLight.set(ActuatorConfiguration.RING_LIGHT.ON);
         theRobot.encoderShooter.sample();
 
@@ -283,6 +283,8 @@ public class TeleopControlMode extends ControlMode {
         SmartDashboard.putDouble("encoderElevator", theRobot.encoderElevator.get());
         SmartDashboard.putDouble("Current Elevator Setpoint", theRobot.pidElevator.getSetpoint());
         SmartDashboard.putDouble("Elevator Output", theRobot.pidElevator.get());
+        
+        return true;
     }
 
     public void init() {

@@ -136,7 +136,7 @@ public class AutonControlMode extends ControlMode {
                 break;
 		}
         
-        return true;
+		return true;
 	}
 
 	public void init() {

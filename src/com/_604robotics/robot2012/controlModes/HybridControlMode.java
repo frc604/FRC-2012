@@ -61,7 +61,8 @@ public class HybridControlMode extends ControlMode {
 				kinectInitted = true;
 			}
 			
-			kinectMode.step();
+			if(!kinectMode.step())
+				return false;
 		}
         
         return true;
