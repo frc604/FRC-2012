@@ -30,6 +30,8 @@ public class HybridControlMode extends ControlMode {
 			theRobot.ringLight.set(ActuatorConfiguration.RING_LIGHT.OFF);
 			return false;
 		}
+        
+        theRobot.encoderShooter.sample();
 		
 		if (!kinect) {
             if (autonRunning)
