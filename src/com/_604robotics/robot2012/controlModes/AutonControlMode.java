@@ -22,6 +22,7 @@ public class AutonControlMode extends ControlMode {
 	double drivePower;
 	double gyroAngle;
 	boolean turnedAround = false;
+    boolean done = false;
 	
 	public boolean step() {
         theRobot.encoderShooter.sample();
@@ -29,8 +30,16 @@ public class AutonControlMode extends ControlMode {
         if (step > SmarterDashboard.getDouble("Auton: Max Step", AutonomousConfiguration.MAX_STEP)) {
             SmartDashboard.putInt("STOPPED AT", step);
             theRobot.driveTrain.tankDrive(0D, 0D);
-
-            return false;
+            
+            if (theRobot.elevatorMachine.test(ElevatorState.PICKUP_OKAY)) {
+                if (theRobot.pickupMachine.crank(PickupState.IN)) {
+                    done = theRobot.elevatorMachine.crank(ElevatorState.MEDIUM);
+                }
+            } else {
+                done = theRobot.elevatorMachine.crank(ElevatorState.MEDIUM);
+            }
+            
+            return !done;
         } else {
             SmartDashboard.putInt("STOPPED AT", -1);
         }
@@ -121,17 +130,6 @@ public class AutonControlMode extends ControlMode {
 
                 if (controlTimer.get() >= SmarterDashboard.getDouble("Auton: Step 5", AutonomousConfiguration.STEP_5_WAIT_TIME)) 
                     step++;
-
-                break;
-            case 6:
-                /* Pull in the pickup and put the elevator down. */
-
-                if (theRobot.elevatorMachine.test(ElevatorState.PICKUP_OKAY)) {
-                    if (theRobot.pickupMachine.crank(PickupState.IN))
-                        theRobot.elevatorMachine.crank(ElevatorState.MEDIUM);
-                } else {
-                    theRobot.elevatorMachine.crank(ElevatorState.MEDIUM);
-                }
 
                 break;
 		}
