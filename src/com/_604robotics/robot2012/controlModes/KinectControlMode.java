@@ -64,7 +64,6 @@ public class KinectControlMode extends ControlMode {
 	}
 
 	public void init() {
-		
 		System.out.println("KINECT ON");
 		
 		theRobot.ringLight.set(ActuatorConfiguration.RING_LIGHT.ON);

@@ -18,6 +18,8 @@ public class HybridControlMode extends ControlMode {
     
 	private boolean kinect = false;
 	private boolean abort = false;
+    
+    private boolean autonRunning = true;
 	private boolean kinectInitted = false;
 	
 	public boolean step() {
@@ -29,31 +31,11 @@ public class HybridControlMode extends ControlMode {
 			return false;
 		}
 		
-		if(!kinect) {
-			
-			theRobot.encoderShooter.sample();
-			
-			if (auton.step > SmarterDashboard.getDouble("Auton: Max Step", AutonomousConfiguration.MAX_STEP) && auton.step < 6) {
-				SmartDashboard.putInt("STOPPED AT", auton.step);
-				this.resetMotors(true);
-
-				System.out.println("WAITING FOR KINECT");
-				
-				return; // TODO - isn't there a better way to "wait"?
-			} else {
-				SmartDashboard.putInt("STOPPED AT", -1);
-			}
-			
-			/* Handle the main logic. */
-			
-			SmartDashboard.putInt("CURRENT STEP", auton.step);
-			SmartDashboard.putDouble("CONTROL TIMER", auton.controlTimer.get());
-			
-			
-			auton.step();
-			
-			
-			this.resetMotors();
+		if (!kinect) {
+            if (autonRunning)
+    			autonRunning = auton.step();
+            else
+    			this.resetMotors();
 		} else {
 			if(!kinectInitted) {
 				theRobot.speedProvider.reset();
@@ -81,6 +63,8 @@ public class HybridControlMode extends ControlMode {
 			
 			kinectMode.step();
 		}
+        
+        return true;
 	}
 	
 	public void init() {
@@ -140,7 +124,6 @@ public class HybridControlMode extends ControlMode {
 	public void resetMotors (boolean driveToo) {
 		if (driveToo)
 			theRobot.driveTrain.tankDrive(0D, 0D);
-		
 		
 		theRobot.elevatorMotors.reload();
 		theRobot.shooterMotors.reload();
