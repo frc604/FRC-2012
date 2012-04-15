@@ -159,7 +159,7 @@ public class TeleopControlMode extends ControlMode {
                     }
 
                     if (theRobot.manipulatorController.getButton(ButtonConfiguration.Manipulator.SHOOT)) {
-                        System.out.println("GET READY U GUIZE");
+                        ///System.out.println("GET READY U GUIZE");
                         theRobot.shooterMachine.crank(ShooterState.SHOOTING);
                     }
                 }
@@ -307,6 +307,7 @@ public class TeleopControlMode extends ControlMode {
     }
 
     public void disable() {
+        
         theRobot.driveTrain.setSafetyEnabled(false);
 
         theRobot.pidElevator.disable();

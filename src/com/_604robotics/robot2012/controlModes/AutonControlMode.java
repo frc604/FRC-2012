@@ -25,8 +25,6 @@ public class AutonControlMode extends ControlMode {
     boolean done = false;
 	
 	public boolean step() {
-        theRobot.encoderShooter.sample();
-
         if (step > SmarterDashboard.getDouble("Auton: Max Step", AutonomousConfiguration.MAX_STEP)) {
             SmartDashboard.putInt("STOPPED AT", step);
             theRobot.driveTrain.tankDrive(0D, 0D);

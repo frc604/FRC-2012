@@ -30,15 +30,17 @@ public class HybridControlMode extends ControlMode {
 			theRobot.ringLight.set(ActuatorConfiguration.RING_LIGHT.OFF);
 			return false;
 		}
+        
+        theRobot.encoderShooter.sample();
 		
 		if (!kinect) {
             if (autonRunning)
     			autonRunning = auton.step();
             else
-    			this.resetMotors();
+				theRobot.speedProvider.reset();
+            this.resetMotors();
 		} else {
 			if(!kinectInitted) {
-				theRobot.speedProvider.reset();
 				
 				theRobot.driveTrain.setSafetyEnabled(false);
 				/* TODO - XXX

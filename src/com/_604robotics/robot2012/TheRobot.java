@@ -210,7 +210,7 @@ public class TheRobot {
 		//speedProvider = new StupidSpeedProvider(shooterMotors);
 		//speedProvider = new NaiveSpeedProvider(shooterMotors, encoderShooter);
 		//speedProvider = new ProcessSpeedProvider(-0.0001, 0D, -0.0008, encoderShooter, shooterMotors);
-		speedProvider = new AwesomeSpeedController(-0.0001, 0D, -0.0008, 0D, encoderShooter, shooterMotors);
+		speedProvider = new AwesomeSpeedController(-0.001, 0D, -0.001, 0D, encoderShooter, shooterMotors);
 		
 		if (speedProvider instanceof AwesomeSpeedController) {
 			SmartDashboard.putDouble("Shooter P", ((AwesomeSpeedController) speedProvider).getP());
