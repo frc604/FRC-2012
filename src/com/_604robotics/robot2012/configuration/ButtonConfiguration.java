@@ -35,7 +35,6 @@ public interface ButtonConfiguration {
         public static final int PICKUP = Button.X;
         
         public static final int TOGGLE_ANGLE = Button.RB;
-        public static final int TOGGLE_LIGHT = Button.Back;
         
         public static final int AT_FENDER = Button.LB;
         public static final int AT_KEY = Button.LT;

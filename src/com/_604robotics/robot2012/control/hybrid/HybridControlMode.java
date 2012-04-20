@@ -1,8 +1,9 @@
-package com._604robotics.robot2012.controlModes;
+package com._604robotics.robot2012.control.hybrid;
 
 import com._604robotics.robot2012.configuration.ActuatorConfiguration;
 import com._604robotics.robot2012.configuration.AutonomousConfiguration;
 import com._604robotics.robot2012.configuration.ButtonConfiguration;
+import com._604robotics.robot2012.control.ControlMode;
 import com._604robotics.utils.SmarterDashboard;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;

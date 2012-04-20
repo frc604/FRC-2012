@@ -1,16 +1,12 @@
-package com._604robotics.robot2012.controlModes;
+package com._604robotics.robot2012.control.teleop;
 
 import com._604robotics.robot2012.TheRobot;
-import com._604robotics.robot2012.camera.RemoteCameraTCP;
 import com._604robotics.robot2012.configuration.ActuatorConfiguration;
 import com._604robotics.robot2012.configuration.ButtonConfiguration;
+import com._604robotics.robot2012.control.ControlMode;
 import com._604robotics.robot2012.machine.ElevatorMachine.ElevatorState;
 import com._604robotics.robot2012.machine.PickupMachine.PickupState;
 import com._604robotics.robot2012.machine.ShooterMachine.ShooterState;
-import com._604robotics.robot2012.speedcontrol.AwesomeSpeedController;
-import com._604robotics.robot2012.vision.Target;
-import com._604robotics.utils.SmarterDashboard;
-import com._604robotics.utils.UpDownPIDController.Gains;
 import com._604robotics.utils.XboxController.Axis;
 
 import edu.wpi.first.wpilibj.DriverStation;
@@ -18,35 +14,39 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class TeleopControlMode extends ControlMode {
-
-    private TheRobot theRobot = TheRobot.theRobot;
+    private final TheRobot theRobot = TheRobot.theRobot;
+    
     int settleState = 2;
     Timer settleTimer = new Timer();
-    Target[] targets;
-    Target target;
-    AwesomeSpeedController ctrl;	// TODO - make this follow polymorphism correctly...
+    
     boolean upHigh = false;
     boolean pickupIn = true;
 
+    public void init() {
+        DriverStation.getInstance().setDigitalOut(2, false);
+        DriverStation.getInstance().setDigitalOut(5, false);
+
+        theRobot.driveTrain.setSafetyEnabled(true);
+        theRobot.compressorPump.start();
+        
+        theRobot.manipulatorController.resetToggles();
+        theRobot.driveController.resetToggles();
+
+        theRobot.pidElevator.reset();
+    }
+
     public boolean step() {
-        theRobot.ringLight.set(ActuatorConfiguration.RING_LIGHT.ON);
-        theRobot.encoderShooter.sample();
-
-        if (ctrl != null) {
-            ctrl.setPIDDP(SmarterDashboard.getDouble("Shooter P", ctrl.getP()), SmarterDashboard.getDouble("Shooter I", ctrl.getI()), SmarterDashboard.getDouble("Shooter D", ctrl.getD()), SmarterDashboard.getDouble("Shooter DP", ctrl.getDP()));
-            ctrl.fac = SmarterDashboard.getDouble("Shooter fac", ctrl.fac);
-            ctrl.maxSpeed = SmarterDashboard.getDouble("Shooter maxSpeed", ctrl.maxSpeed);
-        }
-
-        theRobot.pidElevator.setUpGains(new Gains(SmarterDashboard.getDouble("Elevator Up P", 0.0085), SmarterDashboard.getDouble("Elevator Up I", 0D), SmarterDashboard.getDouble("Elevator Up D", 0.018)));
-        theRobot.pidElevator.setDownGains(new Gains(SmarterDashboard.getDouble("Elevator Down P", 0.0029), SmarterDashboard.getDouble("Elevator Down I", 0.000003), SmarterDashboard.getDouble("Elevator Down P", 0.007)));
-
+        UserInterface.readConfigFromSmartDashboard();
+        
+        PeriodicTasks.processInputs();
+        PeriodicTasks.processOutputs();
+        
+        /*
+         * Disable/re-eneable the elevator. For emergency usage.
+         */
+        
         if (theRobot.driveController.getToggle(ButtonConfiguration.Driver.DISABLE_ELEVATOR)) {
             theRobot.elevatorMotors.setDisabled(!theRobot.elevatorMotors.getDisabled());
-        }
-
-        if (!theRobot.elevatorLimitSwitch.get()) {
-            theRobot.encoderElevator.reset();
         }
 
         if (Math.abs(theRobot.manipulatorController.getAxis(Axis.RIGHT_STICK_Y)) > 0) {
@@ -55,14 +55,6 @@ public class TeleopControlMode extends ControlMode {
 
         if (!theRobot.manipulatorController.getButton(ButtonConfiguration.Manipulator.PICKUP) && Math.abs(theRobot.manipulatorController.getAxis(Axis.LEFT_STICK_Y)) > 0) {
             theRobot.pickupMotor.set(theRobot.manipulatorController.getAxis(Axis.LEFT_STICK_Y));
-        }
-
-        /*
-         * Controls the gear shift.
-         */
-
-        if (theRobot.driveController.getButton(ButtonConfiguration.Driver.SHIFT)) {
-            theRobot.solenoidShifter.set(ActuatorConfiguration.SOLENOID_SHIFTER.HIGH_GEAR);
         }
 
         /*
@@ -122,8 +114,7 @@ public class TeleopControlMode extends ControlMode {
                 upHigh = false;
             }
         }
-
-
+        
         SmartDashboard.putBoolean("upHigh", upHigh);
         SmartDashboard.putBoolean("pickupIn", pickupIn);
 
@@ -221,89 +212,12 @@ public class TeleopControlMode extends ControlMode {
             }
         }
 
-        /*
-         * Toggles the light.
-         */
-
-        if (theRobot.manipulatorController.getButton(ButtonConfiguration.Manipulator.TOGGLE_LIGHT)) {
-            theRobot.ringLight.set(ActuatorConfiguration.RING_LIGHT.ON);
-        }
-
-        /*
-         * Reload the springs.
-         */
-
-        theRobot.speedProvider.reset();
-
-        theRobot.elevatorMotors.reload();
-        theRobot.shooterMotors.reload();
-        theRobot.hopperMotor.reload();
-        theRobot.pickupMotor.reload();
-
-        theRobot.ringLight.reload();
-
-        theRobot.solenoidShifter.reload();
-        theRobot.solenoidHopper.reload();
-
-        /*
-         * Driver assist.
-         */
-
-        targets = theRobot.cameraInterface.getTargets();
-        target = null;
-
-        for (int i = 0; i < targets.length; i++) {
-            if (target == null || targets[i].y < target.y) {
-                target = targets[i];
-            }
-        }
-
-        if (target == null) {
-            SmartDashboard.putDouble("Raw X Pos", 999999.999);
-        } else {
-            SmartDashboard.putDouble("Raw X Pos", target.x);
-        }
-
-        /*
-         * Debug output.
-         */
-
-        SmartDashboard.putDouble("encoderShooter", theRobot.encoderShooter.get());
-        SmartDashboard.putDouble("Current Encoder Rate", theRobot.encoderShooter.getRate());
-        SmartDashboard.putDouble("Current Shooter Output", theRobot.shooterMotors.get());
-
-        SmartDashboard.putDouble("Shooter Speed", theRobot.shooterMachine.getShooterSpeed());
-        SmartDashboard.putBoolean("Using Targets?", theRobot.firingProvider.usingTargets());
-        SmartDashboard.putBoolean("At the Fender?", theRobot.firingProvider.isAtFender());
-
-        SmartDashboard.putDouble("gyroHeading", theRobot.gyroHeading.getAngle());
-
-        SmartDashboard.putInt("ups", ((RemoteCameraTCP) theRobot.cameraInterface).getUPS());
-
-        SmartDashboard.putDouble("encoderElevator", theRobot.encoderElevator.get());
-        SmartDashboard.putDouble("Current Elevator Setpoint", theRobot.pidElevator.getSetpoint());
-        SmartDashboard.putDouble("Elevator Output", theRobot.pidElevator.get());
+        UserInterface.writeDebugInformation();
+        UserInterface.updateDriverAssist();
         
+        PeriodicTasks.reloadActuators();
+
         return true;
-    }
-
-    public void init() {
-
-        DriverStation.getInstance().setDigitalOut(2, false);
-        DriverStation.getInstance().setDigitalOut(5, false);
-
-        theRobot.driveTrain.setSafetyEnabled(true);
-        theRobot.compressorPump.start();
-
-
-        ctrl = (theRobot.speedProvider instanceof AwesomeSpeedController)
-                ? ((AwesomeSpeedController) theRobot.speedProvider)
-                : null;
-
-        theRobot.manipulatorController.resetToggles();
-        theRobot.driveController.resetToggles();
-
-        theRobot.pidElevator.reset();
     }
 
     public void disable() {

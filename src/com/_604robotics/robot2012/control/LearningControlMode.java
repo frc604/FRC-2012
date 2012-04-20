@@ -1,6 +1,6 @@
-package com._604robotics.robot2012.controlModes;
+package com._604robotics.robot2012.control;
 
-import com._604robotics.robot2012.controlModes.ControlMode;
+import com._604robotics.robot2012.control.ControlMode;
 import com._604robotics.robot2012.learning.AveragingTutor;
 import com._604robotics.robot2012.learning.Tutor;
 import com._604robotics.robot2012.vision.Target;
@@ -12,7 +12,7 @@ import com._604robotics.utils.XboxController.Button;
  * 
  * @author  Michael Smith <mdsmtp@gmail.com>
  */
-public class LearningMode extends ControlMode {
+public class LearningControlMode extends ControlMode {
     private final Tutor tutor = new AveragingTutor();
     
     public void init() {
