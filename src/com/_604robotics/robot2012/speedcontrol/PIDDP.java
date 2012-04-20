@@ -21,6 +21,7 @@ public class PIDDP implements IUtility {
     private double m_I;			// factor for "integral" control
     private double m_D;			// factor for "derivative" control
     private double m_DP;		// factor for "derivative/Proportional" control
+    private double m_DP_PMin = 1.0;
     private double m_maximumOutput = 1.0;	// |maximum output|
     private double m_minimumOutput = -1.0;	// |minimum output|
     private double m_maximumInput = 0.0;		// maximum input - limit setpoint to this
@@ -158,7 +159,17 @@ public class PIDDP implements IUtility {
                 
                 double dError = m_error - m_prevError;
                 
-                double dpTerm = m_DP * dError / m_error;
+                double errorForDPTerm = m_error;
+                
+                if(errorForDPTerm > -m_DP_PMin && errorForDPTerm < 0) {
+                    errorForDPTerm = -m_DP_PMin;
+                } else if(errorForDPTerm  < m_DP_PMin && errorForDPTerm > 0) {
+                    errorForDPTerm = m_DP_PMin;
+                } else if(errorForDPTerm == 0) {
+                    errorForDPTerm = 1/0.0;
+                }
+                
+                double dpTerm = m_DP * dError / errorForDPTerm;
                 
                 if(dpTerm != dpTerm)
                     dpTerm = 0;
