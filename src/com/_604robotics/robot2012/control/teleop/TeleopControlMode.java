@@ -1,14 +1,11 @@
 package com._604robotics.robot2012.control.teleop;
 
-import com._604robotics.robot2012.control.ControlMode;
 import com._604robotics.robot2012.TheRobot;
 import com._604robotics.robot2012.configuration.ButtonConfiguration;
-
+import com._604robotics.robot2012.control.ControlMode;
 import edu.wpi.first.wpilibj.DriverStation;
 
 public class TeleopControlMode extends ControlMode {
-    private final TheRobot theRobot = TheRobot.theRobot;
-
     public void init() {
         DriverStation.getInstance().setDigitalOut(2, false);
         DriverStation.getInstance().setDigitalOut(5, false);
