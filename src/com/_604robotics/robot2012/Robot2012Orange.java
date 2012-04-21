@@ -34,14 +34,12 @@ public class Robot2012Orange extends SimpleRobot {
         /*
          * Initialize calibration signals.
          */
-
         DriverStation.getInstance().setDigitalOut(2, false);
         DriverStation.getInstance().setDigitalOut(5, false);
 
         /*
          * Register workers.
          */
-
         WorkerManager.registerWorker(new ConfigWorker());
         WorkerManager.registerWorker(new RingLightWorker());
         WorkerManager.registerWorker(new DriveWorker());
@@ -54,7 +52,6 @@ public class Robot2012Orange extends SimpleRobot {
         /*
          * Initialize hybrid mode.
          */
-
         hybridMode.registerControlMode(new AutonomousControlMode(), true);
         hybridMode.registerControlMode(new WaitingControlMode(), true);
         hybridMode.registerControlMode(new KinectControlMode(), true);
@@ -64,7 +61,6 @@ public class Robot2012Orange extends SimpleRobot {
         /*
          * Initialize teleop mode.
          */
-
         teleopMode.registerControlMode(new CompetitionControlMode(), true);
         teleopMode.registerControlMode(new LearningControlMode(), false);
 
@@ -76,7 +72,6 @@ public class Robot2012Orange extends SimpleRobot {
         /*
          * Ditch the built-in Watchdog.
          */
-
         this.getWatchdog().setEnabled(false);
     }
 
