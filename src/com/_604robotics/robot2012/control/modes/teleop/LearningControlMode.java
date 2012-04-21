@@ -14,6 +14,8 @@ import com._604robotics.utils.XboxController.Button;
  * @author  Michael Smith <mdsmtp@gmail.com>
  */
 public class LearningControlMode implements ControlMode {
+    // TODO: Update post-robotnik.
+    
     private final Tutor tutor = new AveragingTutor();
     
     public void init() {
