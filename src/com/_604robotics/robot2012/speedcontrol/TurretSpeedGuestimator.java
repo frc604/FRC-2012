@@ -8,10 +8,10 @@ public class TurretSpeedGuestimator {
     
     //TODO - calibrate
     static final double
-            constantFactor = 0,
-            linearFactor = 1.0018E-3,
-            quadFactor = 4.6911E-06,
-            cubicFactor = 1.1106E-8,
+            constantFactor = 7.0000E-02,
+            linearFactor = 1.8879E-04,
+            quadFactor = 1.3801E-06,
+            cubicFactor = 7.2550E-09,
             
             originalCalibratedBattery = 12;//or 10 or whatever the battery falls down to under load
     
