@@ -18,7 +18,7 @@ public interface ActuatorConfiguration {
     
     public static final double MAX_SLOW_SPEED = 0.7;
     
-    public static final double TINY_DRIVE_SPEED = 0.6;
+    public static final double DRIVE_BUMP_SPEED = 0.6;
     
     public static final double ELEVATOR_PICKUP_POWER = -0.32;
     

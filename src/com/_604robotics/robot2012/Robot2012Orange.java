@@ -1,16 +1,16 @@
 package com._604robotics.robot2012;
 
-import com._604robotics.robot2012.control.ControlMode;
-import com._604robotics.robot2012.control.LearningControlMode;
-import com._604robotics.robot2012.control.hybrid.HybridControlMode;
-import com._604robotics.robot2012.control.teleop.TeleopControlMode;
-
+import com._604robotics.robot2012.control.modes.SequentialModeLauncher;
+import com._604robotics.robot2012.control.modes.hybrid.AutonomousControlMode;
+import com._604robotics.robot2012.control.modes.hybrid.KinectControlMode;
+import com._604robotics.robot2012.control.modes.hybrid.WaitingControlMode;
+import com._604robotics.robot2012.control.modes.teleop.CompetitionControlMode;
+import com._604robotics.robot2012.control.modes.teleop.LearningControlMode;
+import com._604robotics.robot2012.control.workers.*;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.SimpleRobot;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
 
 /**
  * Main class for the 2012 robot code codenamed Orange.
@@ -23,14 +23,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * @author  Alan Li <alanpusongli@gmail.com>
  */
 public class Robot2012Orange extends SimpleRobot {
-	TheRobot theRobot = TheRobot.theRobot;
+    SequentialModeLauncher hybridMode = new SequentialModeLauncher("Hybrid");
+    SequentialModeLauncher teleopMode = new SequentialModeLauncher("Teleop");
 
-	ControlMode teleop = new TeleopControlMode();
-	ControlMode learning = new LearningControlMode();
-	ControlMode hybrid = new HybridControlMode();
-	
-	SendableChooser teleopMode;
-	
 	/**
 	 * Constructor.
 	 */
@@ -39,14 +34,35 @@ public class Robot2012Orange extends SimpleRobot {
         
 		DriverStation.getInstance().setDigitalOut(2, false);
 		DriverStation.getInstance().setDigitalOut(5, false);
+        
+        /* Register workers. */
+        
+        WorkerManager.registerWorker(new ConfigWorker());
+        WorkerManager.registerWorker(new RingLightWorker());
+        WorkerManager.registerWorker(new DriveWorker());
+        WorkerManager.registerWorker(new ElevatorWorker());
+        WorkerManager.registerWorker(new PickupWorker());
+        WorkerManager.registerWorker(new ShooterWorker());
+        WorkerManager.registerWorker(new DashboardWorker());
+        WorkerManager.registerWorker(new RespringWorker());
+        
+		/* Initialize hybrid mode. */
+        
+        hybridMode.registerControlMode(new AutonomousControlMode(), true);
+        hybridMode.registerControlMode(new WaitingControlMode(), true);
+        hybridMode.registerControlMode(new KinectControlMode(), true);
+        
+        hybridMode.renderSmartDashboard();
 		
-		/* Initialize mode selector. */
-		
-		teleopMode = new SendableChooser();
-		teleopMode.addDefault("Teleop Mode: Competition", teleop);
-		teleopMode.addObject("Teleop Mode: Learning", learning);
-		
-		SmartDashboard.putData("teleopMode", teleopMode);
+		/* Initialize teleop mode. */
+        
+        teleopMode.registerControlMode(new CompetitionControlMode(), true);
+        teleopMode.registerControlMode(new LearningControlMode(), false);
+        
+        teleopMode.renderSmartDashboard();
+        
+        // TODO: Make the following better.
+        Robot.firingProvider.setAtFender(true);
 		
         /* Ditch the built-in Watchdog. */
         
@@ -57,21 +73,26 @@ public class Robot2012Orange extends SimpleRobot {
 	 * Initializes the robot on startup.
 	 */
 	public void robotInit () {
-		TheRobot.init();
-		System.out.println("All done booting!");
+		System.out.println("Initialization fired.");
+        Robot.init();
 	}
 	
 	/**
 	 * Automated drive for autonomous mode.
 	 */
 	public void autonomous() {
-        hybrid.init();
+		DriverStation.getInstance().setDigitalOut(2, false);
+		DriverStation.getInstance().setDigitalOut(5, false);
         
-		while (isAutonomous() && isEnabled()) {
-			hybrid.step();
+        Robot.compressorPump.start();
+        hybridMode.init();
+        
+		while (isAutonomous() && isEnabled() && hybridMode.step()) {
+            WorkerManager.work();
         }
         
-        hybrid.disable();
+        hybridMode.disable();
+        Robot.compressorPump.stop();
 	}
 	
 	
@@ -79,33 +100,34 @@ public class Robot2012Orange extends SimpleRobot {
 	 * Operator-controlled drive for Teleop mode.
 	 */
 	public void operatorControl() {
-        ControlMode mode = (ControlMode) teleopMode.getSelected();
+		DriverStation.getInstance().setDigitalOut(2, false);
+		DriverStation.getInstance().setDigitalOut(5, false);
         
-		mode.init();
-		
-		while (isOperatorControl() && isEnabled()) {
-            mode.step();
+        teleopMode.init();
+        
+		while (isOperatorControl() && isEnabled() && teleopMode.step()) {
+            WorkerManager.work();
         }
         
-        mode.disable();
+        teleopMode.disable();
 	}
 	
 	/**
 	 * Disabled mode processing.
 	 */
 	public void disabled() {
-		theRobot.compressorPump.stop();
-		theRobot.driveTrain.setSafetyEnabled(false);
+		Robot.compressorPump.stop();
+		Robot.driveTrain.setSafetyEnabled(false);
         
 		Timer lastRecalibrated = new Timer();
 		lastRecalibrated.start();
 		
 		while (!isEnabled()) {
-			if (!theRobot.elevatorLimitSwitch.get()) {
+			if (!Robot.elevatorLimitSwitch.get()) {
 				DriverStation.getInstance().setDigitalOut(5, true);
 				SmartDashboard.getBoolean("Elevator Calibrated", true);
 				if (lastRecalibrated.get() >= 1)
-					theRobot.encoderElevator.reset();
+					Robot.encoderElevator.reset();
 				else
 					lastRecalibrated.reset();
 			}

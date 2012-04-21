@@ -6,6 +6,13 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 
 public class SmarterDashboard {
+	public static int getInt(String key, int def) {
+		try {
+			return SmartDashboard.getInt(key, def);
+		} catch (Exception ex) {
+			return def;
+		}
+	}
 
 	public static double getDouble(String key, double def) {
 		try {

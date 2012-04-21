@@ -12,94 +12,60 @@ import com._604robotics.robot2012.machine.ElevatorMachine;
 import com._604robotics.robot2012.machine.PickupMachine;
 import com._604robotics.robot2012.machine.ShooterMachine;
 import com._604robotics.robot2012.speedcontrol.AwesomeSpeedController;
-import com._604robotics.robot2012.speedcontrol.NaiveSpeedProvider;
 import com._604robotics.robot2012.speedcontrol.SpeedProvider;
-import com._604robotics.utils.DualVictor;
-import com._604robotics.utils.EncoderPIDSource;
-import com._604robotics.utils.EncoderSamplingRate;
-import com._604robotics.utils.Gyro360;
-import com._604robotics.utils.SmarterDashboard;
-import com._604robotics.utils.SpringableDoubleSolenoid;
-import com._604robotics.utils.SpringableRelay;
-import com._604robotics.utils.SpringableVictor;
-import com._604robotics.utils.StrangeMachine;
-import com._604robotics.utils.UpDownPIDController;
-import com._604robotics.utils.XboxController;
 import com._604robotics.utils.UpDownPIDController.Gains;
+import com._604robotics.utils.*;
 import com._604robotics.utils.XboxController.Axis;
-
-import edu.wpi.first.wpilibj.Compressor;
-import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.Encoder;
-import edu.wpi.first.wpilibj.KinectStick;
-import edu.wpi.first.wpilibj.RobotDrive;
-import edu.wpi.first.wpilibj.Victor;
 import edu.wpi.first.wpilibj.RobotDrive.MotorType;
+import edu.wpi.first.wpilibj.*;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-
-public class TheRobot {
-	public static final TheRobot theRobot = new TheRobot();
-	private static boolean initialized = false;
+public class Robot {
+	public static final XboxController driveController;
+	public static final XboxController manipulatorController;
 	
-	public XboxController driveController;
-	public XboxController manipulatorController;
+	public static final KinectStick leftKinect;
+	public static final KinectStick rightKinect;
 	
-	public KinectStick leftKinect;
-	public KinectStick rightKinect;
+	public static final RobotDrive driveTrain;
 	
-	public RobotDrive driveTrain;
+	public static final DualVictor elevatorMotors;
 	
-	public DualVictor elevatorMotors;
+	public static final DualVictor shooterMotors;
+	public static final SpringableVictor hopperMotor;
+	public static final SpringableVictor pickupMotor;
 	
-	public DualVictor shooterMotors;
-	public SpringableVictor hopperMotor;
-	public SpringableVictor pickupMotor;
+	public static final SpringableRelay ringLight;
 	
-	public SpringableRelay ringLight;
+	public static final EncoderPIDSource encoderElevator;
+	public static final EncoderSamplingRate encoderShooter;
 	
-	public EncoderPIDSource encoderElevator;
-	public EncoderSamplingRate encoderShooter;
+	public static final DigitalInput elevatorLimitSwitch;
 	
-	public DigitalInput elevatorLimitSwitch;
+	public static final Gyro360 gyroHeading;
 	
-	public Gyro360 gyroHeading;
+	public static final Compressor compressorPump;
 	
-	public Compressor compressorPump;
+	public static final SpringableDoubleSolenoid solenoidShifter;
+	public static final DoubleSolenoid solenoidShooter;
+	public static final DoubleSolenoid solenoidPickup;
+	public static final SpringableDoubleSolenoid solenoidHopper;
 	
-	public SpringableDoubleSolenoid solenoidShifter;
-	public DoubleSolenoid solenoidShooter;
-	public DoubleSolenoid solenoidPickup;
-	public SpringableDoubleSolenoid solenoidHopper;
+	public static final UpDownPIDController pidElevator;
 	
-	public UpDownPIDController pidElevator;
+	public static final StrangeMachine pickupMachine;
+	public static final ElevatorMachine elevatorMachine;
+	public static final ShooterMachine shooterMachine;
 	
-	public StrangeMachine pickupMachine;
-	public ElevatorMachine elevatorMachine;
-	public ShooterMachine shooterMachine;
+	public static final SendableChooser inTheMiddle;
 	
-	public SendableChooser inTheMiddle;
+	public static final CameraInterface cameraInterface;
 	
-	public CameraInterface cameraInterface;
+	public static final CameraFiringProvider firingProvider;
+	public static final SpeedProvider speedProvider;
 	
-	public CameraFiringProvider firingProvider;
-	public SpeedProvider speedProvider;
-	
-	private TheRobot() {
-		
-	}
-	
-	public static void init() {
-		if(!initialized)
-			theRobot.initialize();
-		
-		initialized = true;
-	}
-	
-	private void initialize() {
+	static {
 		driveController = new XboxController(PortConfiguration.Controllers.DRIVE);
 		manipulatorController = new XboxController(PortConfiguration.Controllers.MANIPULATOR);
 		
@@ -163,10 +129,7 @@ public class TheRobot {
 		
 		solenoidShooter.set(ActuatorConfiguration.SOLENOID_SHOOTER.LOWER_ANGLE);
 		
-		/* Initializes inputs on the SmartDashboard and driver station. */
-		
-		DriverStation.getInstance().setDigitalOut(2, true);
-		DriverStation.getInstance().setDigitalOut(5, false);
+		/* Initializes inputs on the SmartDashboard. */
 		
 		SmartDashboard.putDouble("Elevator Up P", 0.0085);
 		SmartDashboard.putDouble("Elevator Up I", 0D);
@@ -242,5 +205,18 @@ public class TheRobot {
 		SmartDashboard.putDouble("Auton: Max Step", AutonomousConfiguration.MAX_STEP);
 		
 		SmartDashboard.putDouble("fac", encoderShooter.getFac());
+        
+        /* Set calibration signals. */
+		
+		DriverStation.getInstance().setDigitalOut(2, true);
+		DriverStation.getInstance().setDigitalOut(5, false);
+        
+        /* Ready for action! */
+        
+        System.out.println("All done booting!");
 	}
+    
+    public static void init () {
+        // Nothing needs to go here.
+    }
 }
