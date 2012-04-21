@@ -20,6 +20,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * @author  Kevin Parker <kevin.m.parker@gmail.com>
  */
 public class AutonomousControlMode implements ControlMode {
+    // TODO: Split this up into Shoot and Basket modes. As-is, it's broken.
+    
 	int step = 1;
 	Timer controlTimer;
     
