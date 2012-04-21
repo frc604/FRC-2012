@@ -2,6 +2,9 @@ package com._604robotics.robot2012.control.teleop;
 
 import com._604robotics.robot2012.TheRobot;
 import com._604robotics.robot2012.camera.RemoteCameraTCP;
+import com._604robotics.robot2012.configuration.ActuatorConfiguration;
+import com._604robotics.robot2012.configuration.ButtonConfiguration;
+import com._604robotics.robot2012.machine.ElevatorMachine;
 import com._604robotics.robot2012.speedcontrol.AwesomeSpeedController;
 import com._604robotics.utils.SmarterDashboard;
 import com._604robotics.utils.UpDownPIDController;
@@ -19,6 +22,29 @@ public class UserInterface {
             (theRobot.speedProvider instanceof AwesomeSpeedController)
                 ? ((AwesomeSpeedController) theRobot.speedProvider)
                 : null;
+    
+    public static boolean upHigh = false;
+    public static boolean pickupIn = true;
+    
+    public static void readControllerInputs () {
+        /*
+         * Manually set whether or not we're at the fender.
+         */
+
+        if (theRobot.manipulatorController.getToggle(ButtonConfiguration.Manipulator.AT_FENDER)) {
+            theRobot.elevatorMachine.setHoodPosition(ActuatorConfiguration.SOLENOID_SHOOTER.LOWER_ANGLE);
+            if (theRobot.elevatorMachine.test(ElevatorMachine.ElevatorState.HIGH)) {
+                theRobot.solenoidShooter.set(ActuatorConfiguration.SOLENOID_SHOOTER.LOWER_ANGLE);
+            }
+            theRobot.firingProvider.setAtFender(true);
+        } else if (theRobot.manipulatorController.getToggle(ButtonConfiguration.Manipulator.AT_KEY)) {
+            theRobot.elevatorMachine.setHoodPosition(ActuatorConfiguration.SOLENOID_SHOOTER.UPPER_ANGLE);
+            if (theRobot.elevatorMachine.test(ElevatorMachine.ElevatorState.HIGH)) {
+                theRobot.solenoidShooter.set(ActuatorConfiguration.SOLENOID_SHOOTER.UPPER_ANGLE);
+            }
+            theRobot.firingProvider.setAtFender(false);
+        }
+    }
     
     public static void readConfigFromSmartDashboard () {
         /*
@@ -40,6 +66,13 @@ public class UserInterface {
     }
     
     public static void writeDebugInformation () {
+        /*
+         * Output state toggle values.
+         */
+        
+        SmartDashboard.putBoolean("upHigh", upHigh);
+        SmartDashboard.putBoolean("pickupIn", pickupIn);
+        
         /*
          * Output shooter encoder information.
          */
@@ -75,5 +108,10 @@ public class UserInterface {
     
     public static void updateDriverAssist () {
         // TODO: Implement!
+    }
+    
+    public static void resetToggles () {
+        upHigh = false;
+        pickupIn = true;
     }
 }
