@@ -14,29 +14,34 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * Main class for the 2012 robot code codenamed Orange.
- * 
- * @author  Michael Smith <mdsmtp@gmail.com>
- * @author  Kevin Parker <kevin.m.parker@gmail.com>
- * @author  Sebastian Merz <merzbasti95@gmail.com>
- * @author  Aaron Wang <aaronw94@gmail.com>
- * @author  Colin Aitken <cacolinerd@gmail.com>
- * @author  Alan Li <alanpusongli@gmail.com>
+ *
+ * @author Michael Smith <mdsmtp@gmail.com>
+ * @author Kevin Parker <kevin.m.parker@gmail.com>
+ * @author Sebastian Merz <merzbasti95@gmail.com>
+ * @author Aaron Wang <aaronw94@gmail.com>
+ * @author Colin Aitken <cacolinerd@gmail.com>
+ * @author Alan Li <alanpusongli@gmail.com>
  */
 public class Robot2012Orange extends SimpleRobot {
+
     SequentialModeLauncher hybridMode = new SequentialModeLauncher("Hybrid");
     SequentialModeLauncher teleopMode = new SequentialModeLauncher("Teleop");
 
-	/**
-	 * Constructor.
-	 */
-	public Robot2012Orange () {
-        /* Initialize calibration signals. */
-        
-		DriverStation.getInstance().setDigitalOut(2, false);
-		DriverStation.getInstance().setDigitalOut(5, false);
-        
-        /* Register workers. */
-        
+    /**
+     * Constructor.
+     */
+    public Robot2012Orange() {
+        /*
+         * Initialize calibration signals.
+         */
+
+        DriverStation.getInstance().setDigitalOut(2, false);
+        DriverStation.getInstance().setDigitalOut(5, false);
+
+        /*
+         * Register workers.
+         */
+
         WorkerManager.registerWorker(new ConfigWorker());
         WorkerManager.registerWorker(new RingLightWorker());
         WorkerManager.registerWorker(new DriveWorker());
@@ -45,92 +50,98 @@ public class Robot2012Orange extends SimpleRobot {
         WorkerManager.registerWorker(new ShooterWorker());
         WorkerManager.registerWorker(new DashboardWorker());
         WorkerManager.registerWorker(new RespringWorker());
-        
-		/* Initialize hybrid mode. */
-        
+
+        /*
+         * Initialize hybrid mode.
+         */
+
         hybridMode.registerControlMode(new AutonomousControlMode(), true);
         hybridMode.registerControlMode(new WaitingControlMode(), true);
         hybridMode.registerControlMode(new KinectControlMode(), true);
-        
+
         hybridMode.renderSmartDashboard();
-		
-		/* Initialize teleop mode. */
-        
+
+        /*
+         * Initialize teleop mode.
+         */
+
         teleopMode.registerControlMode(new CompetitionControlMode(), true);
         teleopMode.registerControlMode(new LearningControlMode(), false);
-        
+
         teleopMode.renderSmartDashboard();
-        
+
         // TODO: Make the following better.
         Robot.firingProvider.setAtFender(true);
-		
-        /* Ditch the built-in Watchdog. */
-        
-		this.getWatchdog().setEnabled(false);
-	}
-	
-	/**
-	 * Initializes the robot on startup.
-	 */
-	public void robotInit () {
-		System.out.println("Initialization fired.");
+
+        /*
+         * Ditch the built-in Watchdog.
+         */
+
+        this.getWatchdog().setEnabled(false);
+    }
+
+    /**
+     * Initializes the robot on startup.
+     */
+    public void robotInit() {
+        System.out.println("Initialization fired.");
         Robot.init();
-	}
-	
-	/**
-	 * Automated drive for autonomous mode.
-	 */
-	public void autonomous() {
-		DriverStation.getInstance().setDigitalOut(2, false);
-		DriverStation.getInstance().setDigitalOut(5, false);
-        
+    }
+
+    /**
+     * Automated drive for autonomous mode.
+     */
+    public void autonomous() {
+        DriverStation.getInstance().setDigitalOut(2, false);
+        DriverStation.getInstance().setDigitalOut(5, false);
+
         Robot.compressorPump.start();
         hybridMode.init();
-        
-		while (isAutonomous() && isEnabled() && hybridMode.step()) {
+
+        while (isAutonomous() && isEnabled() && hybridMode.step()) {
             WorkerManager.work();
         }
-        
+
         hybridMode.disable();
         Robot.compressorPump.stop();
-	}
-	
-	
-	/**
-	 * Operator-controlled drive for Teleop mode.
-	 */
-	public void operatorControl() {
-		DriverStation.getInstance().setDigitalOut(2, false);
-		DriverStation.getInstance().setDigitalOut(5, false);
-        
+    }
+
+    /**
+     * Operator-controlled drive for Teleop mode.
+     */
+    public void operatorControl() {
+        DriverStation.getInstance().setDigitalOut(2, false);
+        DriverStation.getInstance().setDigitalOut(5, false);
+
         teleopMode.init();
-        
-		while (isOperatorControl() && isEnabled() && teleopMode.step()) {
+
+        while (isOperatorControl() && isEnabled() && teleopMode.step()) {
             WorkerManager.work();
         }
-        
+
         teleopMode.disable();
-	}
-	
-	/**
-	 * Disabled mode processing.
-	 */
-	public void disabled() {
-		Robot.compressorPump.stop();
-		Robot.driveTrain.setSafetyEnabled(false);
-        
-		Timer lastRecalibrated = new Timer();
-		lastRecalibrated.start();
-		
-		while (!isEnabled()) {
-			if (!Robot.elevatorLimitSwitch.get()) {
-				DriverStation.getInstance().setDigitalOut(5, true);
-				SmartDashboard.getBoolean("Elevator Calibrated", true);
-				if (lastRecalibrated.get() >= 1)
-					Robot.encoderElevator.reset();
-				else
-					lastRecalibrated.reset();
-			}
-		}
-	}
+    }
+
+    /**
+     * Disabled mode processing.
+     */
+    public void disabled() {
+        Robot.compressorPump.stop();
+        Robot.driveTrain.setSafetyEnabled(false);
+
+        Timer lastRecalibrated = new Timer();
+        lastRecalibrated.start();
+
+        while (!isEnabled()) {
+            if (!Robot.elevatorLimitSwitch.get()) {
+                DriverStation.getInstance().setDigitalOut(5, true);
+                SmartDashboard.getBoolean("Elevator Calibrated", true);
+                if (lastRecalibrated.get() >= 1) {
+                    Robot.encoderElevator.reset();
+                } else {
+                    lastRecalibrated.reset();
+                }
+            }
+        }
+    }
 }
