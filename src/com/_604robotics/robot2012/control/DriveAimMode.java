@@ -1,4 +1,4 @@
-package com._604robotics.robot2012.controlModes;
+package com._604robotics.robot2012.control;
 
 /**
  *

@@ -168,7 +168,10 @@ public class PIDDP implements IUtility {
                 } else if(errorForDPTerm == 0) {
                     errorForDPTerm = 1/0.0;
                 }
-                
+                // P: -0.0010
+                // I: 0.0
+                // D: -0.0010
+                // DP: 0.0
                 double dpTerm = m_DP * dError / errorForDPTerm;
                 
                 if(dpTerm != dpTerm)
