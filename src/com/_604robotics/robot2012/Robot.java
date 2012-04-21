@@ -22,6 +22,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Robot {
+    
+    private static final Timer lastRecalibrated = new Timer();
+    
 	public static final XboxController driveController;
 	public static final XboxController manipulatorController;
 	
@@ -66,6 +69,9 @@ public class Robot {
 	public static final SpeedProvider speedProvider;
 	
 	static {
+        
+        lastRecalibrated.start();
+        
 		driveController = new XboxController(PortConfiguration.Controllers.DRIVE);
 		manipulatorController = new XboxController(PortConfiguration.Controllers.MANIPULATOR);
 		
@@ -211,6 +217,7 @@ public class Robot {
 		DriverStation.getInstance().setDigitalOut(2, true);
 		DriverStation.getInstance().setDigitalOut(5, false);
         
+        
         /* Ready for action! */
         
         System.out.println("All done booting!");
@@ -218,5 +225,18 @@ public class Robot {
     
     public static void init () {
         // Nothing needs to go here.
+        
+    }
+    
+    public static void tryCalibrateElevator() {
+        if (!Robot.elevatorLimitSwitch.get()) {
+            DriverStation.getInstance().setDigitalOut(5, true);
+            SmartDashboard.getBoolean("Elevator Calibrated", true);
+            if (lastRecalibrated.get() >= 1) {
+                Robot.encoderElevator.reset();
+            } else {
+                lastRecalibrated.reset();
+            }
+        }
     }
 }

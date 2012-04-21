@@ -17,8 +17,7 @@ public class ElevatorWorker implements Worker {
         /*
          * Recalibrate elevator if limit switch depressed.
          */
-        if (!Robot.elevatorLimitSwitch.get())
-            Robot.encoderElevator.reset();
+        Robot.tryCalibrateElevator();
         
         /*
          * Handle disabled state.
