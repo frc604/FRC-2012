@@ -1,6 +1,6 @@
 package com._604robotics.robot2012;
 
-import com._604robotics.robot2012.control.ControlMode;
+import com._604robotics.robot2012.control.teleop.ControlMode;
 import com._604robotics.robot2012.control.LearningControlMode;
 import com._604robotics.robot2012.control.hybrid.HybridControlMode;
 import com._604robotics.robot2012.control.teleop.TeleopControlMode;

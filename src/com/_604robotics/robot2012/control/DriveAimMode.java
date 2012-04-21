@@ -1,5 +1,7 @@
 package com._604robotics.robot2012.control;
 
+import com._604robotics.robot2012.control.teleop.ControlMode;
+
 /**
  *
  * @author Kevin Parker <kevin.m.parker@gmail.com>

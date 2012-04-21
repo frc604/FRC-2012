@@ -1,4 +1,4 @@
-package com._604robotics.robot2012.control;
+package com._604robotics.robot2012.control.teleop;
 
 import com._604robotics.robot2012.TheRobot;
 

@@ -3,7 +3,6 @@ package com._604robotics.robot2012.control.teleop;
 import com._604robotics.robot2012.TheRobot;
 import com._604robotics.robot2012.configuration.ActuatorConfiguration;
 import com._604robotics.robot2012.configuration.ButtonConfiguration;
-import com._604robotics.robot2012.control.ControlMode;
 import com._604robotics.robot2012.machine.ElevatorMachine.ElevatorState;
 import com._604robotics.robot2012.machine.PickupMachine.PickupState;
 import com._604robotics.robot2012.machine.ShooterMachine.ShooterState;
