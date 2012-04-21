@@ -49,4 +49,8 @@ public class DriveTrain {
         theRobot.driveTrain.tankDrive(theRobot.driveController.getAxis(XboxController.Axis.LEFT_STICK_Y) * -1, theRobot.driveController.getAxis(XboxController.Axis.RIGHT_STICK_Y) * -1);
         SmartDashboard.putString("Drive Mode", "Manual");
     }
+    
+    public static void autoAim () {
+        // TODO: Implement.
+    }
 }

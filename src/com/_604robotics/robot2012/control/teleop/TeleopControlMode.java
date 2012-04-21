@@ -1,8 +1,8 @@
 package com._604robotics.robot2012.control.teleop;
 
+import com._604robotics.robot2012.control.ControlMode;
 import com._604robotics.robot2012.TheRobot;
 import com._604robotics.robot2012.configuration.ButtonConfiguration;
-import com._604robotics.robot2012.control.ControlMode;
 
 import edu.wpi.first.wpilibj.DriverStation;
 
