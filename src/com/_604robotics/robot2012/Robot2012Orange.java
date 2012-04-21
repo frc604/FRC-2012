@@ -1,11 +1,14 @@
 package com._604robotics.robot2012;
 
-import com._604robotics.robot2012.controlModes.HybridControlMode;
-import com._604robotics.robot2012.controlModes.TeleopControlMode;
+import com._604robotics.robot2012.control.ControlMode;
+import com._604robotics.robot2012.control.LearningControlMode;
+import com._604robotics.robot2012.control.hybrid.HybridControlMode;
+import com._604robotics.robot2012.control.teleop.TeleopControlMode;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.SimpleRobot;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 
@@ -22,25 +25,36 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class Robot2012Orange extends SimpleRobot {
 	TheRobot theRobot = TheRobot.theRobot;
 
-	TeleopControlMode teleop = new TeleopControlMode();
-	HybridControlMode hybrid = new HybridControlMode();
+	ControlMode teleop = new TeleopControlMode();
+	ControlMode learning = new LearningControlMode();
+	ControlMode hybrid = new HybridControlMode();
+	
+	SendableChooser teleopMode;
 	
 	/**
 	 * Constructor.
-	 * 
-	 * Disables the built-in watchdog, since it's not really needed anymore.
 	 */
 	public Robot2012Orange () {
+        /* Initialize calibration signals. */
+        
 		DriverStation.getInstance().setDigitalOut(2, false);
 		DriverStation.getInstance().setDigitalOut(5, false);
 		
+		/* Initialize mode selector. */
+		
+		teleopMode = new SendableChooser();
+		teleopMode.addDefault("Teleop Mode: Competition", teleop);
+		teleopMode.addObject("Teleop Mode: Learning", learning);
+		
+		SmartDashboard.putData("teleopMode", teleopMode);
+		
+        /* Ditch the built-in Watchdog. */
+        
 		this.getWatchdog().setEnabled(false);
 	}
 	
 	/**
 	 * Initializes the robot on startup.
-	 * 
-	 * Sets up all the controllers, sensors, actuators, etc.
 	 */
 	public void robotInit () {
 		TheRobot.init();
@@ -49,10 +63,6 @@ public class Robot2012Orange extends SimpleRobot {
 	
 	/**
 	 * Automated drive for autonomous mode.
-	 * 
-	 * If in middle, drive forward, knock down bridge, turn around.
-	 * 
-	 * Else, or then, go ahead and try to score.
 	 */
 	public void autonomous() {
         hybrid.init();
@@ -67,26 +77,21 @@ public class Robot2012Orange extends SimpleRobot {
 	
 	/**
 	 * Operator-controlled drive for Teleop mode.
-	 * 
-	 * Handles robot driving, automated balancing for the bridge, ball pickup,
-	 * turret aiming, firing, angle adjustments, light control, elevator
-	 * control - both automated and manual - pneumatics, shifting, and various
-	 * other things.
 	 */
 	public void operatorControl() {
-		teleop.init();
+        ControlMode mode = (ControlMode) teleopMode.getSelected();
+        
+		mode.init();
 		
 		while (isOperatorControl() && isEnabled()) {
-            teleop.step();
+            mode.step();
         }
         
-        teleop.disable();
+        mode.disable();
 	}
 	
 	/**
-	 * The robot is disabled.
-	 * 
-	 * Like ze goggles, zees does nothing.
+	 * Disabled mode processing.
 	 */
 	public void disabled() {
 		theRobot.compressorPump.stop();
