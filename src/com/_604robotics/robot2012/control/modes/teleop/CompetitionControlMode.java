@@ -76,6 +76,8 @@ public class CompetitionControlMode implements ControlMode {
         Robot.driveTrain.setSafetyEnabled(false);
 
         Robot.pidElevator.disable();
+        Robot.speedProvider.reset();
+        
         Robot.compressorPump.stop();
     }
 

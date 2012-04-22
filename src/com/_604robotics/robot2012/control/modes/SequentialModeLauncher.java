@@ -26,22 +26,8 @@ public class SequentialModeLauncher implements ControlMode {
         ;
     }
     
-    private static String packBooleanFromInt (int bool) {
-        return (bool == 1)
-                ? "true"
-                : "false"
-        ;
-    }
-    
     private static boolean unpackBoolean (Object packed) {
         return ((String) packed).equals("true");
-    }
-    
-    private static int unpackBooleanAsInt (Object packed) {
-        return (((String) packed).equals("true"))
-                ? 1
-                : 0
-        ;
     }
     
     private static String renderModeName (ControlMode mode, int index) {
@@ -72,7 +58,7 @@ public class SequentialModeLauncher implements ControlMode {
     public void renderSmartDashboard () {
         SmartDashboard.putString(this.getName(), renderModeName(this.getCurrentMode(), mode));
         for (int i = 0; i < modes.size(); i++)
-            SmartDashboard.putInt(this.getModeKey(i), unpackBooleanAsInt(this.enabled.elementAt(i)));
+            SmartDashboard.putBoolean(this.getModeKey(i), unpackBoolean(this.enabled.elementAt(i)));
     }
     
     public void init () {
@@ -83,10 +69,10 @@ public class SequentialModeLauncher implements ControlMode {
         if (mode >= modes.size())
             return false;
         
-        int isEnabled = SmarterDashboard.getInt(this.getModeKey(mode), unpackBooleanAsInt(enabled.elementAt(mode)));
-        enabled.setElementAt(packBooleanFromInt(isEnabled), mode);
+        boolean isEnabled = SmarterDashboard.getBoolean(this.getModeKey(mode), unpackBoolean(enabled.elementAt(mode)));
+        enabled.setElementAt(packBoolean(isEnabled), mode);
         
-        if (isEnabled != 1 || !this.getCurrentMode().step()) {
+        if (!isEnabled|| !this.getCurrentMode().step()) {
             this.getCurrentMode().disable();
             
             mode++;

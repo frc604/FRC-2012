@@ -1,12 +1,17 @@
 package com._604robotics.robot2012;
 
 import com._604robotics.robot2012.control.modes.SequentialModeLauncher;
-import com._604robotics.robot2012.control.modes.hybrid.AutonomousControlMode;
+import com._604robotics.robot2012.control.modes.hybrid.BridgeControlMode;
 import com._604robotics.robot2012.control.modes.hybrid.KinectControlMode;
+import com._604robotics.robot2012.control.modes.hybrid.ShootControlMode;
 import com._604robotics.robot2012.control.modes.hybrid.WaitingControlMode;
 import com._604robotics.robot2012.control.modes.teleop.CompetitionControlMode;
 import com._604robotics.robot2012.control.modes.teleop.LearningControlMode;
 import com._604robotics.robot2012.control.workers.*;
+import com._604robotics.robot2012.dashboard.Dashboard;
+import com._604robotics.robot2012.dashboard.FiringDashboard;
+import com._604robotics.robot2012.dashboard.ShooterDashboard;
+import com._604robotics.robot2012.dashboard.UserDashboard;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.SimpleRobot;
 import edu.wpi.first.wpilibj.Timer;
@@ -23,7 +28,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * @author Alan Li <alanpusongli@gmail.com>
  */
 public class Robot2012Orange extends SimpleRobot {
-
     SequentialModeLauncher hybridMode = new SequentialModeLauncher("Hybrid");
     SequentialModeLauncher teleopMode = new SequentialModeLauncher("Teleop");
 
@@ -31,6 +35,11 @@ public class Robot2012Orange extends SimpleRobot {
      * Constructor.
      */
     public Robot2012Orange() {
+        /*
+         * Make sure the robot is warmed up. Probably isn't necessary.
+         */
+        Robot.init();
+        
         /*
          * Initialize calibration signals.
          */
@@ -40,19 +49,28 @@ public class Robot2012Orange extends SimpleRobot {
         /*
          * Register workers.
          */
-        WorkerManager.registerWorker(new ConfigWorker());
         WorkerManager.registerWorker(new RingLightWorker());
         WorkerManager.registerWorker(new DriveWorker());
         WorkerManager.registerWorker(new ElevatorWorker());
         WorkerManager.registerWorker(new PickupWorker());
         WorkerManager.registerWorker(new ShooterWorker());
-        WorkerManager.registerWorker(new DashboardWorker());
         WorkerManager.registerWorker(new RespringWorker());
-
+        
+        /*
+         * Register dashboard sections.
+         */
+        //Dashboard.registerSection(AutonomousDashboard.getInstance());
+        //Dashboard.registerSection(ElevatorDashboard.getInstance());
+        Dashboard.registerSection(FiringDashboard.getInstance());
+        Dashboard.registerSection(ShooterDashboard.getInstance());
+        //Dashboard.registerSection(StateDashboard.getInstance());
+        Dashboard.registerSection(UserDashboard.getInstance());
+        
         /*
          * Initialize hybrid mode.
          */
-        hybridMode.registerControlMode(new AutonomousControlMode(), true);
+        hybridMode.registerControlMode(new ShootControlMode(), true);
+        hybridMode.registerControlMode(new BridgeControlMode(), false);
         hybridMode.registerControlMode(new WaitingControlMode(), true);
         hybridMode.registerControlMode(new KinectControlMode(), true);
 
@@ -79,8 +97,7 @@ public class Robot2012Orange extends SimpleRobot {
      * Initializes the robot on startup.
      */
     public void robotInit() {
-        System.out.println("Initialization fired.");
-        Robot.init();
+        System.out.println("It's ALIVE!");
     }
 
     /**
@@ -95,6 +112,7 @@ public class Robot2012Orange extends SimpleRobot {
 
         while (isAutonomous() && isEnabled() && hybridMode.step()) {
             WorkerManager.work();
+            //Dashboard.render();
         }
 
         hybridMode.disable();
@@ -109,9 +127,10 @@ public class Robot2012Orange extends SimpleRobot {
         DriverStation.getInstance().setDigitalOut(5, false);
 
         teleopMode.init();
-
+        
         while (isOperatorControl() && isEnabled() && teleopMode.step()) {
             WorkerManager.work();
+            Dashboard.render();
         }
 
         teleopMode.disable();
@@ -128,6 +147,8 @@ public class Robot2012Orange extends SimpleRobot {
         lastRecalibrated.start();
 
         while (!isEnabled()) {
+            Dashboard.render();
+            
             if (!Robot.elevatorLimitSwitch.get()) {
                 DriverStation.getInstance().setDigitalOut(5, true);
                 SmartDashboard.getBoolean("Elevator Calibrated", true);

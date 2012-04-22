@@ -6,6 +6,14 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 
 public class SmarterDashboard {
+	public static boolean getBoolean(String key, boolean def) {
+		try {
+			return SmartDashboard.getBoolean(key, def);
+		} catch (Exception ex) {
+			return def;
+		}
+	}
+    
 	public static int getInt(String key, int def) {
 		try {
 			return SmartDashboard.getInt(key, def);

@@ -1,6 +1,7 @@
 package com._604robotics.robot2012.machine;
 
 import com._604robotics.robot2012.configuration.ActuatorConfiguration;
+import com._604robotics.robot2012.dashboard.UserDashboard;
 import com._604robotics.robot2012.firing.FiringProvider;
 import com._604robotics.robot2012.speedcontrol.SpeedProvider;
 import com._604robotics.utils.DualVictor;
@@ -65,11 +66,11 @@ public class ShooterMachine implements StrangeMachine {
                 this.shooter.apply();
                 
                 if (this.shooter.isOnTarget(ActuatorConfiguration.SHOOTER_SPEED_TOLERANCE)) {
-                    SmartDashboard.putString("Shooter Charged: ", "YES YES YES YES YES");
+                    UserDashboard.setShooterCharged(true);
                     if (DriverStation.getInstance().isAutonomous())
                         this.hopper.set(ActuatorConfiguration.HOPPER_POWER);
                 } else {
-                    SmartDashboard.putString("Shooter Charged: ", "NO NO NO NO NO");
+                    UserDashboard.setShooterCharged(false);
                 }
                 
                 this.elevator.set(0.15);

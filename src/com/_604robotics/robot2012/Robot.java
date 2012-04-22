@@ -3,8 +3,6 @@ package com._604robotics.robot2012;
 import com._604robotics.robot2012.camera.CameraInterface;
 import com._604robotics.robot2012.camera.RemoteCameraTCP;
 import com._604robotics.robot2012.configuration.ActuatorConfiguration;
-import com._604robotics.robot2012.configuration.AutonomousConfiguration;
-import com._604robotics.robot2012.configuration.FiringConfiguration;
 import com._604robotics.robot2012.configuration.PortConfiguration;
 import com._604robotics.robot2012.firing.CameraFiringProvider;
 import com._604robotics.robot2012.firing.ManualFiringProvider;
@@ -18,8 +16,6 @@ import com._604robotics.utils.*;
 import com._604robotics.utils.XboxController.Axis;
 import edu.wpi.first.wpilibj.RobotDrive.MotorType;
 import edu.wpi.first.wpilibj.*;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Robot {
 	public static final XboxController driveController;
@@ -58,8 +54,6 @@ public class Robot {
 	public static final ElevatorMachine elevatorMachine;
 	public static final ShooterMachine shooterMachine;
 	
-	public static final SendableChooser inTheMiddle;
-	
 	public static final CameraInterface cameraInterface;
 	
 	public static final CameraFiringProvider firingProvider;
@@ -84,7 +78,7 @@ public class Robot {
 		driveTrain.setInvertedMotor(MotorType.kFrontRight, false);
 		driveTrain.setInvertedMotor(MotorType.kRearLeft, false);
 		driveTrain.setInvertedMotor(MotorType.kRearRight, false);
-		
+        
 		/* Set up the elevator, shooter, hopper, pickup, and rotation motors. */
 		
 		elevatorMotors = new DualVictor(PortConfiguration.Motors.ELEVATOR_LEFT, PortConfiguration.Motors.ELEVATOR_RIGHT);
@@ -107,7 +101,7 @@ public class Robot {
 		encoderShooter.setDistancePerPulse(1);
 		encoderShooter.setPIDSourceParameter(Encoder.PIDSourceParameter.kRate);
 		encoderShooter.setSamplingRate(20);
-		encoderShooter.setFac(SmarterDashboard.getDouble("fac", 0.5));
+		encoderShooter.setFac(0.5);
 		encoderShooter.start();
 		
 		/* Sets up the limit switches for calibration. */
@@ -129,33 +123,15 @@ public class Robot {
 		
 		solenoidShooter.set(ActuatorConfiguration.SOLENOID_SHOOTER.LOWER_ANGLE);
 		
-		/* Initializes inputs on the SmartDashboard. */
-		
-		SmartDashboard.putDouble("Elevator Up P", 0.0085);
-		SmartDashboard.putDouble("Elevator Up I", 0D);
-		SmartDashboard.putDouble("Elevator Up D", 0.018);
-		
-		SmartDashboard.putDouble("Elevator Down P", 0.0029);
-		SmartDashboard.putDouble("Elevator Down I", 0.000003);
-		SmartDashboard.putDouble("Elevator Down D", 0.007);
-		
 		/* Sets up the PID controllers. */
 		
-		pidElevator = new UpDownPIDController(new Gains(SmarterDashboard.getDouble("Elevator Up P", 0.0085), SmarterDashboard.getDouble("Elevator Up I", 0D), SmarterDashboard.getDouble("Elevator Up D", 0.018)), new Gains(SmarterDashboard.getDouble("Elevator Down P", 0.0029), SmarterDashboard.getDouble("Elevator Down I", 0.000003), SmarterDashboard.getDouble("Elevator Down P", 0.007)), encoderElevator, elevatorMotors);
+		pidElevator = new UpDownPIDController(new Gains(0.0085, 0D, 0.018), new Gains(0.0029, 0.000003, 0.007), encoderElevator, elevatorMotors);
 		
 		pidElevator.setInputRange(0, 1550);
 		pidElevator.setOutputRange(ActuatorConfiguration.ELEVATOR_POWER_MIN, ActuatorConfiguration.ELEVATOR_POWER_MAX);
 		pidElevator.setSetpoint(822);
 		
 		elevatorMotors.setController(pidElevator);
-		
-		/* Sets up the switcher for autonomous. */
-		
-		inTheMiddle = new SendableChooser();
-		inTheMiddle.addDefault("Autonomous: On the Sides", "No");
-		inTheMiddle.addObject("Autonomous: In the Middle", "Yes");
-		
-		SmartDashboard.putData("inTheMiddle", inTheMiddle);
 		
 		/* Sets up the camera inteface. */
 		
@@ -175,37 +151,12 @@ public class Robot {
 		//speedProvider = new ProcessSpeedProvider(-0.0001, 0D, -0.0008, encoderShooter, shooterMotors);
 		speedProvider = new AwesomeSpeedController(-0.001, 0D, -0.001, 0D, encoderShooter, shooterMotors);
 		
-		if (speedProvider instanceof AwesomeSpeedController) {
-			SmartDashboard.putDouble("Shooter P", ((AwesomeSpeedController) speedProvider).getP());
-			SmartDashboard.putDouble("Shooter I", ((AwesomeSpeedController) speedProvider).getI());
-			SmartDashboard.putDouble("Shooter D", ((AwesomeSpeedController) speedProvider).getD());
-			SmartDashboard.putDouble("Shooter DP", ((AwesomeSpeedController) speedProvider).getDP());
-			SmartDashboard.putDouble("Shooter fac", ((AwesomeSpeedController) speedProvider).fac);
-			SmartDashboard.putDouble("Shooter maxSpeed", ((AwesomeSpeedController) speedProvider).maxSpeed);
-		}
-		
 		/* Sets up the Machines. */
 		
 		pickupMachine = new PickupMachine(solenoidPickup);
 		elevatorMachine = new ElevatorMachine(pidElevator, encoderElevator, solenoidShooter);
 		shooterMachine = new ShooterMachine(hopperMotor, firingProvider, speedProvider, elevatorMotors);
-		
-		/* Sets up debug outputs. */
-		
-		SmartDashboard.putString("Shooter Charged: ", "NO NO NO NO NO");
-		SmartDashboard.putBoolean("Elevator Calibrated", false);
-		
-		SmartDashboard.putDouble("Shooter Preset: Fender", FiringConfiguration.FENDER_FIRING_POWER);
-		SmartDashboard.putDouble("Shooter Preset: Key", FiringConfiguration.KEY_FIRING_POWER);
-		
-		SmartDashboard.putDouble("Auton: Step 2", AutonomousConfiguration.STEP_2_SHOOT_TIME);
-		SmartDashboard.putDouble("Auton: Step 3", AutonomousConfiguration.STEP_3_TURN_TIME);
-		SmartDashboard.putDouble("Auton: Step 4", AutonomousConfiguration.STEP_4_DRIVE_TIME);
-		SmartDashboard.putDouble("Auton: Step 5", AutonomousConfiguration.STEP_5_WAIT_TIME);
-		SmartDashboard.putDouble("Auton: Max Step", AutonomousConfiguration.MAX_STEP);
-		
-		SmartDashboard.putDouble("fac", encoderShooter.getFac());
-        
+		        
         /* Set calibration signals. */
 		
 		DriverStation.getInstance().setDigitalOut(2, true);
@@ -217,6 +168,6 @@ public class Robot {
 	}
     
     public static void init () {
-        // Nothing needs to go here.
+        // This space intentionally left blank.
     }
 }

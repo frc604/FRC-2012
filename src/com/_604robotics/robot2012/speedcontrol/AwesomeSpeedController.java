@@ -8,7 +8,6 @@ import edu.wpi.first.wpilibj.PIDSource;
  * @author Kevin Parker <kevin.m.parker@gmail.com>
  */
 public class AwesomeSpeedController implements SpeedProvider {
-    
     public double maxSpeed = 1;
     public double fac = .9;
     
@@ -25,7 +24,6 @@ public class AwesomeSpeedController implements SpeedProvider {
         private double process = 0D;
         private double add = 0;
         
-        
         public void pidWrite (double output) {
             this.process += output;
             
@@ -33,8 +31,6 @@ public class AwesomeSpeedController implements SpeedProvider {
                 this.process = maxSpeed;
             else if(this.process < -maxSpeed)
                 this.process = -maxSpeed;
-            
-            System.out.println("Process = "+this.process);
             
             currentValue = this.process + add;
         }
@@ -73,35 +69,12 @@ public class AwesomeSpeedController implements SpeedProvider {
     public boolean isOnTarget(double tolerance) {
         return Math.abs(tolerance - this.source.pidGet()) < tolerance;
     }
-
-    public double getP () {
-        return this.controller.getP();
-    }
-
-    public double getI () {
-        return this.controller.getI();
-    }
-
-    public double getD () {
-        return this.controller.getD();
-    }
     
-    public double getDP () {
-        return this.controller.getDP();
-    }
-
-    public void setPID (double P, double I, double D) {
-        this.controller.setPID(P, I, D);
-    }
-
-    public void setPIDDP (double P, double I, double D, double DP) {
-        this.controller.setPIDDP(P, I, D, DP);
+    public PIDDP getController () {
+        return controller;
     }
     
     public void apply() {
-        //System.out.println("Awesome speed = " + getSetSpeed());
-        //System.out.println(this.getSetSpeed());
-        
         this.loaded = true;
         double setpoint = this.getSetSpeed();
         
