@@ -1,7 +1,6 @@
 package edu.wpi.first.wpilibj.smartdashboard;
 
 import edu.wpi.first.wpilibj.networktables.NetworkTable;
-import edu.wpi.first.wpilibj.networktables.NetworkTableKeyNotDefined;
 
 /**
  *
