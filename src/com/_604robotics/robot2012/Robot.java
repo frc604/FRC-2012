@@ -12,13 +12,15 @@ import com._604robotics.robot2012.machine.PickupMachine;
 import com._604robotics.robot2012.machine.ShooterMachine;
 import com._604robotics.robot2012.speedcontrol.AwesomeSpeedController;
 import com._604robotics.robot2012.speedcontrol.SpeedProvider;
-import com._604robotics.utils.UpDownPIDController.Gains;
 import com._604robotics.utils.*;
 import com._604robotics.utils.XboxController.Axis;
 import edu.wpi.first.wpilibj.RobotDrive.MotorType;
 import edu.wpi.first.wpilibj.*;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Robot {
+    private static final Timer lastRecalibrated = new Timer();
+    
 	public static final XboxController driveController;
 	public static final XboxController manipulatorController;
 	
@@ -64,6 +66,9 @@ public class Robot {
 	public static final SpeedProvider speedProvider;
 	
 	static {
+        
+        lastRecalibrated.start();
+        
 		driveController = new XboxController(PortConfiguration.Controllers.DRIVE);
 		manipulatorController = new XboxController(PortConfiguration.Controllers.MANIPULATOR);
 		
@@ -169,6 +174,7 @@ public class Robot {
 		DriverStation.getInstance().setDigitalOut(2, true);
 		DriverStation.getInstance().setDigitalOut(5, false);
         
+        
         /* Ready for action! */
         
         System.out.println("All done booting!");
@@ -176,5 +182,17 @@ public class Robot {
     
     public static void init () {
         // This space intentionally left blank.
+    }
+    
+    public static void tryCalibrateElevator() {
+        if (!Robot.elevatorLimitSwitch.get()) {
+            DriverStation.getInstance().setDigitalOut(5, true);
+            SmartDashboard.getBoolean("Elevator Calibrated", true);
+            if (lastRecalibrated.get() >= 1) {
+                Robot.encoderElevator.reset();
+            } else {
+                lastRecalibrated.reset();
+            }
+        }
     }
 }

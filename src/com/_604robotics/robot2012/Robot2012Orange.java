@@ -11,7 +11,6 @@ import com._604robotics.robot2012.control.workers.*;
 import com._604robotics.robot2012.dashboard.*;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.SimpleRobot;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
@@ -140,21 +139,9 @@ public class Robot2012Orange extends SimpleRobot {
         Robot.compressorPump.stop();
         Robot.driveTrain.setSafetyEnabled(false);
 
-        Timer lastRecalibrated = new Timer();
-        lastRecalibrated.start();
-
         while (!isEnabled()) {
+            Robot.tryCalibrateElevator();
             Dashboard.render();
-            
-            if (!Robot.elevatorLimitSwitch.get()) {
-                DriverStation.getInstance().setDigitalOut(5, true);
-                SmartDashboard.getBoolean("Elevator Calibrated", true);
-                if (lastRecalibrated.get() >= 1) {
-                    Robot.encoderElevator.reset();
-                } else {
-                    lastRecalibrated.reset();
-                }
-            }
         }
     }
 }
