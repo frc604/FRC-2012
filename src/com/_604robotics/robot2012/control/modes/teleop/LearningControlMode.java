@@ -29,13 +29,7 @@ public class LearningControlMode implements ControlMode {
         if (Math.abs(leftStickY) > 0.15) {
             Drive.drive(leftStickY);
             
-            Target[] targets = Robot.cameraInterface.getTargets();
-            Target target = null;
-            
-            for (int i = 0; i < targets.length; i++) {
-                if (target == null || targets[i].getY() < target.getY())
-                    target = targets[i];
-            }
+            Target target = Robot.cameraInterface.getSingleTarget();
             
             if (target != null) {
                 tutor.configure(target.getZ());

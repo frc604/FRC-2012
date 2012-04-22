@@ -30,6 +30,7 @@ public class CompetitionControlMode implements ControlMode {
          */
         Drive.shift(Robot.driveController.getButton(ButtonConfiguration.Driver.SHIFT));
         Drive.setSlow(Robot.driveController.getButton(ButtonConfiguration.Driver.SLOW_BUTTON));
+        Drive.autoAim(Robot.driveController.getButton(ButtonConfiguration.Driver.AUTO_AIM));
         
         if (Robot.driveController.getButton(ButtonConfiguration.Driver.TINY_FORWARD))
             Drive.bump(1);

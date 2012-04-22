@@ -3,6 +3,7 @@ package com._604robotics.robot2012;
 import com._604robotics.robot2012.camera.CameraInterface;
 import com._604robotics.robot2012.camera.RemoteCameraTCP;
 import com._604robotics.robot2012.configuration.ActuatorConfiguration;
+import com._604robotics.robot2012.configuration.PIDConfiguration;
 import com._604robotics.robot2012.configuration.PortConfiguration;
 import com._604robotics.robot2012.firing.CameraFiringProvider;
 import com._604robotics.robot2012.firing.ManualFiringProvider;
@@ -49,6 +50,9 @@ public class Robot {
 	public static final SpringableDoubleSolenoid solenoidHopper;
 	
 	public static final UpDownPIDController pidElevator;
+    
+    public static final CachingPIDSource pidSourceDriveAngle;
+    public static final PIDController pidAutoAim;
 	
 	public static final StrangeMachine pickupMachine;
 	public static final ElevatorMachine elevatorMachine;
@@ -125,11 +129,14 @@ public class Robot {
 		
 		/* Sets up the PID controllers. */
 		
-		pidElevator = new UpDownPIDController(new Gains(0.0085, 0D, 0.018), new Gains(0.0029, 0.000003, 0.007), encoderElevator, elevatorMotors);
+		pidElevator = new UpDownPIDController(PIDConfiguration.Elevator.UP, PIDConfiguration.Elevator.DOWN, encoderElevator, elevatorMotors);
 		
 		pidElevator.setInputRange(0, 1550);
 		pidElevator.setOutputRange(ActuatorConfiguration.ELEVATOR_POWER_MIN, ActuatorConfiguration.ELEVATOR_POWER_MAX);
 		pidElevator.setSetpoint(822);
+        
+        pidSourceDriveAngle = new CachingPIDSource();
+        pidAutoAim = new PIDController(PIDConfiguration.AutoAim.P, PIDConfiguration.AutoAim.I, PIDConfiguration.AutoAim.D, pidSourceDriveAngle, new TurningDrivePIDOutput(driveTrain));
 		
 		elevatorMotors.setController(pidElevator);
 		
@@ -149,13 +156,13 @@ public class Robot {
 		//speedProvider = new StupidSpeedProvider(shooterMotors);
 		//speedProvider = new NaiveSpeedProvider(shooterMotors, encoderShooter);
 		//speedProvider = new ProcessSpeedProvider(-0.0001, 0D, -0.0008, encoderShooter, shooterMotors);
-		speedProvider = new AwesomeSpeedController(-0.001, 0D, -0.001, 0D, encoderShooter, shooterMotors);
+		speedProvider = new AwesomeSpeedController(PIDConfiguration.Shooter.P, PIDConfiguration.Shooter.I, PIDConfiguration.Shooter.D, PIDConfiguration.Shooter.DP, encoderShooter, shooterMotors);
 		
 		/* Sets up the Machines. */
 		
-		pickupMachine = new PickupMachine(solenoidPickup);
-		elevatorMachine = new ElevatorMachine(pidElevator, encoderElevator, solenoidShooter);
-		shooterMachine = new ShooterMachine(hopperMotor, firingProvider, speedProvider, elevatorMotors);
+		pickupMachine = new PickupMachine();
+		elevatorMachine = new ElevatorMachine();
+		shooterMachine = new ShooterMachine();
 		        
         /* Set calibration signals. */
 		

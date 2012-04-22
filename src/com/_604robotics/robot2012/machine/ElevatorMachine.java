@@ -1,10 +1,9 @@
 package com._604robotics.robot2012.machine;
 
+import com._604robotics.robot2012.Robot;
 import com._604robotics.robot2012.configuration.ActuatorConfiguration;
 import com._604robotics.utils.StrangeMachine;
 import edu.wpi.first.wpilibj.DoubleSolenoid;
-import edu.wpi.first.wpilibj.Encoder;
-import edu.wpi.first.wpilibj.PIDController;
 
 /**
  * Machine to control the elevator.
@@ -12,10 +11,6 @@ import edu.wpi.first.wpilibj.PIDController;
  * @author  Michael Smith <mdsmtp@gmail.com>
  */
 public class ElevatorMachine implements StrangeMachine {
-    private final PIDController controller;
-    private final Encoder encoder;
-    private final DoubleSolenoid hood;
-    
     private int lastState = ElevatorState.MEDIUM;
     private boolean withinTolerance = false;
     
@@ -38,29 +33,27 @@ public class ElevatorMachine implements StrangeMachine {
      * @param   encoder     The encoder monitoring the elevator's vertical
      *                      position.
      */
-    public ElevatorMachine (PIDController controller, Encoder encoder, DoubleSolenoid hood) {
-        this.controller = controller;
-        this.encoder = encoder;
-        this.hood = hood;
+    public ElevatorMachine () {
+        
     }
     
     public boolean test (int state) {
         switch (state) {
             case ElevatorState.HIGH:
-                /* if (this.encoder.get() >= ActuatorConfiguration.ELEVATOR.TOLERANCE.HIGH)
+                /* if (Robot.encoderElevator.get() >= ActuatorConfiguration.ELEVATOR.TOLERANCE.HIGH)
                     this.withinTolerance = true;
-                return this.lastState == ElevatorState.HIGH && this.withinTolerance && this.encoder.get() >= ActuatorConfiguration.ELEVATOR.DEADBAND.HIGH; */
+                return this.lastState == ElevatorState.HIGH && this.withinTolerance && Robot.encoderElevator.get() >= ActuatorConfiguration.ELEVATOR.DEADBAND.HIGH; */
                 return true;
             case ElevatorState.MEDIUM:
-                if (this.encoder.get() >= ActuatorConfiguration.ELEVATOR.TOLERANCE.MEDIUM_LOWER && this.encoder.get() <= ActuatorConfiguration.ELEVATOR.TOLERANCE.MEDIUM_UPPER)
+                if (Robot.encoderElevator.get() >= ActuatorConfiguration.ELEVATOR.TOLERANCE.MEDIUM_LOWER && Robot.encoderElevator.get() <= ActuatorConfiguration.ELEVATOR.TOLERANCE.MEDIUM_UPPER)
                     this.withinTolerance = true;
-                return this.lastState == ElevatorState.MEDIUM && this.withinTolerance && this.encoder.get() >= ActuatorConfiguration.ELEVATOR.DEADBAND.MEDIUM_LOWER && this.encoder.get() <= ActuatorConfiguration.ELEVATOR.DEADBAND.MEDIUM_UPPER;
+                return this.lastState == ElevatorState.MEDIUM && this.withinTolerance && Robot.encoderElevator.get() >= ActuatorConfiguration.ELEVATOR.DEADBAND.MEDIUM_LOWER && Robot.encoderElevator.get() <= ActuatorConfiguration.ELEVATOR.DEADBAND.MEDIUM_UPPER;
             case ElevatorState.LOW:
-                if (this.encoder.get() <= ActuatorConfiguration.ELEVATOR.TOLERANCE.LOW)
+                if (Robot.encoderElevator.get() <= ActuatorConfiguration.ELEVATOR.TOLERANCE.LOW)
                     this.withinTolerance = true;
-                return this.lastState == ElevatorState.LOW && this.withinTolerance && this.encoder.get() <= ActuatorConfiguration.ELEVATOR.DEADBAND.LOW;
+                return this.lastState == ElevatorState.LOW && this.withinTolerance && Robot.encoderElevator.get() <= ActuatorConfiguration.ELEVATOR.DEADBAND.LOW;
             case ElevatorState.PICKUP_OKAY:
-                return this.lastState != ElevatorState.LOW && this.encoder.get() >= ActuatorConfiguration.ELEVATOR.DEADBAND.MEDIUM_LOWER;
+                return this.lastState != ElevatorState.LOW && Robot.encoderElevator.get() >= ActuatorConfiguration.ELEVATOR.DEADBAND.MEDIUM_LOWER;
         }
         
         return false;
@@ -69,13 +62,13 @@ public class ElevatorMachine implements StrangeMachine {
     public boolean crank (int state) {
         if (this.lastState != state) {
             this.withinTolerance = false;
-            this.controller.reset();
+            Robot.pidElevator.reset();
             
             if (state == ElevatorState.HIGH) {
-                this.hood.set(this.hoodPosition);
+                Robot.solenoidShooter.set(this.hoodPosition);
             } else if (this.lastState == ElevatorState.HIGH) {
-                this.hoodPosition = this.hood.get();
-                this.hood.set(ActuatorConfiguration.SOLENOID_SHOOTER.LOWER_ANGLE);
+                this.hoodPosition = Robot.solenoidShooter.get();
+                Robot.solenoidShooter.set(ActuatorConfiguration.SOLENOID_SHOOTER.LOWER_ANGLE);
             }
             
             this.lastState = state;
@@ -83,27 +76,27 @@ public class ElevatorMachine implements StrangeMachine {
         
         switch (state) {
             case ElevatorState.HIGH:
-                //this.controller.setSetpoint(ActuatorConfiguration.ELEVATOR.HIGH);
+                Robot.pidElevator.setSetpoint(ActuatorConfiguration.ELEVATOR.HIGH);
                 break;
             case ElevatorState.MEDIUM:
-                this.controller.setSetpoint(ActuatorConfiguration.ELEVATOR.MEDIUM);
+                Robot.pidElevator.setSetpoint(ActuatorConfiguration.ELEVATOR.MEDIUM);
                 break;
             case ElevatorState.LOW:
-                this.controller.setSetpoint(ActuatorConfiguration.ELEVATOR.LOW);
+                Robot.pidElevator.setSetpoint(ActuatorConfiguration.ELEVATOR.LOW);
                 break;
             default:
-                this.controller.disable();
+                Robot.pidElevator.disable();
                 return false;
         }
         
         boolean ret = this.test(state);
         
         if (ret) {
-            if (this.controller.isEnable())
-                this.controller.disable();
+            if (Robot.pidElevator.isEnable())
+                Robot.pidElevator.disable();
         } else {
-            if (!this.controller.isEnable())
-                this.controller.enable();
+            if (!Robot.pidElevator.isEnable())
+                Robot.pidElevator.enable();
         }
         
         return ret;

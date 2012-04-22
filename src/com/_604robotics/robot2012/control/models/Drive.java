@@ -13,6 +13,8 @@ public class Drive {
     public static double leftPower = 0D;
     public static double rightPower = 0D;
     
+    public static boolean autoAim = false;
+    
     public static void shift (boolean shifted) {
         Drive.shifted = shifted;
     }
@@ -36,5 +38,13 @@ public class Drive {
     
     public static void bump (int polarity) {
         Drive.drive(ActuatorConfiguration.DRIVE_BUMP_SPEED * polarity);
+    }
+    
+    public static void autoAim (boolean autoAim) {
+        Drive.autoAim = autoAim;
+    }
+    
+    public static void autoAim () {
+        Drive.autoAim(true);
     }
 }

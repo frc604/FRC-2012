@@ -20,6 +20,8 @@ public interface ButtonConfiguration {
         public static final int TINY_FORWARD = Button.Y;
         public static final int TINY_REVERSE = Button.A;
         
+        public static final int AUTO_AIM = Button.X;
+        
         public static final int CALIBRATE = Button.LB;
     }
     
