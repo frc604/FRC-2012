@@ -13,6 +13,7 @@ public class SendableButton implements SmartDashboardNamedData {
     
     private boolean wasPressed = false;
     private boolean isDisabled = false;
+    private boolean deleted = false;
     
     public SendableButton (String name) {
         this.table = new NetworkTable();
@@ -46,6 +47,15 @@ public class SendableButton implements SmartDashboardNamedData {
     public void setDisabled (boolean isDisabled) {
         this.isDisabled = isDisabled;
         this.table.putBoolean("disabled", isDisabled);
+    }
+    
+    public boolean isDeleted () {
+        return this.deleted;
+    }
+    
+    public void delete () {
+        this.deleted = true;
+        this.table.putBoolean("delete", this.deleted);
     }
 
     public String getName () {
