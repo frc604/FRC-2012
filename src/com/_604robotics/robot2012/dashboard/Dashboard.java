@@ -64,7 +64,7 @@ public class Dashboard {
         }
 
         protected void end() {
-            
+            this.getTable().putBoolean("delete", true);
         }
 
         protected void interrupted() {

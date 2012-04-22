@@ -11,7 +11,6 @@ import com._604robotics.robot2012.control.workers.*;
 import com._604robotics.robot2012.dashboard.*;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.SimpleRobot;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * Main class for the 2012 robot code codenamed Orange.
