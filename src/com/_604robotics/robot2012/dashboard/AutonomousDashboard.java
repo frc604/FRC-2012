@@ -12,8 +12,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class AutonomousDashboard implements DashboardSection {
     private static final AutonomousDashboard instance;
     
-	public static final SendableChooser inTheMiddle;
-    
     public static int step = 0;
     public static boolean done = false;
     
@@ -23,9 +21,11 @@ public class AutonomousDashboard implements DashboardSection {
     public static double step5 = AutonomousConfiguration.STEP_5_WAIT_TIME;
     public static double maxStep = AutonomousConfiguration.STEP_5_WAIT_TIME;
     
-    public void render () {
-        SmartDashboard.putData("Auton: Selector", inTheMiddle);
+    public void enable () {
         
+    }
+    
+    public void render () {
         SmartDashboard.putDouble("Auton: Current Step", AutonomousDashboard.step);
         SmartDashboard.putBoolean("Auton: Done?", AutonomousDashboard.done);
         
@@ -36,10 +36,6 @@ public class AutonomousDashboard implements DashboardSection {
         AutonomousDashboard.maxStep = Dashboard.renderDouble("Auton: Max Step", maxStep);
         
         SmartDashboard.putDouble("gyroHeading", Robot.gyroHeading.getAngle());
-    }
-    
-    public static boolean isInTheMiddle () {
-        return ((String) inTheMiddle.getSelected()).equals("Yes");
     }
     
     public static void setStep (int step) {
@@ -56,13 +52,6 @@ public class AutonomousDashboard implements DashboardSection {
     
     static {
         instance = new AutonomousDashboard();
-        
-		/*
-         * Sets up the switcher for autonomous.
-         */
-		inTheMiddle = new SendableChooser();
-		inTheMiddle.addDefault("Autonomous: On the Sides", "No");
-		inTheMiddle.addObject("Autonomous: In the Middle", "Yes");
     }
     
     public static AutonomousDashboard getInstance () {

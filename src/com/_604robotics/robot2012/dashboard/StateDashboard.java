@@ -11,6 +11,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class StateDashboard implements DashboardSection {
     private static final StateDashboard instance;
     
+    public void enable () {
+        
+    }
+    
     public void render () {
         SmartDashboard.putBoolean("upHigh", Elevator.high);
         SmartDashboard.putBoolean("pickupIn", Pickup.up);

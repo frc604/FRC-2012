@@ -13,20 +13,17 @@ public class ShooterDashboard implements DashboardSection {
     private static final ShooterDashboard instance;
     private static final PIDDPEditor shooterEditor;
     
-    private static boolean renderedEditor = false;
-    
     public static boolean ignoreHeight = false;
+    
+    public void enable () {
+        if (Robot.speedProvider instanceof AwesomeSpeedController)
+            SmartDashboard.putData("Shooter Speed Controller", ShooterDashboard.shooterEditor);
+    }
     
     public void render () {
 		if (Robot.speedProvider instanceof AwesomeSpeedController) {
-            if (ShooterDashboard.shooterEditor != null) {
-                if (!ShooterDashboard.renderedEditor) {
-                    ShooterDashboard.renderedEditor = true;
-                    SmartDashboard.putData("Shooter Speed Controller", ShooterDashboard.shooterEditor);
-                }
-                
+            if (ShooterDashboard.shooterEditor != null)
                 ShooterDashboard.shooterEditor.update();
-            }
             
 			((AwesomeSpeedController) Robot.speedProvider).fac = Dashboard.renderDouble("Shooter fac", ((AwesomeSpeedController) Robot.speedProvider).fac);
 			((AwesomeSpeedController) Robot.speedProvider).maxSpeed = Dashboard.renderDouble("Shooter maxSpeed", ((AwesomeSpeedController) Robot.speedProvider).maxSpeed);

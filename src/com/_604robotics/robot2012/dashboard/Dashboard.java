@@ -13,10 +13,10 @@ public class Dashboard {
     
     public static void registerSection (DashboardSection section) {
         sections.addElement(section);
+        section.enable();
     }
     
     public static void render () {
-        long time = System.currentTimeMillis();
         for (int i = 0; i < sections.size(); i++)
             ((DashboardSection) sections.elementAt(i)).render();
     }

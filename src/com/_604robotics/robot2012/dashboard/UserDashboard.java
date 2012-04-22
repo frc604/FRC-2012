@@ -13,6 +13,10 @@ public class UserDashboard implements DashboardSection {
     public static boolean shooterCharged = false;
     public static boolean elevatorCalibrated = false;
     
+    public void enable () {
+        
+    }
+    
     public void render () {
 		SmartDashboard.putString("Shooter Charged: ",
                 (UserDashboard.shooterCharged)

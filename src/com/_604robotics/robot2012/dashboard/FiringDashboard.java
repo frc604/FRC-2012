@@ -11,6 +11,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class FiringDashboard implements DashboardSection {
     private static final FiringDashboard instance;
     
+    public void enable () {
+        
+    }
+    
     public void render () {
         SmartDashboard.putBoolean("Using Targets?", Robot.firingProvider.usingTargets());
         SmartDashboard.putInt("ups", ((RemoteCameraTCP) Robot.cameraInterface).getUPS());

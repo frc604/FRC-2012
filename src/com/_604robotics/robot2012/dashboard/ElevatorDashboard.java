@@ -16,14 +16,11 @@ public class ElevatorDashboard implements DashboardSection {
     private static final ElevatorDashboard instance;
     private static final UpDownPIDEditor elevatorEditor;
     
-    private static boolean renderedEditor = false;
+    public void enable () {
+        SmartDashboard.putData("Elevator PID Controller", ElevatorDashboard.elevatorEditor);
+    }
     
     public void render () {
-        if (!ElevatorDashboard.renderedEditor) {
-            ElevatorDashboard.renderedEditor = true;
-            SmartDashboard.putData("Elevator PID Controller", ElevatorDashboard.elevatorEditor);
-        }
-        
         ElevatorDashboard.elevatorEditor.update();
         
         SmartDashboard.putDouble("encoderElevator", Robot.encoderElevator.get());
