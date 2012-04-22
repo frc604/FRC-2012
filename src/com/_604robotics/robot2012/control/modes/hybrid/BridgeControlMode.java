@@ -10,7 +10,6 @@ import com._604robotics.robot2012.control.models.Shooter;
 import com._604robotics.robot2012.control.modes.ControlMode;
 import com._604robotics.robot2012.dashboard.AutonomousDashboard;
 import com._604robotics.robot2012.machine.ElevatorMachine.ElevatorState;
-import com._604robotics.robot2012.machine.ShooterMachine.ShooterState;
 import edu.wpi.first.wpilibj.Timer;
 
 /**

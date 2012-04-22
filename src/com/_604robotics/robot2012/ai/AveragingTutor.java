@@ -1,4 +1,4 @@
-package com._604robotics.robot2012.learning;
+package com._604robotics.robot2012.ai;
 
 import java.util.Vector;
 
@@ -56,7 +56,6 @@ public class AveragingTutor implements Tutor {
          * If a good shot has been found...
          */
         if (minGood == minGood) {
-
             double dLow = minGood - minTest;
             double dHigh = maxTest - maxGood;
 

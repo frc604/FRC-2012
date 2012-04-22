@@ -1,6 +1,7 @@
 package com._604robotics.robot2012.machine;
 
 import com._604robotics.robot2012.configuration.ActuatorConfiguration;
+import com._604robotics.robot2012.control.models.Shooter;
 import com._604robotics.robot2012.dashboard.UserDashboard;
 import com._604robotics.robot2012.firing.FiringProvider;
 import com._604robotics.robot2012.speedcontrol.SpeedProvider;
@@ -62,16 +63,14 @@ public class ShooterMachine implements StrangeMachine {
     public boolean crank (int state) {
         switch (state) {
             case ShooterState.SHOOTING:
-                this.shooter.setSetSpeed(this.provider.getSpeed());
+                this.shooter.setSetSpeed(
+                        (Shooter.manual)
+                            ? Shooter.manualSpeed
+                            : this.provider.getSpeed()
+                );
                 this.shooter.apply();
                 
-                if (this.shooter.isOnTarget(ActuatorConfiguration.SHOOTER_SPEED_TOLERANCE)) {
-                    UserDashboard.setShooterCharged(true);
-                    if (DriverStation.getInstance().isAutonomous())
-                        this.hopper.set(ActuatorConfiguration.HOPPER_POWER);
-                } else {
-                    UserDashboard.setShooterCharged(false);
-                }
+                Shooter.setCharged(this.shooter.isOnTarget(ActuatorConfiguration.SHOOTER_SPEED_TOLERANCE));
                 
                 this.elevator.set(0.15);
                 

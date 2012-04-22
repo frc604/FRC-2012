@@ -1,5 +1,7 @@
 package com._604robotics.robot2012.control.models;
 
+import com._604robotics.robot2012.configuration.ActuatorConfiguration;
+
 /**
  *
  * @author Michael Smith <mdsmtp@gmail.com>
@@ -8,7 +10,12 @@ public class Shooter {
     public static boolean shooting = false;
     public static boolean fender = true;
     public static boolean hoodUp = false;
+    
     public static double hopperPower = 0D;
+    public static long lastCharged = 0;
+    
+    public static boolean manual = false;
+    public static double manualSpeed = 0D;
     
     public static void setAtFender () {
         Shooter.fender = true;
@@ -49,5 +56,41 @@ public class Shooter {
     
     public static void driveHopper (double hopperPower) {
         Shooter.hopperPower = hopperPower;
+    }
+    
+    public static void driveHopper (boolean really) {
+        if (really)
+            Shooter.driveHopper(ActuatorConfiguration.HOPPER_POWER);
+        else
+            Shooter.hopperPower = 0D;
+    }
+    
+    public static void driveHopper () {
+        Shooter.driveHopper(true);
+    }
+    
+    public static boolean isCharged () {
+        return Shooter.shooting && System.currentTimeMillis() - Shooter.lastCharged < 50;
+    }
+    
+    public static void setCharged (boolean really) {
+        if (really)
+            Shooter.lastCharged = System.currentTimeMillis();
+        else
+            Shooter.lastCharged = 0;
+    }
+    
+    public static void setCharged () {
+        Shooter.setCharged(true);
+    }
+    
+    public static void setManual (boolean manual) {
+        Shooter.manual = manual;
+        if (!manual)
+            Shooter.manualSpeed = 0D;
+    }
+    
+    public static void setManualSpeed (double manualSpeed) {
+        Shooter.manualSpeed = manualSpeed;
     }
 }
