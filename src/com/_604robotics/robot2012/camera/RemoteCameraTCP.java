@@ -1,5 +1,6 @@
 package com._604robotics.robot2012.camera;
 
+import com._604robotics.robot2012.Robot;
 import com._604robotics.robot2012.vision.Target;
 import edu.wpi.first.wpilibj.Timer;
 import java.io.IOException;
@@ -47,6 +48,20 @@ public class RemoteCameraTCP implements CameraInterface {
     public Target[] getTargets () {
         return this.server.targets;
     }
+    
+    public Target getSingleTarget () {
+        Target[] targets = this.getTargets();
+        Target target = null;
+
+        for (int i = 0; i < targets.length; i++) {
+            if (target == null || targets[i].getY() < target.getY()) {
+                target = targets[i];
+            }
+        }
+        
+        return target;
+    }
+    
     /**
      * Records the time elapsed between reception of data packets from camera.
      * @return The elapsed time since the last packet was received.

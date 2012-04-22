@@ -26,6 +26,8 @@ public interface CameraInterface {
      */
     public abstract Target[] getTargets ();
     
+    public abstract Target getSingleTarget ();
+    
     /**
      * Gets the estimated time since the last packet was received.
      * 

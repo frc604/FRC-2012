@@ -84,7 +84,6 @@ public class ProcessSpeedProvider implements SpeedProvider {
             this.spinUp.reset();
         this.ran = true;
         this.loaded = true;
-        SmartDashboard.putDouble("spinUp", this.spinUp.get());
         if (!(this.spinUp.get() < 0.5))
 //            this.output.pidWrite(-0.7);
 //        else

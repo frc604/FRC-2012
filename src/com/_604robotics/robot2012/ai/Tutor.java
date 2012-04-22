@@ -1,4 +1,4 @@
-package com._604robotics.robot2012.learning;
+package com._604robotics.robot2012.ai;
 
 import java.util.Vector;
 

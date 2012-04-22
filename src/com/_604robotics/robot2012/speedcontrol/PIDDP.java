@@ -132,7 +132,7 @@ public class PIDDP implements IUtility {
             enabled = m_enabled; // take snapshot of these values...
             pidInput = m_pidInput;
         }
-
+        
         if (enabled) {
             double input = pidInput.pidGet();
             double result;
