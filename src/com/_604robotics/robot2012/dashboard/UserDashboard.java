@@ -1,6 +1,7 @@
 package com._604robotics.robot2012.dashboard;
 
 import com._604robotics.robot2012.Robot;
+import edu.wpi.first.wpilibj.smartdashboard.SendableTag;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
@@ -9,22 +10,21 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  */
 public class UserDashboard implements DashboardSection {
     private static final UserDashboard instance;
+    private static final SendableTag tag;
     
     public static boolean shooterCharged = false;
     public static boolean elevatorCalibrated = false;
     
     public void enable () {
-        
+        SmartDashboard.putData(tag);
     }
     
     public void render () {
-		SmartDashboard.putString("Shooter Charged: ",
+		SmartDashboard.putString("Shooter Charged",
                 (UserDashboard.shooterCharged)
                     ? "YES YES YES YES YES"
                     : "NO NO NO NO NO"
         );
-		SmartDashboard.putBoolean("Elevator Calibrated", UserDashboard.elevatorCalibrated);
-        // TODO: Implement in merge.
         
         SmartDashboard.putBoolean("At the Fender?", Robot.firingProvider.isAtFender());
     }
@@ -43,6 +43,10 @@ public class UserDashboard implements DashboardSection {
     
     static {
         instance = new UserDashboard();
+        tag = new SendableTag("User", new String[] {
+            "Shooter Charged",
+            "At the Fender?"
+        });
     }
     
     public static UserDashboard getInstance () {

@@ -164,7 +164,7 @@ public class Robot {
 		elevatorMachine = new ElevatorMachine();
 		shooterMachine = new ShooterMachine();
 		        
-        /* Set calibration signals. */
+        /* Send calibration signals. */
 		
 		DriverStation.getInstance().setDigitalOut(2, true);
 		DriverStation.getInstance().setDigitalOut(5, false);

@@ -33,7 +33,7 @@ public class ShootControlMode implements ControlMode {
         
         Elevator.goUp();
         
-        if (Robot.elevatorMachine.test(ElevatorState.HIGH) || controlTimer.get() < AutonomousConfiguration.STEP_1_ELEVATOR_TIME) {
+        if (Robot.elevatorMachine.test(ElevatorState.HIGH) || controlTimer.get() < AutonomousDashboard.step1) {
             AutonomousDashboard.setStep(2);
             
             if (controlTimer.get() < AutonomousDashboard.step2) {

@@ -3,6 +3,7 @@ package com._604robotics.robot2012.dashboard;
 import com._604robotics.robot2012.Robot;
 import com._604robotics.robot2012.speedcontrol.AwesomeSpeedController;
 import edu.wpi.first.wpilibj.smartdashboard.PIDDPEditor;
+import edu.wpi.first.wpilibj.smartdashboard.SendableTag;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
@@ -12,10 +13,12 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class ShooterDashboard implements DashboardSection {
     private static final ShooterDashboard instance;
     private static final PIDDPEditor shooterEditor;
+    private static final SendableTag tag;
     
     public static boolean ignoreHeight = false;
     
     public void enable () {
+        SmartDashboard.putData(tag);
         if (Robot.speedProvider instanceof AwesomeSpeedController)
             SmartDashboard.putData("Shooter Speed Controller", ShooterDashboard.shooterEditor);
     }
@@ -50,6 +53,15 @@ public class ShooterDashboard implements DashboardSection {
             shooterEditor = new PIDDPEditor(((AwesomeSpeedController) Robot.speedProvider).getController());
         else
             shooterEditor = null;
+        
+        tag = new SendableTag("Shooter", new String[] {
+            "Shooter Speed Controller",
+            "encoderShooter",
+            "Current Encoder Rate",
+            "Current Shooter Output",
+            "Shooter Speed",
+            "Shoot Regardless of Height"
+        });
     }
     
     public static ShooterDashboard getInstance () {
