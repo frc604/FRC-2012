@@ -18,7 +18,9 @@ public class Dashboard {
     }
     
     public static void registerSection (DashboardSection section) {
-        SmartDashboard.putData(new DisplaySectionCommand(section));
+        //SmartDashboard.putData(new DisplaySectionCommand(section));
+        sections.addElement(section);
+        section.enable();
     }
     
     public static void render () {
