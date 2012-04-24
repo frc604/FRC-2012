@@ -159,11 +159,9 @@ public class PIDDP implements IUtility {
                 
                 double dError = m_error - m_prevError;
                 
-                double errorForDPTerm = m_error;
+                double errorForDPTerm = Math.abs(m_error);
                 
-                if(errorForDPTerm > -m_DP_PMin && errorForDPTerm < 0) {
-                    errorForDPTerm = -m_DP_PMin;
-                } else if(errorForDPTerm  < m_DP_PMin && errorForDPTerm > 0) {
+                if(errorForDPTerm  < m_DP_PMin) {
                     errorForDPTerm = m_DP_PMin;
                 } else if(errorForDPTerm == 0) {
                     errorForDPTerm = 1/0.0;
