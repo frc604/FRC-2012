@@ -6,9 +6,11 @@ import com._604robotics.robot2012.control.models.Shooter;
 import com._604robotics.robot2012.control.modes.ControlMode;
 import com._604robotics.robot2012.ai.AveragingTutor;
 import com._604robotics.robot2012.ai.Tutor;
+import com._604robotics.robot2012.ai.Tutor.Bounds;
 import com._604robotics.robot2012.vision.Target;
 import com._604robotics.utils.XboxController.Axis;
 import com._604robotics.utils.XboxController.Button;
+import java.util.Vector;
 
 /**
  * TODO: Document?
@@ -35,7 +37,8 @@ public class LearningControlMode implements ControlMode {
                 tutor.configure(target.getZ());
                 System.out.println("Distance reconfigured to " + target.getZ() + ".");
             } else {
-                System.out.println("WARNING: No target detected!");
+                tutor.configure(tutor.getDistance() + 1);
+                System.out.println("WARNING: No target detected! Setting \"distance\" to " + tutor.getDistance() + ".");
             }
         }
         
@@ -43,18 +46,27 @@ public class LearningControlMode implements ControlMode {
         Shooter.shoot(Robot.driveController.getButton(Button.B));
         Shooter.driveHopper(Shooter.isCharged());
         
-        if (Robot.driveController.getButton(Button.Y)) {
+        if (Robot.driveController.getToggle(Button.Y)) {
             tutor.feedback(1);
             System.out.println("Too high!");
-        } else if (Robot.driveController.getButton(Button.A)) {
+        } else if (Robot.driveController.getToggle(Button.A)) {
             tutor.feedback(-1);
             System.out.println("Too low!");
-        } else if (Robot.driveController.getButton(Button.X)) {
+        } else if (Robot.driveController.getToggle(Button.X)) {
             tutor.feedback(0);
             System.out.println("Juuust right.");
         } else if (Robot.driveController.getToggle(Button.LT)) {
             tutor.record();
             System.out.println("Recorded.");
+        } else if (Robot.driveController.getToggle(Button.Back)) {
+            Vector data = tutor.getData();
+            Bounds bounds;
+            System.out.println("-----");
+            for (int i = 0; i < data.size(); i++) {
+                bounds = ((Bounds) data.elementAt(i));
+                System.out.println(bounds.distance + ": " + bounds.min + " - " + bounds.max);
+            }
+            System.out.println("=====");
         } else if (Math.abs(rightStickY) > 0.2) {
             Shooter.driveHopper(rightStickY);
         }

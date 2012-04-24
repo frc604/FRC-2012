@@ -67,7 +67,7 @@ public class AwesomeSpeedController implements SpeedProvider {
     }
 
     public boolean isOnTarget(double tolerance) {
-        return Math.abs(tolerance - this.source.pidGet()) < tolerance;
+        return Math.abs(this.getSetSpeed() - this.source.pidGet()) < tolerance;
     }
     
     public PIDDP getController () {

@@ -3,6 +3,7 @@ package com._604robotics.robot2012.machine;
 import com._604robotics.robot2012.Robot;
 import com._604robotics.robot2012.configuration.ActuatorConfiguration;
 import com._604robotics.robot2012.control.models.Shooter;
+import com._604robotics.robot2012.dashboard.ShooterDashboard;
 import com._604robotics.utils.StrangeMachine;
 
 /**
@@ -56,7 +57,7 @@ public class ShooterMachine implements StrangeMachine {
                 );
                 Robot.speedProvider.apply();
                 
-                Shooter.setCharged(Robot.speedProvider.isOnTarget(ActuatorConfiguration.SHOOTER_SPEED_TOLERANCE));
+                Shooter.setCharged(Robot.speedProvider.isOnTarget(ShooterDashboard.tolerance));
                 
                 Robot.elevatorMotors.set(0.15);
                 

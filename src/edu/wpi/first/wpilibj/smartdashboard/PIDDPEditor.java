@@ -1,5 +1,7 @@
 package edu.wpi.first.wpilibj.smartdashboard;
 
+import com._604robotics.robot2012.control.models.Shooter;
+import com._604robotics.robot2012.dashboard.ShooterDashboard;
 import com._604robotics.robot2012.speedcontrol.PIDDP;
 import edu.wpi.first.wpilibj.networktables.NetworkListener;
 import edu.wpi.first.wpilibj.networktables.NetworkTable;

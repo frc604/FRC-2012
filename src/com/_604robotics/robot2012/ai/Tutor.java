@@ -15,6 +15,7 @@ public interface Tutor {
         }
     }
     
+    public abstract double getDistance ();
     public abstract void configure (double distance);
     public abstract void record ();
     public abstract double shoot ();
