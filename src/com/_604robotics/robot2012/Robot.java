@@ -156,8 +156,8 @@ public class Robot {
 		/* Sets up the firing provider. */
 		
 		firingProvider = new CameraFiringProvider(cameraInterface, new ManualFiringProvider());
-		firingProvider.setPhysicsEnabled(false);
-		firingProvider.setEnabled(false);
+		firingProvider.setPhysicsEnabled(true);
+		firingProvider.setEnabled(true);
 		
 		/* Sets up the speed provider for the shooter. */
 		

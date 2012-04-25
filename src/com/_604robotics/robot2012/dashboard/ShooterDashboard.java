@@ -2,6 +2,7 @@ package com._604robotics.robot2012.dashboard;
 
 import com._604robotics.robot2012.Robot;
 import com._604robotics.robot2012.configuration.ActuatorConfiguration;
+import com._604robotics.robot2012.configuration.FiringConfiguration;
 import com._604robotics.robot2012.control.models.Shooter;
 import com._604robotics.robot2012.speedcontrol.AwesomeSpeedController;
 import com._604robotics.robot2012.speedcontrol.BangBangSpeedController;
@@ -22,7 +23,7 @@ public class ShooterDashboard implements DashboardSection {
     public static boolean ignoreHeight = false;
     public static boolean useManualSetpoint = false;
     
-    public static double tolerance = ActuatorConfiguration.SHOOTER_SPEED_TOLERANCE;
+    public static double tolerance = FiringConfiguration.SPEED_TOLERANCE;
     
     public void enable () {
         SmartDashboard.putData(tag);

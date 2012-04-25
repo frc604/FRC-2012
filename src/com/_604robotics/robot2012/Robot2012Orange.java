@@ -8,7 +8,9 @@ import com._604robotics.robot2012.control.modes.hybrid.WaitingControlMode;
 import com._604robotics.robot2012.control.modes.teleop.CompetitionControlMode;
 import com._604robotics.robot2012.control.modes.teleop.LearningControlMode;
 import com._604robotics.robot2012.control.workers.*;
-import com._604robotics.robot2012.dashboard.*;
+import com._604robotics.robot2012.dashboard.Dashboard;
+import com._604robotics.robot2012.dashboard.FiringDashboard;
+import com._604robotics.robot2012.dashboard.ShooterDashboard;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.SimpleRobot;
 

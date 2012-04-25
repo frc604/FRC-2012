@@ -2,7 +2,6 @@ package com._604robotics.robot2012.firing;
 
 import com._604robotics.robot2012.camera.CameraInterface;
 import com._604robotics.robot2012.configuration.FiringConfiguration;
-import com._604robotics.robot2012.physics.Physics;
 import com._604robotics.robot2012.vision.Target;
 
 public class CameraFiringProvider implements FiringProvider {
@@ -57,7 +56,8 @@ public class CameraFiringProvider implements FiringProvider {
             
             if (this.physicsEnabled) {
                 this.usedTargets = true;
-                return Physics.getSubparFiringVelocity(target.z, FiringConfiguration.TOP_HOOP_HEIGHT - FiringConfiguration.SHOOTER_HEIGHT, FiringConfiguration.SHOOTER_SLOPE);
+                //return Physics.getSubparFiringVelocity(target.z, FiringConfiguration.TOP_HOOP_HEIGHT - FiringConfiguration.SHOOTER_HEIGHT, FiringConfiguration.SHOOTER_SLOPE);
+                return EncoderSpeedsForDist.getSpeedForDist(target.z);
             } else {
                 this.usedTargets = false;
                 return this.fallback.getSpeed();
