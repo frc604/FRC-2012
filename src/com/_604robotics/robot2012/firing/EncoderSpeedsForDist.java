@@ -59,7 +59,6 @@ public class EncoderSpeedsForDist {
 	/**
 	 * Adapted from {@link http://martin.ankerl.com/2007/10/04/optimized-pow-approximation-for-java-and-c-c/}
 	 * 
-	 * This is currently unused; in the future, it might be used in the getVal() function.
 	 * 
 	 * @param a	number
 	 * @param exp	exponent
