@@ -40,10 +40,9 @@ public class ElevatorMachine implements StrangeMachine {
     public boolean test (int state) {
         switch (state) {
             case ElevatorState.HIGH:
-                /* if (Robot.encoderElevator.get() >= ActuatorConfiguration.ELEVATOR.TOLERANCE.HIGH)
+                if (Robot.encoderElevator.get() >= ActuatorConfiguration.ELEVATOR.TOLERANCE.HIGH)
                     this.withinTolerance = true;
-                return this.lastState == ElevatorState.HIGH && this.withinTolerance && Robot.encoderElevator.get() >= ActuatorConfiguration.ELEVATOR.DEADBAND.HIGH; */
-                return true;
+                return this.lastState == ElevatorState.HIGH && this.withinTolerance && Robot.encoderElevator.get() >= ActuatorConfiguration.ELEVATOR.DEADBAND.HIGH;
             case ElevatorState.MEDIUM:
                 if (Robot.encoderElevator.get() >= ActuatorConfiguration.ELEVATOR.TOLERANCE.MEDIUM_LOWER && Robot.encoderElevator.get() <= ActuatorConfiguration.ELEVATOR.TOLERANCE.MEDIUM_UPPER)
                     this.withinTolerance = true;
