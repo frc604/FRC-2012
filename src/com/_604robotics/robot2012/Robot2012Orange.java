@@ -46,6 +46,7 @@ public class Robot2012Orange extends SimpleRobot {
         WorkerManager.registerWorker(new ElevatorWorker());
         WorkerManager.registerWorker(new PickupWorker());
         WorkerManager.registerWorker(new ShooterWorker());
+        WorkerManager.registerWorker(new StingerWorker());
         WorkerManager.registerWorker(new RespringWorker());
         
         /*
@@ -104,7 +105,7 @@ public class Robot2012Orange extends SimpleRobot {
 
         while (isAutonomous() && isEnabled() && hybridMode.step()) {
             WorkerManager.work();
-            //Dashboard.render();
+            Dashboard.render();
         }
 
         hybridMode.disable();
