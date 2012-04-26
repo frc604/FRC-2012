@@ -3,10 +3,7 @@ package com._604robotics.robot2012.control.modes.teleop;
 import com._604robotics.robot2012.Robot;
 import com._604robotics.robot2012.configuration.ButtonConfiguration;
 import com._604robotics.robot2012.configuration.FiringConfiguration;
-import com._604robotics.robot2012.control.models.Drive;
-import com._604robotics.robot2012.control.models.Elevator;
-import com._604robotics.robot2012.control.models.Pickup;
-import com._604robotics.robot2012.control.models.Shooter;
+import com._604robotics.robot2012.control.models.*;
 import com._604robotics.robot2012.control.modes.ControlMode;
 import com._604robotics.utils.XboxController.Axis;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -39,6 +36,11 @@ public class CompetitionControlMode implements ControlMode {
             Drive.bump(-1);
         else
             Drive.drive(Robot.driveController.getAxis(Axis.LEFT_STICK_Y), Robot.driveController.getAxis(Axis.RIGHT_STICK_Y), true);
+        
+        /*
+         * Stinger control.
+         */
+        Stinger.put(Robot.driveController.getButton(ButtonConfiguration.Driver.STINGER_DOWN));
         
         /*
          * Elevator control.

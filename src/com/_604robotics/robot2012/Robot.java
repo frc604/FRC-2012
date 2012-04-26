@@ -49,7 +49,7 @@ public class Robot {
 	public static final SpringableDoubleSolenoid solenoidShifter;
 	public static final DoubleSolenoid solenoidShooter;
 	public static final DoubleSolenoid solenoidPickup;
-	public static final SpringableDoubleSolenoid solenoidHopper;
+	public static final SpringableDoubleSolenoid solenoidStinger;
 	
 	public static final UpDownPIDController pidElevator;
     
@@ -131,7 +131,7 @@ public class Robot {
 		solenoidShifter = new SpringableDoubleSolenoid(PortConfiguration.Pneumatics.SHIFTER_SOLENOID.LOW_GEAR, PortConfiguration.Pneumatics.SHIFTER_SOLENOID.HIGH_GEAR, ActuatorConfiguration.SOLENOID_SHIFTER.LOW_GEAR);
 		solenoidShooter = new DoubleSolenoid(PortConfiguration.Pneumatics.SHOOTER_SOLENOID.LOWER_ANGLE, PortConfiguration.Pneumatics.SHOOTER_SOLENOID.UPPER_ANGLE);
 		solenoidPickup = new DoubleSolenoid(PortConfiguration.Pneumatics.PICKUP_SOLENOID.IN, PortConfiguration.Pneumatics.PICKUP_SOLENOID.OUT);
-		solenoidHopper = new SpringableDoubleSolenoid(PortConfiguration.Pneumatics.HOPPER_SOLENOID.FORWARD, PortConfiguration.Pneumatics.HOPPER_SOLENOID.REVERSE, ActuatorConfiguration.SOLENOID_HOPPER.REGULAR);
+		solenoidStinger = new SpringableDoubleSolenoid(PortConfiguration.Pneumatics.STINGER_SOLENOID.FORWARD, PortConfiguration.Pneumatics.STINGER_SOLENOID.REVERSE, ActuatorConfiguration.SOLENOID_STINGER.UP);
 		
 		solenoidShooter.set(ActuatorConfiguration.SOLENOID_SHOOTER.LOWER_ANGLE);
 		

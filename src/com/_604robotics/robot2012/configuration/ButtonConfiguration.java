@@ -9,18 +9,19 @@ import com._604robotics.utils.XboxController.Button;
  */
 public interface ButtonConfiguration {
     public interface Driver {
-        public static final int SHIFT = Button.EitherTrigger;
+        public static final int SHIFT = Button.LT;
         
         public static final int TOGGLE_PICKUP = Button.RB;
         
         public static final int DISABLE_ELEVATOR = Button.Back;
         
         public static final int SLOW_BUTTON = Button.EitherStick;
+        public static final int STINGER_DOWN = Button.B;
         
         public static final int TINY_FORWARD = Button.Y;
         public static final int TINY_REVERSE = Button.A;
         
-        public static final int AUTO_AIM = Button.X;
+        public static final int AUTO_AIM = Button.RT;
         
         public static final int CALIBRATE = Button.LB;
     }

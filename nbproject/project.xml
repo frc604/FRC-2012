@@ -84,7 +84,7 @@
             <compilation-unit>
                 <package-root>src</package-root>
                 <classpath mode="boot">${sunspot.bootclasspath}</classpath>
-                <classpath mode="compile">${wpilibj.home}/classes.jar</classpath>
+                <classpath mode="compile">${wpilibj.home}/classes.jar;C:\Users\Driver Station\sunspotfrcsdk\lib\WPILibJ\classes.jar;C:\Users\Driver Station\sunspotfrcsdk\bin\debugger-proxy_classes.jar;C:\Users\Driver Station\sunspotfrcsdk\bin\debugger_classes.jar;C:\Users\Driver Station\sunspotfrcsdk\bin\hosted-support_classes.jar;C:\Users\Driver Station\sunspotfrcsdk\bin\romizer_classes.jar;C:\Users\Driver Station\sunspotfrcsdk\bin\squawk.jar;C:\Users\Driver Station\sunspotfrcsdk\bin\squawk_device_classes.jar;C:\Users\Driver Station\sunspotfrcsdk\bin\translator_classes.jar</classpath>
                 <built-to>build</built-to>
                 <source-level>1.4</source-level>
             </compilation-unit>

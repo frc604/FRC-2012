@@ -22,6 +22,6 @@ public class RespringWorker implements Worker {
         Robot.ringLight.reload();
 
         Robot.solenoidShifter.reload();
-        Robot.solenoidHopper.reload();
+        Robot.solenoidStinger.reload();
     }
 }

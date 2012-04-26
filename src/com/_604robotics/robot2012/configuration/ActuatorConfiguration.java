@@ -64,8 +64,8 @@ public interface ActuatorConfiguration {
         public static final DoubleSolenoid.Value OUT  = DoubleSolenoid.Value.kReverse;
     }
     
-    public interface SOLENOID_HOPPER {
-        public static final DoubleSolenoid.Value REGULAR = DoubleSolenoid.Value.kForward;
-        public static final DoubleSolenoid.Value PUSH  = DoubleSolenoid.Value.kReverse;
+    public interface SOLENOID_STINGER {
+        public static final DoubleSolenoid.Value UP = DoubleSolenoid.Value.kForward;
+        public static final DoubleSolenoid.Value DOWN  = DoubleSolenoid.Value.kReverse;
     }
 }

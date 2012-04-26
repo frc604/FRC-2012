@@ -48,7 +48,7 @@ public interface PortConfiguration {
         public static final int SHOOTER_B = 5;
         
         public static final int ELEVATOR_A = 11;
-        public static final int ELEVATOR_B = 10 ;
+        public static final int ELEVATOR_B = 10;
     }
     
     public interface Pneumatics {
@@ -70,7 +70,7 @@ public interface PortConfiguration {
             public static final int OUT = 3; // REVERSE
         }
         
-        public interface HOPPER_SOLENOID {
+        public interface STINGER_SOLENOID {
             public static final int FORWARD = 2; // REGULAR
             public static final int REVERSE = 1; // PUSH
         }
