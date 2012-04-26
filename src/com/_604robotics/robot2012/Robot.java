@@ -16,6 +16,7 @@ import com._604robotics.utils.*;
 import com._604robotics.utils.XboxController.Axis;
 import edu.wpi.first.wpilibj.RobotDrive.MotorType;
 import edu.wpi.first.wpilibj.*;
+import edu.wpi.first.wpilibj.smartdashboard.SendablePIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Robot {
@@ -52,9 +53,8 @@ public class Robot {
 	public static final SpringableDoubleSolenoid solenoidStinger;
 	
 	public static final UpDownPIDController pidElevator;
-    
     public static final CachingPIDSource pidSourceDriveAngle;
-    public static final PIDController pidAutoAim;
+    public static final SendablePIDController pidAutoAim;
 	
 	public static final StrangeMachine pickupMachine;
 	public static final ElevatorMachine elevatorMachine;
@@ -144,7 +144,7 @@ public class Robot {
 		pidElevator.setSetpoint(822);
         
         pidSourceDriveAngle = new CachingPIDSource();
-        pidAutoAim = new PIDController(PIDConfiguration.AutoAim.P, PIDConfiguration.AutoAim.I, PIDConfiguration.AutoAim.D, pidSourceDriveAngle, new TurningDrivePIDOutput(driveTrain));
+        pidAutoAim = new SendablePIDController(PIDConfiguration.AutoAim.P, PIDConfiguration.AutoAim.I, PIDConfiguration.AutoAim.D, pidSourceDriveAngle, new TurningDrivePIDOutput(driveTrain));
 		
 		elevatorMotors.setController(pidElevator);
 		

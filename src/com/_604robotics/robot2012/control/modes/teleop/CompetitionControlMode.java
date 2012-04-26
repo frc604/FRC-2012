@@ -14,7 +14,6 @@ public class CompetitionControlMode implements ControlMode {
         DriverStation.getInstance().setDigitalOut(5, false);
 
         Robot.driveTrain.setSafetyEnabled(true);
-        Robot.compressorPump.start();
         
         Robot.manipulatorController.resetToggles();
         Robot.driveController.resetToggles();
@@ -85,8 +84,6 @@ public class CompetitionControlMode implements ControlMode {
 
         Robot.pidElevator.disable();
         Robot.speedProvider.reset();
-        
-        Robot.compressorPump.stop();
     }
 
     public String getName() {

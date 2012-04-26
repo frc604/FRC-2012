@@ -15,6 +15,7 @@ public class FiringDashboard implements DashboardSection {
     
     public void enable () {
         SmartDashboard.putData(tag);
+        SmartDashboard.putData("pidAutoAim", Robot.pidAutoAim);
     }
     
     public void render () {
