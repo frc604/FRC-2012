@@ -47,10 +47,12 @@ public class CompetitionControlMode implements ControlMode {
         Elevator.toggleDisabled(Robot.driveController.getButton(ButtonConfiguration.Driver.DISABLE_ELEVATOR));
         Elevator.recalibrate(Robot.driveController.getButton(ButtonConfiguration.Driver.CALIBRATE));
         
-        if (Robot.manipulatorController.getButton(ButtonConfiguration.Manipulator.Elevator.UP))
+        if (Robot.manipulatorController.getButton(ButtonConfiguration.Manipulator.Elevator.UP)) {
             Elevator.goUp();
-        else if (Robot.manipulatorController.getButton(ButtonConfiguration.Manipulator.Elevator.DOWN))
+            Pickup.flipUp();
+        } else if (Robot.manipulatorController.getButton(ButtonConfiguration.Manipulator.Elevator.DOWN)) {
             Elevator.goDown();
+        }
         
         /*
          * Pickup control.
