@@ -71,8 +71,8 @@ public interface PortConfiguration {
         }
         
         public interface STINGER_SOLENOID {
-            public static final int FORWARD = 2; // REGULAR
-            public static final int REVERSE = 1; // PUSH
+            public static final int FORWARD = 1; // REGULAR
+            public static final int REVERSE = 2; // PUSH
         }
     }
 }
