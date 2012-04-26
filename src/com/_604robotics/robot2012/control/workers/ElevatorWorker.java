@@ -54,11 +54,10 @@ public class ElevatorWorker implements Worker {
                     );
                 }
             } else {
-                Robot.elevatorMachine.crank(
-                        (Pickup.up)
-                            ? ElevatorMachine.ElevatorState.MEDIUM
-                            : ElevatorMachine.ElevatorState.LOW
-                );
+                if (Pickup.up)
+                    Robot.elevatorMachine.crank(ElevatorMachine.ElevatorState.MEDIUM);
+                else if (Robot.pickupMachine.test(PickupState.OUT))
+                    Robot.elevatorMachine.crank(ElevatorMachine.ElevatorState.LOW);
             }
         }
     }
