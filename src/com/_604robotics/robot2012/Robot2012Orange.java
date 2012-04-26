@@ -118,6 +118,7 @@ public class Robot2012Orange extends SimpleRobot {
         DriverStation.getInstance().setDigitalOut(2, false);
         DriverStation.getInstance().setDigitalOut(5, false);
 
+        Robot.compressorPump.start();
         teleopMode.init();
         
         while (isOperatorControl() && isEnabled() && teleopMode.step()) {
@@ -126,6 +127,7 @@ public class Robot2012Orange extends SimpleRobot {
         }
 
         teleopMode.disable();
+        Robot.compressorPump.stop();
     }
 
     /**
