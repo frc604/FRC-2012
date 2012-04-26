@@ -8,6 +8,7 @@ public class Elevator {
     public static boolean recalibrating = false;
     public static boolean high = false;
     public static boolean disabled = false;
+    public static boolean calibrated = false;
     
     public static void recalibrate (boolean recalibrating) {
         Elevator.recalibrating = recalibrating;
@@ -36,5 +37,9 @@ public class Elevator {
     
     public static void toggleDisabled () {
         Elevator.toggleDisabled(true);
+    }
+    
+    public static void calibrated () {
+        Elevator.calibrated = true;
     }
 }

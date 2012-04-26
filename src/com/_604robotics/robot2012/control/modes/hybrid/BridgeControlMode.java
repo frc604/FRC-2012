@@ -58,11 +58,9 @@ public class BridgeControlMode implements ControlMode {
 		switch (step) {
             case 3:
                 /* 
-                 * Turn around and face the bridge, and put the elevator
-                 * down.
+                 * Turn around and face the bridge.
                  */
 
-                Elevator.goDown();
                 Shooter.hoodDown();
                     
                 if (controlTimer.get() <= AutonomousDashboard.step3) {

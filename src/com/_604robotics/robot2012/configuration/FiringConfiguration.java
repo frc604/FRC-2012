@@ -19,7 +19,7 @@ public interface FiringConfiguration {
     public static final double KEY_FIRING_POWER = -1D;
         // TODO: Configure this.
     
-    public static final double FENDER_FIRING_SPEED = 200D;
+    public static final double FENDER_FIRING_SPEED = 220D;
         // TODO: Configure this.32
     public static final double KEY_FIRING_SPEED = 420D;
         // TODO: Configure this.
@@ -31,6 +31,6 @@ public interface FiringConfiguration {
     public static final double SPEED_TOLERANCE = 10D;
         // TODO: Configure this.
     
-    public static final boolean TELEOP_AUTO_HOPPER = true;
+    public static final boolean TELEOP_AUTO_HOPPER = false;
         // TODO: Figure out whether or not to use this.
 }

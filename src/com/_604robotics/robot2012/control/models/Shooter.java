@@ -9,7 +9,7 @@ import com._604robotics.robot2012.configuration.ActuatorConfiguration;
 public class Shooter {
     public static boolean shooting = false;
     public static boolean fender = true;
-    public static boolean hoodUp = false;
+    public static boolean hoodUp = true;
     
     public static double hopperPower = 0D;
     public static long lastCharged = 0;

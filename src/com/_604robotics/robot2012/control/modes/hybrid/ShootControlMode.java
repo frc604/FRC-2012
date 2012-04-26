@@ -22,6 +22,10 @@ public class ShootControlMode implements ControlMode {
 	public void init() {
         Drive.drive(0D);
         AutonomousDashboard.setDone(false);
+        
+        Elevator.goUp();
+        
+        Shooter.setAtKey();
 
 		controlTimer = new Timer();
 		controlTimer.start();
@@ -31,8 +35,6 @@ public class ShootControlMode implements ControlMode {
         if (Robot.leftKinect.getRawButton(ButtonConfiguration.Kinect.ABORT))
             return false;
         
-        Elevator.goUp();
-        
         if (Robot.elevatorMachine.test(ElevatorState.HIGH) || controlTimer.get() < AutonomousDashboard.step1) {
             AutonomousDashboard.setStep(2);
             
@@ -40,7 +42,6 @@ public class ShootControlMode implements ControlMode {
                 Shooter.shoot();
                 Shooter.driveHopper(Shooter.isCharged());
             } else {
-                Shooter.shoot(false);
                 return false;
             }
         } else {
@@ -53,6 +54,13 @@ public class ShootControlMode implements ControlMode {
     public void disable() {
         controlTimer.stop();
         
+        Shooter.setAtFender();
+        
+        Shooter.shoot(false);
+        Shooter.driveHopper(false);
+        
+        Elevator.goDown();
+
         Robot.pickupMotor.set(0D);
         Robot.hopperMotor.set(0D);
     }

@@ -58,9 +58,11 @@ public class CompetitionControlMode implements ControlMode {
          * Pickup control.
          */
         Pickup.suckIn(Robot.manipulatorController.getButton(ButtonConfiguration.Manipulator.PICKUP));
-        Pickup.setSpeed(Robot.manipulatorController.getAxis(Axis.LEFT_STICK_Y));
+        Pickup.setSpeed(Robot.manipulatorController.getAxis(Axis.RIGHT_STICK_Y));
         
         Pickup.toggleFlip(Robot.driveController.getToggle(ButtonConfiguration.Driver.TOGGLE_PICKUP));
+        if (!Pickup.up)
+            Elevator.goDown();
         
         /*
          * Shooter control.
@@ -68,8 +70,8 @@ public class CompetitionControlMode implements ControlMode {
         Shooter.toggleHood(Robot.manipulatorController.getToggle(ButtonConfiguration.Manipulator.TOGGLE_ANGLE));
         Shooter.shoot(Robot.manipulatorController.getButton(ButtonConfiguration.Manipulator.SHOOT));
         
-        if (!FiringConfiguration.TELEOP_AUTO_HOPPER || Math.abs(Robot.manipulatorController.getAxis(Axis.RIGHT_STICK_Y)) > 0.2 )
-            Shooter.driveHopper(Robot.manipulatorController.getAxis(Axis.RIGHT_STICK_Y));
+        if (!FiringConfiguration.TELEOP_AUTO_HOPPER || Math.abs(Robot.manipulatorController.getAxis(Axis.LEFT_STICK_Y)) > 0.2 )
+            Shooter.driveHopper(Robot.manipulatorController.getAxis(Axis.LEFT_STICK_Y));
         else
             Shooter.driveHopper(Shooter.isCharged());
         

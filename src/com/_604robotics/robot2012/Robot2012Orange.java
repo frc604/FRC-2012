@@ -26,6 +26,7 @@ import edu.wpi.first.wpilibj.SimpleRobot;
  * @author Alan Li <alanpusongli@gmail.com>
  */
 public class Robot2012Orange extends SimpleRobot {
+
     SequentialModeLauncher hybridMode = new SequentialModeLauncher("Hybrid");
     SequentialModeLauncher teleopMode = new SequentialModeLauncher("Teleop");
 
@@ -37,7 +38,7 @@ public class Robot2012Orange extends SimpleRobot {
          * Make sure the robot is warmed up. Probably isn't necessary.
          */
         Robot.init();
-        
+
         /*
          * Register workers.
          */
@@ -48,7 +49,7 @@ public class Robot2012Orange extends SimpleRobot {
         WorkerManager.registerWorker(new ShooterWorker());
         WorkerManager.registerWorker(new StingerWorker());
         WorkerManager.registerWorker(new RespringWorker());
-        
+
         /*
          * Register dashboard sections.
          */
@@ -58,7 +59,7 @@ public class Robot2012Orange extends SimpleRobot {
         Dashboard.registerSection(ShooterDashboard.getInstance());
         //Dashboard.registerSection(StateDashboard.getInstance());
         //Dashboard.registerSection(UserDashboard.getInstance());
-        
+
         /*
          * Initialize hybrid mode.
          */
@@ -97,38 +98,54 @@ public class Robot2012Orange extends SimpleRobot {
      * Automated drive for autonomous mode.
      */
     public void autonomous() {
-        DriverStation.getInstance().setDigitalOut(2, false);
-        DriverStation.getInstance().setDigitalOut(5, false);
+        try {
+            DriverStation.getInstance().setDigitalOut(2, false);
+            DriverStation.getInstance().setDigitalOut(5, false);
 
-        Robot.compressorPump.start();
-        hybridMode.init();
+            Robot.compressorPump.start();
+            hybridMode.init();
 
-        while (isAutonomous() && isEnabled() && hybridMode.step()) {
-            WorkerManager.work();
-            Dashboard.render();
+            try {
+                while (isAutonomous() && isEnabled() && hybridMode.step()) {
+                    WorkerManager.work();
+                    Dashboard.render();
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+
+            hybridMode.disable();
+            Robot.compressorPump.stop();
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
-
-        hybridMode.disable();
-        Robot.compressorPump.stop();
     }
 
     /**
      * Operator-controlled drive for Teleop mode.
      */
     public void operatorControl() {
-        DriverStation.getInstance().setDigitalOut(2, false);
-        DriverStation.getInstance().setDigitalOut(5, false);
+        try {
+            DriverStation.getInstance().setDigitalOut(2, false);
+            DriverStation.getInstance().setDigitalOut(5, false);
 
-        Robot.compressorPump.start();
-        teleopMode.init();
-        
-        while (isOperatorControl() && isEnabled() && teleopMode.step()) {
-            WorkerManager.work();
-            Dashboard.render();
+            Robot.compressorPump.start();
+            teleopMode.init();
+
+            try {
+                while (isOperatorControl() && isEnabled() && teleopMode.step()) {
+                    WorkerManager.work();
+                    Dashboard.render();
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+
+            teleopMode.disable();
+            Robot.compressorPump.stop();
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
-
-        teleopMode.disable();
-        Robot.compressorPump.stop();
     }
 
     /**

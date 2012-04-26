@@ -21,7 +21,7 @@ public class PickupWorker implements Worker {
     }
     
     public void work () {
-        if (Elevator.recalibrating) {
+        if (Elevator.recalibrating || !Elevator.calibrated) {
             /*
              * Firce the pickup down for recalibration.
              */

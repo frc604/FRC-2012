@@ -14,7 +14,7 @@ public class ElevatorMachine implements StrangeMachine {
     private int lastState = ElevatorState.MEDIUM;
     private boolean withinTolerance = false;
     
-    private DoubleSolenoid.Value hoodPosition = ActuatorConfiguration.SOLENOID_SHOOTER.LOWER_ANGLE;
+    private DoubleSolenoid.Value hoodPosition = ActuatorConfiguration.SOLENOID_SHOOTER.UPPER_ANGLE;
 
     /**
      * Various possible states the elevator can be in.

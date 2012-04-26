@@ -5,6 +5,7 @@ import com._604robotics.robot2012.camera.RemoteCameraTCP;
 import com._604robotics.robot2012.configuration.ActuatorConfiguration;
 import com._604robotics.robot2012.configuration.PIDConfiguration;
 import com._604robotics.robot2012.configuration.PortConfiguration;
+import com._604robotics.robot2012.control.models.Elevator;
 import com._604robotics.robot2012.firing.CameraFiringProvider;
 import com._604robotics.robot2012.firing.ManualFiringProvider;
 import com._604robotics.robot2012.machine.ElevatorMachine;
@@ -22,8 +23,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class Robot {
     private static final Timer lastRecalibrated = new Timer();
     
-	public static final XboxController driveController;
-	public static final XboxController manipulatorController;
+	public static final Controller driveController;
+	public static final Controller manipulatorController;
 	
 	public static final KinectStick leftKinect;
 	public static final KinectStick rightKinect;
@@ -70,7 +71,7 @@ public class Robot {
         lastRecalibrated.start();
         
 		driveController = new XboxController(PortConfiguration.Controllers.DRIVE);
-		manipulatorController = new XboxController(PortConfiguration.Controllers.MANIPULATOR);
+		manipulatorController = new JoystickController(PortConfiguration.Controllers.MANIPULATOR);
 		
 		leftKinect = new KinectStick(PortConfiguration.Kinect.LEFT);
 		rightKinect = new KinectStick(PortConfiguration.Kinect.RIGHT);
@@ -193,6 +194,7 @@ public class Robot {
             DriverStation.getInstance().setDigitalOut(5, true);
             SmartDashboard.getBoolean("Elevator Calibrated", true);
             if (lastRecalibrated.get() >= 1) {
+                Elevator.calibrated();
                 Robot.encoderElevator.reset();
             } else {
                 lastRecalibrated.reset();

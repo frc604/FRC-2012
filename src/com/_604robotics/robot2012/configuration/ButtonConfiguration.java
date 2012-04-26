@@ -26,21 +26,36 @@ public interface ButtonConfiguration {
         public static final int CALIBRATE = Button.LB;
     }
     
-    public interface Manipulator {
+    /* public interface Manipulator {
         public interface Elevator {
-            public static final int UP = Button.Y;
-            public static final int DOWN = Button.A;
+            public static final int UP = Button.Y; // 6
+            public static final int DOWN = Button.A; // 7
         }
         
-        public static final int SHOOT = Button.RT;
-        public static final int POWER_HOPPER = Button.RightStick;
+        public static final int SHOOT = Button.RT; // 1
         
-        public static final int PICKUP = Button.X;
+        public static final int PICKUP = Button.X; // 8
         
-        public static final int TOGGLE_ANGLE = Button.RB;
+        public static final int TOGGLE_ANGLE = Button.RB; // 9
         
-        public static final int AT_FENDER = Button.LB;
-        public static final int AT_KEY = Button.LT;
+        public static final int AT_FENDER = Button.LB; // 4
+        public static final int AT_KEY = Button.LT; // 5
+    } */
+    
+    public interface Manipulator {
+        public interface Elevator {
+            public static final int UP = 6;
+            public static final int DOWN = 7;
+        }
+        
+        public static final int SHOOT = 1;
+        
+        public static final int PICKUP = 8;
+        
+        public static final int TOGGLE_ANGLE = 9;
+        
+        public static final int AT_FENDER = 4;
+        public static final int AT_KEY = 5;
     }
     
     public interface Kinect {

@@ -29,6 +29,8 @@ public class DriveWorker implements Worker {
             if (target != null) {
                Robot.pidSourceDriveAngle.cache(target.getAngle());
                Robot.pidAutoAim.enable();
+            } else if (!Robot.pidAutoAim.isEnable()) {
+               Robot.driveTrain.tankDrive(0D, 0D);
             }
         } else {
             Robot.pidAutoAim.disable();

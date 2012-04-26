@@ -25,7 +25,7 @@ public class ElevatorWorker implements Worker {
          */
         Robot.elevatorMotors.setDisabled(Elevator.disabled);
         
-        if (Elevator.recalibrating) {
+        if (Elevator.recalibrating || !Elevator.calibrated) {
             /*
              * If the pickup is out, force the elevator down for recalibration.
              */

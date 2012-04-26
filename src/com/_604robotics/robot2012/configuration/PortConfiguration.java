@@ -45,7 +45,7 @@ public interface PortConfiguration {
     
     public interface Encoders {
         public static final int SHOOTER_A = 3;
-        public static final int SHOOTER_B = 5;
+        public static final int SHOOTER_B = 4;
         
         public static final int ELEVATOR_A = 10;
         public static final int ELEVATOR_B = 9;

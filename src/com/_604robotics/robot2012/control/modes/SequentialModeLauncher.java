@@ -63,6 +63,8 @@ public class SequentialModeLauncher implements ControlMode {
     
     public void init () {
         mode = 0;
+        if (mode < modes.size())
+            this.getCurrentMode().init();
     }
     
     public boolean step () {
