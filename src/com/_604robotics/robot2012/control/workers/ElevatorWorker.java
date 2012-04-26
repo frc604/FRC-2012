@@ -7,6 +7,7 @@ import com._604robotics.robot2012.control.models.Pickup;
 import com._604robotics.robot2012.control.models.Shooter;
 import com._604robotics.robot2012.machine.ElevatorMachine;
 import com._604robotics.robot2012.machine.PickupMachine;
+import com._604robotics.robot2012.machine.PickupMachine.PickupState;
 
 /**
  *
