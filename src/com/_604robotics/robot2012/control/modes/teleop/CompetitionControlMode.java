@@ -2,6 +2,7 @@ package com._604robotics.robot2012.control.modes.teleop;
 
 import com._604robotics.robot2012.Robot;
 import com._604robotics.robot2012.configuration.ButtonConfiguration;
+import com._604robotics.robot2012.configuration.FiringConfiguration;
 import com._604robotics.robot2012.control.models.Drive;
 import com._604robotics.robot2012.control.models.Elevator;
 import com._604robotics.robot2012.control.models.Pickup;
@@ -63,7 +64,11 @@ public class CompetitionControlMode implements ControlMode {
          */
         Shooter.toggleHood(Robot.manipulatorController.getToggle(ButtonConfiguration.Manipulator.TOGGLE_ANGLE));
         Shooter.shoot(Robot.manipulatorController.getButton(ButtonConfiguration.Manipulator.SHOOT));
-        Shooter.driveHopper(Robot.manipulatorController.getAxis(Axis.RIGHT_STICK_Y));
+        
+        if (!FiringConfiguration.TELEOP_AUTO_HOPPER || Math.abs(Robot.manipulatorController.getAxis(Axis.RIGHT_STICK_Y)) > 0.2 )
+            Shooter.driveHopper(Robot.manipulatorController.getAxis(Axis.RIGHT_STICK_Y));
+        else
+            Shooter.driveHopper(Shooter.isCharged());
         
         if (Robot.manipulatorController.getToggle(ButtonConfiguration.Manipulator.AT_FENDER))
             Shooter.setAtFender();

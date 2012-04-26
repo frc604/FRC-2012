@@ -1,5 +1,6 @@
 package com._604robotics.robot2012.speedcontrol;
 
+import com._604robotics.robot2012.configuration.FiringConfiguration;
 import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.PIDSource;
 
@@ -19,6 +20,9 @@ public class AwesomeSpeedController implements SpeedProvider {
     private final AddableDifferentialOutput diffOutput;
     
     private boolean loaded = false;
+    
+    private long lastApplied = 0;
+    private long lastChanged = 0;
     
     private class AddableDifferentialOutput implements PIDOutput {
         private double process = 0D;
@@ -59,6 +63,8 @@ public class AwesomeSpeedController implements SpeedProvider {
     }
 
     public void setSetSpeed(double setSpeed) {
+        if (setSpeed != this.getSetSpeed())
+            this.lastChanged = System.currentTimeMillis();
         this.controller.setSetpoint(setSpeed);
     }
 
@@ -67,7 +73,12 @@ public class AwesomeSpeedController implements SpeedProvider {
     }
 
     public boolean isOnTarget(double tolerance) {
-        return Math.abs(tolerance - this.source.pidGet()) < tolerance;
+        if (FiringConfiguration.USE_HOPPER_THRESHOLD) {
+            return Math.abs(this.getSetSpeed() - this.source.pidGet()) < tolerance;
+        } else {
+            final long now = System.currentTimeMillis();
+            return now - this.lastChanged >= FiringConfiguration.CHARGE_TIME && now - this.lastApplied < 50;
+        }
     }
     
     public PIDDP getController () {
@@ -76,7 +87,9 @@ public class AwesomeSpeedController implements SpeedProvider {
     
     public void apply() {
         this.loaded = true;
-        double setpoint = this.getSetSpeed();
+        this.lastApplied = System.currentTimeMillis();
+        
+        final double setpoint = this.getSetSpeed();
         
         if (Math.abs(this.source.pidGet()) < fac * setpoint) {
             this.output.pidWrite(-maxSpeed);

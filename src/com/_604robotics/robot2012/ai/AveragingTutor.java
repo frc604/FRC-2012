@@ -14,7 +14,7 @@ public class AveragingTutor implements Tutor {
     private double lastShot = 0D;
     
     private double minTest = 0;
-    private double maxTest = 1;
+    private double maxTest = 420;
     
     private double minGood = NaN;
     private double maxGood = NaN;
@@ -41,6 +41,10 @@ public class AveragingTutor implements Tutor {
         return Math.max(a, b);
     }
     
+    public double getDistance () {
+        return this.distance;
+    }
+    
     public void configure (double distance) {
         this.distance = distance;
     }
@@ -60,19 +64,19 @@ public class AveragingTutor implements Tutor {
             double dHigh = maxTest - maxGood;
 
             if (dLow > dHigh) {
-                System.out.println(" -----> New Tolerance: " + dLow);
+                //System.out.println(" -----> New Tolerance: " + dLow);
                 
                 lastShot = .5 * (minTest + minGood); // avg between bottom test and bottom good;
                 return lastShot;
             } else {
-                System.out.println(" -----> New Tolerance: " + dHigh);
+                //System.out.println(" -----> New Tolerance: " + dHigh);
                 
                 lastShot = .5 * (maxTest + maxGood); // avg between top test and top good
                 return lastShot;
             }
         }
 
-        System.out.println(" -----> New Tolerance: " + (maxTest - minTest));
+        //System.out.println(" -----> New Tolerance: " + (maxTest - minTest));
 
         lastShot = avg;
         return lastShot;

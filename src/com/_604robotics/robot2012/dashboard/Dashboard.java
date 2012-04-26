@@ -52,24 +52,25 @@ public class Dashboard {
             this.section = section;
         }
 
-        protected void initialize() {
+        public void initialize() {
             
         }
 
-        protected void execute() {
+        public void execute() {
+            System.out.println("EXECUTING " + this.section.getName());
             Dashboard.enableSection(this.section);
             this.done = true;
         }
 
-        protected boolean isFinished() {
+        public boolean isFinished() {
             return this.done;
         }
 
-        protected void end() {
+        public void end() {
             this.getTable().putBoolean("delete", true);
         }
 
-        protected void interrupted() {
+        public void interrupted() {
             
         }
     }

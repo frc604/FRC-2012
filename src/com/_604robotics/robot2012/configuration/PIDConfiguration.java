@@ -11,7 +11,7 @@ public interface PIDConfiguration {
     public interface Shooter {
         public static final double P = -0.001;
         public static final double I = 0D;
-        public static final double D = -0.001;
+        public static final double D = 0D;
         public static final double DP = 0D;
     }
     

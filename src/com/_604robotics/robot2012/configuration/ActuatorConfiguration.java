@@ -22,9 +22,6 @@ public interface ActuatorConfiguration {
     
     public static final double ELEVATOR_PICKUP_POWER = -0.32;
     
-    public static final double SHOOTER_SPEED_TOLERANCE = 30D;
-        // TODO: Configure this.
-    
     public interface RING_LIGHT {
         public static final Value ON = Value.kOn;
         public static final Value OFF = Value.kOff;

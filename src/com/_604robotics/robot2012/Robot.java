@@ -111,6 +111,9 @@ public class Robot {
 		encoderShooter.setPIDSourceParameter(Encoder.PIDSourceParameter.kRate);
 		encoderShooter.setSamplingRate(20);
 		encoderShooter.setFac(0.5);
+        
+        //encoderShooter = new EncoderRateSensor(PortConfiguration.Encoders.SHOOTER_A, PortConfiguration.Encoders.SHOOTER_B);
+        
 		encoderShooter.start();
 		
 		/* Sets up the limit switches for calibration. */
@@ -153,8 +156,8 @@ public class Robot {
 		/* Sets up the firing provider. */
 		
 		firingProvider = new CameraFiringProvider(cameraInterface, new ManualFiringProvider());
-		firingProvider.setPhysicsEnabled(false);
-		firingProvider.setEnabled(false);
+		firingProvider.setPhysicsEnabled(true);
+		firingProvider.setEnabled(true);
 		
 		/* Sets up the speed provider for the shooter. */
 		
@@ -162,7 +165,8 @@ public class Robot {
 		//speedProvider = new NaiveSpeedProvider(shooterMotors, encoderShooter);
 		//speedProvider = new ProcessSpeedProvider(-0.0001, 0D, -0.0008, encoderShooter, shooterMotors);
 		speedProvider = new AwesomeSpeedController(PIDConfiguration.Shooter.P, PIDConfiguration.Shooter.I, PIDConfiguration.Shooter.D, PIDConfiguration.Shooter.DP, encoderShooter, shooterMotors);
-		
+		//speedProvider = new BangBangSpeedController(shooterMotors, encoderShooter);
+        
 		/* Sets up the Machines. */
 		
 		pickupMachine = new PickupMachine();
