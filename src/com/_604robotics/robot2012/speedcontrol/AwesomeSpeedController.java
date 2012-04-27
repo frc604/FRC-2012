@@ -63,6 +63,8 @@ public class AwesomeSpeedController implements SpeedProvider {
     }
 
     public void setSetSpeed(double setSpeed) {
+        if (System.currentTimeMillis() - this.lastApplied < 100)
+            return;
         if (setSpeed != this.getSetSpeed())
             this.lastChanged = System.currentTimeMillis();
         this.controller.setSetpoint(setSpeed);

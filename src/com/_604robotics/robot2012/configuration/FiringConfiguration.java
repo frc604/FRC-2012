@@ -24,11 +24,11 @@ public interface FiringConfiguration {
     public static final double KEY_FIRING_SPEED = 375D; // was 420D
         // TODO: Configure this.
     
-    public static final boolean USE_HOPPER_THRESHOLD = false;
+    public static final boolean USE_HOPPER_THRESHOLD = true;
         // TODO: See what works best.
     public static final int CHARGE_TIME = 3000;
         // TODO: Configure this.
-    public static final double SPEED_TOLERANCE = 10D;
+    public static final double SPEED_TOLERANCE = 15D;
         // TODO: Configure this.
     
     public static final boolean TELEOP_AUTO_HOPPER = false;

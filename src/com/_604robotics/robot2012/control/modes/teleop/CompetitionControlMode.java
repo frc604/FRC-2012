@@ -67,6 +67,7 @@ public class CompetitionControlMode implements ControlMode {
         /*
          * Shooter control.
          */
+        Shooter.setVisionEnabled(!Robot.manipulatorController.getButton(ButtonConfiguration.Manipulator.DISABLE_VISION));
         Shooter.shoot(Robot.manipulatorController.getButton(ButtonConfiguration.Manipulator.SHOOT));
         Shooter.toggleHood(Robot.manipulatorController.getToggle(ButtonConfiguration.Manipulator.TOGGLE_ANGLE));
                 

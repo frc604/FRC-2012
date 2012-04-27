@@ -54,7 +54,7 @@ public class Robot2012Orange extends SimpleRobot {
          * Register dashboard sections.
          */
         //Dashboard.registerSection(AutonomousDashboard.getInstance());
-        Dashboard.registerSection(ElevatorDashboard.getInstance());
+        //Dashboard.registerSection(ElevatorDashboard.getInstance());
         Dashboard.registerSection(FiringDashboard.getInstance());
         Dashboard.registerSection(ShooterDashboard.getInstance());
         //Dashboard.registerSection(StateDashboard.getInstance());

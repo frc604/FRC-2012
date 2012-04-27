@@ -28,6 +28,11 @@ public class ShooterWorker implements Worker {
          */
         Robot.firingProvider.setAtFender(Shooter.fender);
         
+        /*
+         * Enable and disable vision.
+         */
+        Robot.firingProvider.setEnabled(Shooter.vision);
+        
         if (ShooterDashboard.ignoreHeight || Robot.elevatorMachine.test(ElevatorState.HIGH)) {
             /*
              * Toggle the hood.

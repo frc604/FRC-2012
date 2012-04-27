@@ -62,7 +62,7 @@ public class ShooterDashboard implements DashboardSection {
         SmartDashboard.putDouble("Current Shooter Output", Robot.shooterMotors.get());
         
         if (!Shooter.manual)
-            SmartDashboard.putDouble("Shooter Speed", Robot.firingProvider.getSpeed());
+            SmartDashboard.putDouble("Shooter Speed", Robot.speedProvider.getSetSpeed());
     }
     
     private ShooterDashboard () {

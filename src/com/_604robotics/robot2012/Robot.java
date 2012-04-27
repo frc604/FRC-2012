@@ -113,7 +113,7 @@ public class Robot {
 		encoderShooter.setDistancePerPulse(1);
 		encoderShooter.setPIDSourceParameter(Encoder.PIDSourceParameter.kRate);
 		encoderShooter.setSamplingRate(20);
-		encoderShooter.setFac(0.5);
+		encoderShooter.setFac(0.2);
         
         //encoderShooter = new EncoderRateSensor(PortConfiguration.Encoders.SHOOTER_A, PortConfiguration.Encoders.SHOOTER_B);
         

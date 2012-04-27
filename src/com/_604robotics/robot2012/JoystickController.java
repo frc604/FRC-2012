@@ -28,6 +28,13 @@ public class JoystickController extends Controller {
         super(joystick);
     }
     
+    public boolean getButton (int button) {
+        if (button >= 100)
+            return super.getAxis(button-100) > 0;
+        else
+            return super.getButton(button);
+    }
+    
     public double getAxis (int axis) {
         if (axis == XboxController.Axis.LEFT_STICK_Y) {
             if (this.joystick.getRawButton(3))

@@ -12,7 +12,9 @@ public interface PIDConfiguration {
         public static final double P = -0.001;
         public static final double I = 0D;
         public static final double D = 0D;
-        public static final double DP = 0D;
+        public static final double DP = -.005D;
+        //public static final double D = 0.0002D;
+        //public static final double DP = -.001D;
     }
     
     //On target < .025

@@ -13,13 +13,15 @@ public class TurretSpeedGuestimator {
             quadFactor = 1.3801E-06,
             cubicFactor = 7.2550E-09,
             
+            netMul = 0.6,
+            
             originalCalibratedBattery = 12;//or 10 or whatever the battery falls down to under load
     
     public static double guestimatePow(double speed) {
-        return constantFactor
+        return (constantFactor
                 + linearFactor*speed
                 + quadFactor*speed*speed
-                + cubicFactor*speed*speed*speed;
+                + cubicFactor*speed*speed*speed) * netMul;
     }
     public static double guestimateSpeed(double speed, double battery) {
         return (guestimatePow(speed)) * (battery / originalCalibratedBattery);

@@ -53,6 +53,7 @@ public interface ButtonConfiguration {
         public static final int PICKUP = 8;
         
         public static final int TOGGLE_ANGLE = 9;
+        public static final int DISABLE_VISION = 103;
         
         public static final int AT_FENDER = 4;
         public static final int AT_KEY = 5;

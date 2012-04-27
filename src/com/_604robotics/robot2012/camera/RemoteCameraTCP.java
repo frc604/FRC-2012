@@ -1,5 +1,6 @@
 package com._604robotics.robot2012.camera;
 
+import com._604robotics.robot2012.control.models.Shooter;
 import com._604robotics.robot2012.vision.Target;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;

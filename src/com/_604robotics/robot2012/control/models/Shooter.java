@@ -17,6 +17,8 @@ public class Shooter {
     public static boolean manual = false;
     public static double manualSpeed = 0D;
     
+    public static boolean vision = false;
+    
     public static void setAtFender () {
         Shooter.fender = true;
     }
@@ -92,5 +94,9 @@ public class Shooter {
     
     public static void setManualSpeed (double manualSpeed) {
         Shooter.manualSpeed = manualSpeed;
+    }
+    
+    public static void setVisionEnabled (boolean vision) {
+        Shooter.vision = vision;
     }
 }
