@@ -45,7 +45,7 @@ public class CameraFiringProvider implements FiringProvider {
                 target = targets[i];
         }
         
-        if (target == null) {
+        if (target == null || this.atFender) {
             this.usedTargets = false;
             return this.fallback.getSpeed();
         } else {

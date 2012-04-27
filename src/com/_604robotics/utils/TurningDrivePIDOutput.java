@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.RobotDrive;
  */
 public class TurningDrivePIDOutput implements PIDOutput {
     private final RobotDrive drive;
+    private double forwardPower = 0D;
     
     public TurningDrivePIDOutput (RobotDrive drive) {
         this.drive = drive;
@@ -16,5 +17,9 @@ public class TurningDrivePIDOutput implements PIDOutput {
     
     public void pidWrite (double output) {
         this.drive.arcadeDrive(0D, output);
+    }
+    
+    public void setForwardPower (double forwardPower) {
+        this.forwardPower = forwardPower;
     }
 }

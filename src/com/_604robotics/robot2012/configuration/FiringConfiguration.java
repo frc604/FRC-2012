@@ -19,9 +19,9 @@ public interface FiringConfiguration {
     public static final double KEY_FIRING_POWER = -1D;
         // TODO: Configure this.
     
-    public static final double FENDER_FIRING_SPEED = 220D;
-        // TODO: Configure this.32
-    public static final double KEY_FIRING_SPEED = 420D;
+    public static final double FENDER_FIRING_SPEED = 250D;
+        // TODO: Configure this.
+    public static final double KEY_FIRING_SPEED = 375D; // was 420D
         // TODO: Configure this.
     
     public static final boolean USE_HOPPER_THRESHOLD = false;

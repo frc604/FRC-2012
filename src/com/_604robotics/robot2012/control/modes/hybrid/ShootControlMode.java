@@ -32,7 +32,8 @@ public class ShootControlMode implements ControlMode {
 	}
 	
 	public boolean step() {
-        if (Robot.leftKinect.getRawButton(ButtonConfiguration.Kinect.ABORT))
+        if (Robot.leftKinect.getRawButton(ButtonConfiguration.Kinect.ENABLE) ||
+                Robot.leftKinect.getRawButton(ButtonConfiguration.Kinect.ABORT))
             return false;
         
         if (Robot.elevatorMachine.test(ElevatorState.HIGH) || controlTimer.get() < AutonomousDashboard.step1) {

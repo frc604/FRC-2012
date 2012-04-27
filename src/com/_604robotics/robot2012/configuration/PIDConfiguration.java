@@ -15,10 +15,11 @@ public interface PIDConfiguration {
         public static final double DP = 0D;
     }
     
+    //On target < .025
     public interface AutoAim {
-        public static final double P = 0D;
+        public static final double P = 8D;
             // TODO: Configure this.
-        public static final double I = 0D;
+        public static final double I = .5D;
             // TODO: Configure this.
         public static final double D = 0D;
             // TODO: Configure this.

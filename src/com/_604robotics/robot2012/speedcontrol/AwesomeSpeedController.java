@@ -77,6 +77,7 @@ public class AwesomeSpeedController implements SpeedProvider {
             return Math.abs(this.getSetSpeed() - this.source.pidGet()) < tolerance;
         } else {
             final long now = System.currentTimeMillis();
+            System.out.println(now - this.lastChanged);
             return now - this.lastChanged >= FiringConfiguration.CHARGE_TIME && now - this.lastApplied < 50;
         }
     }

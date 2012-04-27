@@ -38,7 +38,8 @@ public class BridgeControlMode implements ControlMode {
 	}
 	
 	public boolean step() {
-        if (Robot.leftKinect.getRawButton(ButtonConfiguration.Kinect.ABORT))
+        if (Robot.leftKinect.getRawButton(ButtonConfiguration.Kinect.ENABLE) ||
+                Robot.leftKinect.getRawButton(ButtonConfiguration.Kinect.ABORT))
             return false;
         
         if (step > AutonomousDashboard.maxStep) {

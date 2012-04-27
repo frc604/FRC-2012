@@ -67,18 +67,21 @@ public class CompetitionControlMode implements ControlMode {
         /*
          * Shooter control.
          */
-        Shooter.toggleHood(Robot.manipulatorController.getToggle(ButtonConfiguration.Manipulator.TOGGLE_ANGLE));
         Shooter.shoot(Robot.manipulatorController.getButton(ButtonConfiguration.Manipulator.SHOOT));
-        
+        Shooter.toggleHood(Robot.manipulatorController.getToggle(ButtonConfiguration.Manipulator.TOGGLE_ANGLE));
+                
         if (!FiringConfiguration.TELEOP_AUTO_HOPPER || Math.abs(Robot.manipulatorController.getAxis(Axis.LEFT_STICK_Y)) > 0.2 )
             Shooter.driveHopper(Robot.manipulatorController.getAxis(Axis.LEFT_STICK_Y));
         else
             Shooter.driveHopper(Shooter.isCharged());
         
-        if (Robot.manipulatorController.getToggle(ButtonConfiguration.Manipulator.AT_FENDER))
+        if (Robot.manipulatorController.getToggle(ButtonConfiguration.Manipulator.AT_FENDER)) {
             Shooter.setAtFender();
-        else if (Robot.manipulatorController.getToggle(ButtonConfiguration.Manipulator.AT_KEY))
+            Shooter.setHood(false);
+        } else if (Robot.manipulatorController.getToggle(ButtonConfiguration.Manipulator.AT_KEY)) {
             Shooter.setAtKey();
+            Shooter.setHood(true);
+        }
         
         return true;
     }

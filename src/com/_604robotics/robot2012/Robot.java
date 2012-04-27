@@ -54,8 +54,10 @@ public class Robot {
 	public static final SpringableDoubleSolenoid solenoidStinger;
 	
 	public static final UpDownPIDController pidElevator;
-    public static final CachingPIDSource pidSourceDriveAngle;
+    
     public static final SendablePIDController pidAutoAim;
+    public static final CachingPIDSource pidSourceDriveAngle;
+    public static final TurningDrivePIDOutput pidOutputDrive;
 	
 	public static final StrangeMachine pickupMachine;
 	public static final ElevatorMachine elevatorMachine;
@@ -145,7 +147,8 @@ public class Robot {
 		pidElevator.setSetpoint(822);
         
         pidSourceDriveAngle = new CachingPIDSource();
-        pidAutoAim = new SendablePIDController(PIDConfiguration.AutoAim.P, PIDConfiguration.AutoAim.I, PIDConfiguration.AutoAim.D, pidSourceDriveAngle, new TurningDrivePIDOutput(driveTrain));
+        pidOutputDrive = new TurningDrivePIDOutput(driveTrain);
+        pidAutoAim = new SendablePIDController(PIDConfiguration.AutoAim.P, PIDConfiguration.AutoAim.I, PIDConfiguration.AutoAim.D, pidSourceDriveAngle, pidOutputDrive);
 		
 		elevatorMotors.setController(pidElevator);
 		

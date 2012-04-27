@@ -78,7 +78,8 @@ public class SequentialModeLauncher implements ControlMode {
             this.getCurrentMode().disable();
             
             mode++;
-            this.getCurrentMode().init();
+            if (mode < this.modes.size())
+                this.getCurrentMode().init();
         }
         
         return true;

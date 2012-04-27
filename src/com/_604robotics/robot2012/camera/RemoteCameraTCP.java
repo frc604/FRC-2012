@@ -1,8 +1,8 @@
 package com._604robotics.robot2012.camera;
 
-import com._604robotics.robot2012.Robot;
 import com._604robotics.robot2012.vision.Target;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
@@ -237,6 +237,9 @@ class RemoteCameraServer implements Runnable {
                                 break;
                             if ((t.angleUncertainty = readDouble(in)) == -1)
                                 break;
+                            
+                            SmartDashboard.putDouble("PID Out", t.x/t.z);
+                                    // TODO: Get rid of this, here.
                             
                             tgts.addElement(t);
                             
