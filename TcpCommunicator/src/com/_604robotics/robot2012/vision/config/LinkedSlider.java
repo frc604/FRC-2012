@@ -181,7 +181,7 @@ public abstract class LinkedSlider extends Box implements ChangeListener {
 		/**
 		 * The underlying resolution of the slider
 		 */
-		private static final int MAX = 1<<24;
+		private static final int MAX = 1<<8;
 		
 		/**
 		 * A constructor for a DoubleLinkedSlider
@@ -191,7 +191,7 @@ public abstract class LinkedSlider extends Box implements ChangeListener {
 		 * @param max	The maximum value that this slider can be at
 		 */
 		public DoubleLinkedSlider(String name, double initialValue, double max) {
-			super(name, 0, MAX, (int) Math.round(initialValue*MAX));
+			super(name, 0, MAX, (int) Math.round(initialValue/max*MAX));
 			this.mul = max;
 			
 			updateValLabel();
@@ -229,7 +229,7 @@ public abstract class LinkedSlider extends Box implements ChangeListener {
 		this.min = min;
 		this.max = max;
 		this.mul = (max-min);
-		
+		System.out.printf("min = %d, max = %d, val = %d\n", min, max, val);
 		slider = new JSlider(min, max, val);
 		setupSlider();
 		

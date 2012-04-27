@@ -4,6 +4,8 @@ import java.util.logging.ConsoleHandler;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 
+import com._604robotics.robot2012.vision.VisionProcessing;
+
 
 
 public class Logger {
@@ -25,7 +27,9 @@ public class Logger {
 	}
 	
 	public static void log(Object o) {
-		logger.info(o.toString());
+		if (VisionProcessing.defaultProcessing.conf.getBoolean("debug_Print")) {
+			logger.info(o.toString());
+		}
 	}
 	public static void err(Object o) {
 		logger.severe(o.toString());

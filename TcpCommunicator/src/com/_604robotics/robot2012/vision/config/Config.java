@@ -228,6 +228,10 @@ public class Config {
 			return (Integer) value;
 		}
 		public double getDouble() {
+			if(defValue instanceof Integer) {
+				return getInt();
+			}
+			
 			if(!(defValue instanceof Double))
 				throw new RuntimeException("The value could not be parsed as a double.");
 			
@@ -374,8 +378,61 @@ public class Config {
 		addKeyValuePair("color_mulR", 0.0207);
 		addKeyValuePair("color_mulG", 0.02);
 		addKeyValuePair("color_mulB", 0.02);
+
+		
+		/**
+		 * The width of the vision target, in inches
+		 */
+		addKeyValuePair("targetWidth", 24.0);
+
+		/**
+		 * The height of the vision target, in inches
+		 */
+		addKeyValuePair("targetHeight", 18.0);
+
+		/**
+		 * How far the camera is pointing down, in degrees
+		 */
+		addKeyValuePair("camAngle", 28.5);
+
+		
+		/**
+		 * How many horizontal pixels away from center a line is that goes out at the same rate it goes right
+		 */
+		addKeyValuePair("kx", 700.0);								// was 736, then 605; then 695-705
+		
+		/**
+		 * How many vertical pixels away from center a line is that goes out at the same rate it goes up
+		 */
+		addKeyValuePair("ky", 530.0);								// was 736, then 605; then 695-705
 	}
 
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	public int hashCode() {
+		return dataMap.hashCode();
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Config other = (Config) obj;
+		if (dataMap == null) {
+			if (other.dataMap != null)
+				return false;
+		} else if (!dataMap.equals(other.dataMap))
+			return false;
+		return true;
+	}
 
 	public Object get(String key) {
 		return this.getDataValue(key).value;

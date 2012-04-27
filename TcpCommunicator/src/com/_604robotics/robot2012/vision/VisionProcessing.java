@@ -239,7 +239,7 @@ public class VisionProcessing {
 		
 		// Start streaming images from the camera
 		URL url = new URL("http://10.6.4.11/mjpg/video.mjpg");
-		CamStream stream = new CamStream(url, "", null, Integer.MAX_VALUE, 100, null, false);
+		CamStream stream = new CamStream(url, "", null, 5, 100, null, false);
 		stream.start();
 		
 		BufferedImage lastImg = null;

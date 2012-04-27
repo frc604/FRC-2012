@@ -229,7 +229,7 @@ public class CamStream extends Thread {
 					// Wait a while before retrying...
 					//
 					if (m_debug) {
-						Logger.warn("// Waiting for " + retryDelay + " ms");
+						Logger.log("// Waiting for " + retryDelay + " ms");
 					}
 					Logger.err(connectionError);
 					sleep(retryDelay);

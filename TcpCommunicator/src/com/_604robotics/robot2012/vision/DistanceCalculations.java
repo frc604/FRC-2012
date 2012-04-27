@@ -1,5 +1,7 @@
 package com._604robotics.robot2012.vision;
 
+import logging.Logger;
+
 import com._604robotics.robot2012.points.Point2d;
 import com._604robotics.robot2012.points.Point3d;
 
@@ -28,37 +30,12 @@ public class DistanceCalculations {
 	private Point2d	cameraCorner_topLeft	= transformPoint(cameraCorner_0_0),
 			cameraCorner_bottomRight = transformPoint(cameraCorner_640_480);
 	// 320 / (tan(47 / 2 degrees));
-																				
-	/**
-	 * How many horizontal pixels away from center a line is that goes out at the same rate it goes right
-	 */
-	double			kx						= 700;								// was 736, then 605; then 695-705
-	
-	/**
-	 * How many vertical pixels away from center a line is that goes out at the same rate it goes up
-	 */
-	double			ky						= 530;								// was 736, then 605; then 514
 	
 	/**
 	 * If a target corner is estimated to be less than 5 pixels away from the edge, the target is reported
 	 * as unreliable
 	 */
-	private double	nearSideTolerance		= 5 / kx;
-	
-	/**
-	 * How far the camera is pointing down, in radians
-	 */
-	double			rotUpDown				= Math.toRadians(-28.5);			// -26
-																				
-	/**
-	 * The height of the vision target, in inches
-	 */
-	double			targetHeight			= 18;								// inches
-																				
-	/**
-	 * The width of the vision target, in inches
-	 */
-	double			targetWidth				= 24;								// inches
+	private double	nearSideTolerance		= 5 / VisionProcessing.defaultProcessing.conf.getDouble("kx");
 																				
 	/**
 	 * This function gets the direction the target is facing, relative to the camera. It is imperfect, and half-assumes
@@ -76,7 +53,7 @@ public class DistanceCalculations {
 		double dyRatio = dy1 / dy2;
 		
 
-		double expectedW = targetHeight / z;
+		double expectedW = VisionProcessing.defaultProcessing.conf.getDouble("targetWidth") / z;
 		double actualW = q.getAvgWidth();
 		
 		double wRatio = actualW / expectedW;
@@ -88,9 +65,7 @@ public class DistanceCalculations {
 		if (wRatio > 1) {
 			wRatio = 1;
 		}
-		if (VisionProcessing.defaultProcessing.conf.getBoolean("debug_Print")) {
-			System.out.println(wRatio);
-		}
+		Logger.log(wRatio);
 		
 		return Math.acos(wRatio) * (dyRatio > 1 ? -1 : 1);
 	}
@@ -121,12 +96,12 @@ public class DistanceCalculations {
 		// Uncertainties
 		{
 			double plusOrMinus = .5;
-			double targetPixHeight = kx / quad.getAvgHeight();
+			double targetPixHeight = VisionProcessing.defaultProcessing.conf.getDouble("ky") / quad.getAvgHeight();
 			double frac = (targetPixHeight + plusOrMinus) / (targetPixHeight - plusOrMinus) - 1;
 			t.setZUncertainty(frac * t.getZ());
 			
-			t.setXUncertainty(t.getZ() / kx); // approximately 1 pixel of uncertainty
-			t.setYUncertainty(t.getZ() / ky); // approximately 1 pixel of uncertainty
+			t.setXUncertainty(t.getZ() / VisionProcessing.defaultProcessing.conf.getDouble("kx")); // approximately 1 pixel of uncertainty
+			t.setYUncertainty(t.getZ() / VisionProcessing.defaultProcessing.conf.getDouble("ky")); // approximately 1 pixel of uncertainty
 			
 			t.setAngleUncertainty(.25); // constant, for now; unknown
 			
@@ -162,7 +137,7 @@ public class DistanceCalculations {
 	 * 
 	 */
 	public Point3d getRelXYZOfTarget(Quad q) {
-		double z = targetHeight / q.getAvgHeight();
+		double z = VisionProcessing.defaultProcessing.conf.getDouble("targetHeight") / q.getAvgHeight();
 		// xs = kx * x / z
 		// x = xs * z / kx
 		double avgx = q.getAvgX();
@@ -182,7 +157,10 @@ public class DistanceCalculations {
 	 * @return the transformed point (based on camera coords and rotUpDown into values indicating x/z and y/z)
 	 */
 	private Point2d transformPoint(Point2d p) {
-		double x = (p.x - cameraPixelWidth / 2) / kx, y = (cameraPixelHeight / 2 - p.y) / ky;
+		double x = (p.x - cameraPixelWidth / 2) / VisionProcessing.defaultProcessing.conf.getDouble("kx"),
+		y = (cameraPixelHeight / 2 - p.y) / VisionProcessing.defaultProcessing.conf.getDouble("ky");
+		
+		double rotUpDown = Math.toRadians(-VisionProcessing.defaultProcessing.conf.getDouble("camAngle"));
 		
 		double cos = Math.cos(rotUpDown);
 		double sin = Math.sin(rotUpDown);

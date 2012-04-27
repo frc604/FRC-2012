@@ -4,6 +4,9 @@ import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
+import java.awt.event.WindowStateListener;
 import java.io.IOException;
 
 import javax.swing.*;
@@ -48,6 +51,12 @@ public class Configger {
 	 * 		- MegaScan
 	 * 		- Min Blob Size
 	 * 		- Step
+	 *  - Target/Cam Info
+	 *  	- Width
+	 *  	- Height
+	 *  	- Camera angle down
+	 *  	- kx
+	 *  	- ky
 	 * 	- Debug
 	 * 		- Communicate to robot
 	 * 		- Save images to files
@@ -60,7 +69,10 @@ public class Configger {
 	/**
 	 * The tabs in the tabbedPane
 	 */
-	Box colorTunerTab = new Box(BoxLayout.Y_AXIS), tileTunerTab = new Box(BoxLayout.Y_AXIS), debugTab = new Box(BoxLayout.Y_AXIS);
+	Box colorTunerTab = new Box(BoxLayout.Y_AXIS),
+	tileTunerTab = new Box(BoxLayout.Y_AXIS),
+	targetInfoTab = new Box(BoxLayout.Y_AXIS),
+	debugTab = new Box(BoxLayout.Y_AXIS);
 	
 	JLabel colorLabel = new JLabel("r=000\tg=000\tb=000   ");
 	
@@ -68,8 +80,11 @@ public class Configger {
 	 * A simple main() method to make the Configger a runnable program
 	 */
 	public static void main(String[] args) {
+		if(args.length > 1)
+			usePreSaved = true;
 		new Configger();
 	}
+	private static boolean usePreSaved = false;
 	
 	/**
 	 * This constructor of the Configger initializes everything and sets the Configger as visible.
@@ -77,12 +92,14 @@ public class Configger {
 	public Configger() {
 		tabbedPane.addTab("Color Tuner", colorTunerTab);
 		tabbedPane.addTab("Tile Tuner", tileTunerTab);
+		tabbedPane.addTab("Target/Cam Info", targetInfoTab);
 		tabbedPane.addTab("Debug", debugTab);
 		
 		Config conf = VisionProcessing.defaultProcessing.conf;
 		
 		setupColorTuner(conf);
 		setupTileTuner(conf);
+		setupTargetInfo(conf);
 		setupDebugTab(conf);
 		
 		//tileTunertab
@@ -122,10 +139,10 @@ public class Configger {
 		
 		Thread tc = new Thread(colorUpdater);
 		tc.start();
-
+		
 		JButton acceptButton = new JButton("Accept");
 		JButton revertButton = new JButton("Revert");
-
+		
 		acceptButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
@@ -144,7 +161,7 @@ public class Configger {
 		});
 		
 		Box acceptRevertBox = new Box(BoxLayout.X_AXIS);
-
+		
 		acceptRevertBox.add(new JPanel());
 		acceptRevertBox.add(acceptButton);
 		acceptRevertBox.add(revertButton);
@@ -154,9 +171,10 @@ public class Configger {
 		Runnable r = new Runnable() {
 			public void run() {
 				try {
-					//TODO
-					vp.loopAndProcessPreSavedPics();
-					//vp.loopAndProcessPics();
+					if(usePreSaved)
+						vp.loopAndProcessPreSavedPics();
+					else
+						vp.loopAndProcessPics();
 				} catch (Exception ex) {
 					Logger.ex(ex);
 				}
@@ -175,7 +193,43 @@ public class Configger {
 		t.start();
 		
 		frame.add(ui);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);//TODO - save on exit
+		frame.addWindowListener(new WindowListener() {
+			
+			public void windowOpened(WindowEvent e) { }
+			
+			public void windowClosing(WindowEvent e) {
+				System.out.println("Closing");
+				int ret = JOptionPane.NO_OPTION;
+				if(VisionProcessing.defaultProcessing.conf.equals(Config.readDefaultConfig()))
+					ret = JOptionPane.showConfirmDialog(null, "Save changes?", "Save?", JOptionPane.YES_NO_CANCEL_OPTION);
+				
+				
+				if(ret == JOptionPane.YES_OPTION) {
+					try {
+						VisionProcessing.defaultProcessing.conf.saveDefaultConfig();
+					} catch (IOException ex) {
+						ex.printStackTrace();
+					}
+				} else if(ret == JOptionPane.NO_OPTION) {
+					//trash changes
+				} else {
+					throw new RuntimeException("Cancelling Close");
+				}
+				
+				System.exit(0);
+			}
+			
+			public void windowClosed(WindowEvent e) { }
+			
+			public void windowIconified(WindowEvent e) { }
+			
+			public void windowDeiconified(WindowEvent e) { }
+			
+			public void windowActivated(WindowEvent e) { }
+			
+			public void windowDeactivated(WindowEvent e) { }
+			
+		});
 		//frame.pack();
 		Dimension tabbedPaneSize = new Dimension(400, 300);
 		tabbedPane.setSize(tabbedPaneSize);
@@ -209,6 +263,35 @@ public class Configger {
 		saveImgs.addActionListener(refresher);
 		showDebugCam.addActionListener(refresher);
 		printDebug.addActionListener(refresher);
+	}
+	
+	/**
+	 * Sets up the Target Info tab
+	 * 
+	 * @param conf	The Config to configure
+	 */
+	private void setupTargetInfo(Config conf) {
+		
+		System.out.println(conf.getDouble("targetWidth"));
+		
+		targetWidth = new LinkedSlider.DoubleLinkedSlider("Target Width", conf.getDouble("targetWidth"), 24);
+		targetHeight = new LinkedSlider.DoubleLinkedSlider("Target Height", conf.getDouble("targetHeight"), 18);
+		camAngle = new LinkedSlider.DoubleLinkedSlider("Camera Angle", conf.getDouble("camAngle"), 45);
+		kx = new LinkedSlider.DoubleLinkedSlider("kx", conf.getDouble("kx"), 1000);
+		ky = new LinkedSlider.DoubleLinkedSlider("ky", conf.getDouble("ky"), 1000);
+		
+		targetInfoTab.add(targetWidth);
+		targetInfoTab.add(targetHeight);
+		targetInfoTab.add(camAngle);
+		targetInfoTab.add(kx);
+		targetInfoTab.add(ky);
+		
+		
+		targetWidth.slider.addChangeListener(refresher);
+		targetHeight.slider.addChangeListener(refresher);
+		camAngle.slider.addChangeListener(refresher);
+		kx.slider.addChangeListener(refresher);
+		ky.slider.addChangeListener(refresher);
 	}
 	
 	/**
@@ -248,6 +331,7 @@ public class Configger {
 	 * Slider to tune the variable with the same name in {@link Config}
 	 */
 	LinkedSlider.IntLinkedSlider rTarget, gTarget, bTarget, sensSlider, minBlobSize, tileSize;
+	LinkedSlider.DoubleLinkedSlider targetWidth, targetHeight, camAngle, kx, ky;
 	
 	/**
 	 * Check boxes to toggle variables with the same name in {@link Config}
@@ -290,23 +374,34 @@ public class Configger {
 			conf.setValue("color_targetR", rTarget.getIntValue());
 			conf.setValue("color_targetG", gTarget.getIntValue());
 			conf.setValue("color_targetB", bTarget.getIntValue());
-
+			
 			conf.setValue("color_mulR", rSlider.getValue());
 			conf.setValue("color_mulG", gSlider.getValue());
 			conf.setValue("color_mulB", bSlider.getValue());
-
+			
 			conf.setValue("sensitivity", sensSlider.getIntValue());
 			conf.setValue("minBlobSize", minBlobSize.getIntValue());
 			conf.setValue("tileSize", tileSize.getIntValue());
 			
-
+			
 			conf.setValue("checkCenter", centerCheck.isSelected());
 			conf.setValue("scanWholeTile", scanWholeTile.isSelected());
 			conf.setValue("communicateToRobot", communicate.isSelected());
 			conf.setValue("debug_SaveImagesToFiles", saveImgs.isSelected());
-			conf.setValue("debug_SaveImagesToFiles", saveImgs.isSelected());
 			conf.setValue("debug_ShowDisplay", showDebugCam.isSelected());
 			conf.setValue("debug_Print", printDebug.isSelected());
+
+
+			targetWidth.slider.addChangeListener(refresher);
+			targetHeight.slider.addChangeListener(refresher);
+			camAngle.slider.addChangeListener(refresher);
+			kx.slider.addChangeListener(refresher);
+			ky.slider.addChangeListener(refresher);
+			conf.setValue("targetWidth", targetWidth.getValue());
+			conf.setValue("targetHeight", targetHeight.getValue());
+			conf.setValue("camAngle", camAngle.getValue());
+			conf.setValue("kx", kx.getValue());
+			conf.setValue("ky", ky.getValue());
 			
 			//tabbedPane.repaint();
 		}
@@ -319,15 +414,15 @@ public class Configger {
 	 */
 	private void revertToConf() {
 		Config conf = Config.readDefaultConfig();
-
+		
 		rTarget.setValue(conf.getInt("color_targetR"));
 		gTarget.setValue(conf.getInt("color_targetG"));
 		bTarget.setValue(conf.getInt("color_targetB"));
-
+		
 		rSlider.setValue(conf.getDouble("color_mulR"));
 		gSlider.setValue(conf.getDouble("color_mulG"));
 		bSlider.setValue(conf.getDouble("color_mulB"));
-
+		
 		sensSlider.setValue(conf.getInt("sensitivity"));
 		minBlobSize.setValue(conf.getInt("minBlobSize"));
 		tileSize.setValue(conf.getInt("tileSize"));
@@ -336,19 +431,19 @@ public class Configger {
 		for(int i = 0; i < sliders.length; i++) {
 			sliders[i].updateValLabel();
 		}
-		*/
-
+		 */
+		
 		centerCheck.setSelected(conf.getBoolean("checkCenter"));
 		scanWholeTile.setSelected(conf.getBoolean("scanWholeTile"));
 		communicate.setSelected(conf.getBoolean("communicateToRobot"));
 		saveImgs.setSelected(conf.getBoolean("debug_SaveImagesToFiles"));
 		showDebugCam.setSelected(conf.getBoolean("debug_ShowDisplay"));
 		printDebug.setSelected(conf.getBoolean("debug_Print"));
-
+		
 		VisionProcessing.defaultProcessing.conf = conf;
 		
 		System.out.println(conf);
-
+		
 		tabbedPane.repaint();
 	}
 	
