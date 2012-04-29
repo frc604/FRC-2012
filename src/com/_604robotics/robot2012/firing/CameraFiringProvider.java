@@ -1,5 +1,6 @@
 package com._604robotics.robot2012.firing;
 
+import com._604robotics.robot2012.Robot;
 import com._604robotics.robot2012.camera.CameraInterface;
 import com._604robotics.robot2012.configuration.FiringConfiguration;
 import com._604robotics.robot2012.vision.Target;
@@ -37,13 +38,7 @@ public class CameraFiringProvider implements FiringProvider {
             return this.fallback.getSpeed();
         }
         
-        Target[] targets = camera.getTargets();
-        Target target = null;
-        
-        for (int i = 0; i < targets.length; i++) {
-            if (target == null || targets[i].y < target.y)
-                target = targets[i];
-        }
+        Target target = Robot.cameraInterface.getSingleTarget();
         
         if (target == null || this.atFender) {
             this.usedTargets = false;

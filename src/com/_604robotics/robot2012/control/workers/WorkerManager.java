@@ -1,5 +1,6 @@
 package com._604robotics.robot2012.control.workers;
 
+import com._604robotics.robot2012.Robot2012Orange;
 import java.util.Vector;
 
 /**
@@ -18,7 +19,12 @@ public class WorkerManager {
     }
     
     public static void work () {
-        for (int i = 0; i < workers.size(); i++)
-            WorkerManager.getWorker(i).work();
+        for (int i = 0; i < workers.size(); i++) {
+            try {
+                WorkerManager.getWorker(i).work();
+            } catch (Exception ex) {
+                Robot2012Orange.logException(ex);
+            }
+        }
     }
 }

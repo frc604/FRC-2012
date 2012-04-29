@@ -33,4 +33,7 @@ public interface FiringConfiguration {
     
     public static final boolean TELEOP_AUTO_HOPPER = false;
         // TODO: Figure out whether or not to use this.
+    
+    
+    public static final double MAX_SPEED = 575;
 }

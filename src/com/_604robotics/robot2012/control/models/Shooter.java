@@ -19,6 +19,8 @@ public class Shooter {
     
     public static boolean vision = false;
     
+    public static boolean fullPower = false;
+    
     public static void setAtFender () {
         Shooter.fender = true;
     }
@@ -98,5 +100,9 @@ public class Shooter {
     
     public static void setVisionEnabled (boolean vision) {
         Shooter.vision = vision;
+    }
+    
+    public static void setFullPower (boolean fullPower) {
+        Shooter.fullPower = fullPower;
     }
 }

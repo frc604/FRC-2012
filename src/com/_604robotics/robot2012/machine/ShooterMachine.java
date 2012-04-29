@@ -4,6 +4,7 @@ import com._604robotics.robot2012.Robot;
 import com._604robotics.robot2012.configuration.ActuatorConfiguration;
 import com._604robotics.robot2012.control.models.Shooter;
 import com._604robotics.robot2012.dashboard.ShooterDashboard;
+import com._604robotics.robot2012.machine.ElevatorMachine.ElevatorState;
 import com._604robotics.utils.StrangeMachine;
 
 /**
@@ -59,7 +60,10 @@ public class ShooterMachine implements StrangeMachine {
                 
                 Shooter.setCharged(Robot.speedProvider.isOnTarget(ShooterDashboard.tolerance));
                 
-                Robot.elevatorMotors.set(0.15);
+                if (!ShooterDashboard.ignoreHeight || Robot.elevatorMachine.test(ElevatorState.HIGH))
+                    Robot.elevatorMotors.set(0.15);
+                else if (ShooterDashboard.ignoreHeight && !Robot.shooterMachine.test(ElevatorState.HIGH))
+                    Robot.elevatorMotors.set(-0.15);
                 
                 return true;
         }

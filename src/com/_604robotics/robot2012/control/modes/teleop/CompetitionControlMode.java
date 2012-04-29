@@ -7,8 +7,11 @@ import com._604robotics.robot2012.control.models.*;
 import com._604robotics.robot2012.control.modes.ControlMode;
 import com._604robotics.utils.XboxController.Axis;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.Timer;
 
 public class CompetitionControlMode implements ControlMode {
+    private final Timer exTimer = new Timer();
+    
     public void init() {
         DriverStation.getInstance().setDigitalOut(2, false);
         DriverStation.getInstance().setDigitalOut(5, false);
@@ -19,6 +22,9 @@ public class CompetitionControlMode implements ControlMode {
         Robot.driveController.resetToggles();
 
         Robot.pidElevator.reset();
+        
+        exTimer.reset();
+        exTimer.start();
     }
 
     public boolean step() {
@@ -67,6 +73,7 @@ public class CompetitionControlMode implements ControlMode {
         /*
          * Shooter control.
          */
+        Shooter.setFullPower(Math.abs(Robot.manipulatorController.getJoystick().getY()) > 0.8);
         Shooter.setVisionEnabled(!Robot.manipulatorController.getButton(ButtonConfiguration.Manipulator.DISABLE_VISION));
         Shooter.shoot(Robot.manipulatorController.getButton(ButtonConfiguration.Manipulator.SHOOT));
         Shooter.toggleHood(Robot.manipulatorController.getToggle(ButtonConfiguration.Manipulator.TOGGLE_ANGLE));

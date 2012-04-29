@@ -1,12 +1,14 @@
 package com._604robotics.robot2012.firing;
 
+import com._604robotics.robot2012.configuration.FiringConfiguration;
+
 /**
  *
  * @author Kevin Parker <kevin.m.parker@gmail.com>
  */
 public class EncoderSpeedsForDist {
     
-    private static final double switchDist = 100;
+    private static final double switchDist = 72;
     
     private static final EncoderSpeedsForDist inMapping = new EncoderSpeedsForDist();
     private static final EncoderSpeedsForDist bounceMapping = new EncoderSpeedsForDist();
@@ -28,25 +30,33 @@ public class EncoderSpeedsForDist {
         
         
         //y = 1.169E-07x4 + 9.779E-05x3 - 2.648E-02x2 + 3.325E+00x + 8.691E+01
-        bounceMapping._quart = 1.169E-07;
-        bounceMapping._cubic = 9.779E-05;
-        bounceMapping._quad  = 2.648E-02;
-        bounceMapping._linear= 3.325E+00;
-        bounceMapping._const = 8.691E+01;
+        bounceMapping._quart = 3E-07;
+        bounceMapping._cubic = 1.25E-04;
+        bounceMapping._quad  = -1.8E-02;
+        bounceMapping._linear= 1.4E+00;
+        bounceMapping._const = 2.17E+02;
     }
     
     
     public static double getSpeedForDist(double dist, EncoderSpeedsForDist mapping) {
-        return mapping._quart     * fastPow(dist, 4)
+        double ret =  mapping._quart     * fastPow(dist, 4)
                +mapping._cubic    * fastPow(dist, 3)
                +mapping._quad     * fastPow(dist, 2)
                +mapping._linear   * dist
                +mapping._const;
+        
+        System.out.println("dist: " + dist);
+        System.out.println("ret: " + ret);
+        
+        if(ret > FiringConfiguration.MAX_SPEED)
+            ret = FiringConfiguration.MAX_SPEED;
+        
+        return ret;
     }
     
     
     public static double getSpeedForDist(double dist) {
-        return getSpeedForDist(dist, dist < switchDist ? bounceMapping : inMapping);
+        return 1.1 * getSpeedForDist(dist, dist < switchDist ? bounceMapping : inMapping);
     }
     
     

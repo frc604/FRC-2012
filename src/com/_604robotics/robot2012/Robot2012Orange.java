@@ -12,8 +12,12 @@ import com._604robotics.robot2012.dashboard.Dashboard;
 import com._604robotics.robot2012.dashboard.ElevatorDashboard;
 import com._604robotics.robot2012.dashboard.FiringDashboard;
 import com._604robotics.robot2012.dashboard.ShooterDashboard;
+import com.sun.squawk.microedition.io.FileConnection;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.SimpleRobot;
+import java.io.OutputStream;
+import java.io.PrintStream;
+import javax.microedition.io.Connector;
 
 /**
  * Main class for the 2012 robot code codenamed Orange.
@@ -30,6 +34,28 @@ public class Robot2012Orange extends SimpleRobot {
     SequentialModeLauncher hybridMode = new SequentialModeLauncher("Hybrid");
     SequentialModeLauncher teleopMode = new SequentialModeLauncher("Teleop");
 
+    public static void logException (Exception ex) {
+        try {
+            ex.printStackTrace();
+            
+            FileConnection log = (FileConnection) Connector.open("file://" + System.currentTimeMillis() + ".txt"); 
+            log.create();
+            
+            OutputStream logstream = log.openOutputStream();
+            PrintStream logger = new PrintStream(logstream);
+            
+            logger.println(ex.getMessage());
+            logger.println(ex.toString());
+            
+            logger.close();
+            logstream.close();
+            
+            
+        } catch (Exception ex2) {
+            ex2.printStackTrace();
+        }
+    }
+    
     /**
      * Constructor.
      */
@@ -117,7 +143,7 @@ public class Robot2012Orange extends SimpleRobot {
             hybridMode.disable();
             Robot.compressorPump.stop();
         } catch (Exception ex) {
-            ex.printStackTrace();
+            logException(ex);
         }
     }
 
@@ -125,26 +151,34 @@ public class Robot2012Orange extends SimpleRobot {
      * Operator-controlled drive for Teleop mode.
      */
     public void operatorControl() {
-        try {
-            DriverStation.getInstance().setDigitalOut(2, false);
-            DriverStation.getInstance().setDigitalOut(5, false);
-
-            Robot.compressorPump.start();
-            teleopMode.init();
-
+        boolean retry = true;
+        
+        while (retry) {
             try {
-                while (isOperatorControl() && isEnabled() && teleopMode.step()) {
-                    WorkerManager.work();
-                    Dashboard.render();
-                }
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
+                retry = false;
 
-            teleopMode.disable();
-            Robot.compressorPump.stop();
-        } catch (Exception ex) {
-            ex.printStackTrace();
+                DriverStation.getInstance().setDigitalOut(2, false);
+                DriverStation.getInstance().setDigitalOut(5, false);
+
+                Robot.compressorPump.start();
+                teleopMode.init();
+
+                try {
+                    while (isOperatorControl() && isEnabled() && teleopMode.step()) {
+                        WorkerManager.work();
+                        Dashboard.render();
+                    }
+                } catch (Exception ex) {
+                    logException(ex);
+                    retry = true;
+                }
+
+                teleopMode.disable();
+                Robot.compressorPump.stop();
+            } catch (Exception ex) {
+                logException(ex);
+                retry = true;
+            }
         }
     }
 
@@ -152,12 +186,16 @@ public class Robot2012Orange extends SimpleRobot {
      * Disabled mode processing.
      */
     public void disabled() {
-        Robot.compressorPump.stop();
-        Robot.driveTrain.setSafetyEnabled(false);
+        try {
+            Robot.compressorPump.stop();
+            Robot.driveTrain.setSafetyEnabled(false);
 
-        while (!isEnabled()) {
-            Robot.tryCalibrateElevator();
-            Dashboard.render();
+            while (!isEnabled()) {
+                Robot.tryCalibrateElevator();
+                Dashboard.render();
+            }
+        } catch (Exception ex) {
+            logException(ex);
         }
     }
 }

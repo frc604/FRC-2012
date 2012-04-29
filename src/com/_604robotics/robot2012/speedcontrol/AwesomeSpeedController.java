@@ -1,6 +1,7 @@
 package com._604robotics.robot2012.speedcontrol;
 
 import com._604robotics.robot2012.configuration.FiringConfiguration;
+import com._604robotics.robot2012.control.models.Shooter;
 import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.PIDSource;
 
@@ -63,6 +64,11 @@ public class AwesomeSpeedController implements SpeedProvider {
     }
 
     public void setSetSpeed(double setSpeed) {
+        if (Shooter.fullPower) {
+            this.controller.setSetpoint(999D);
+            return;
+        }
+        
         if (System.currentTimeMillis() - this.lastApplied < 100)
             return;
         if (setSpeed != this.getSetSpeed())

@@ -148,7 +148,22 @@ public class Robot {
         
         pidSourceDriveAngle = new CachingPIDSource();
         pidOutputDrive = new TurningDrivePIDOutput(driveTrain);
-        pidAutoAim = new SendablePIDController(PIDConfiguration.AutoAim.P, PIDConfiguration.AutoAim.I, PIDConfiguration.AutoAim.D, pidSourceDriveAngle, pidOutputDrive);
+        
+        if(PIDConfiguration.AutoAim.USE_GYRO) {
+            pidAutoAim = new SendablePIDController(
+                    PIDConfiguration.AutoAim.P_GYRO,
+                    PIDConfiguration.AutoAim.I_GYRO,
+                    PIDConfiguration.AutoAim.D_GYRO,
+                    gyroHeading,
+                    pidOutputDrive);
+        } else {
+            pidAutoAim = new SendablePIDController(
+                    PIDConfiguration.AutoAim.P_NO_GYRO,
+                    PIDConfiguration.AutoAim.I_NO_GYRO,
+                    PIDConfiguration.AutoAim.D_NO_GYRO,
+                    pidSourceDriveAngle,
+                    pidOutputDrive);
+        }
 		
 		elevatorMotors.setController(pidElevator);
 		
