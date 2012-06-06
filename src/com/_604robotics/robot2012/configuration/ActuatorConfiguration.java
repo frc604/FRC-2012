@@ -28,21 +28,21 @@ public interface ActuatorConfiguration {
     }
     
     public interface ELEVATOR {
-        public static final int HIGH = 1520;
+        public static final int HIGH = 1094;// was 1520;
         public static final int MEDIUM = 663;
         public static final int LOW = 0;
         
         public static final int OKAY_TO_TURN = 1300;
         
         public interface TOLERANCE {
-            public static final int HIGH = 1420;
+            public static final int HIGH = 1080; // was 1420
             public static final int MEDIUM_UPPER = 680; // +8
             public static final int MEDIUM_LOWER = 631; // -32
             public static final int LOW = 25;
         }
         
         public interface DEADBAND {
-            public static final int HIGH = 1400;
+            public static final int HIGH = 1070; // was 1400
             public static final int MEDIUM_UPPER = 710; // +28
             public static final int MEDIUM_LOWER = 611; // -52
             public static final int LOW = 64;

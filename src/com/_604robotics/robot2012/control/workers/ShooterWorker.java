@@ -2,6 +2,7 @@ package com._604robotics.robot2012.control.workers;
 
 import com._604robotics.robot2012.Robot;
 import com._604robotics.robot2012.configuration.ActuatorConfiguration;
+import com._604robotics.robot2012.control.models.Pickup;
 import com._604robotics.robot2012.control.models.Shooter;
 import com._604robotics.robot2012.dashboard.ShooterDashboard;
 import com._604robotics.robot2012.machine.ElevatorMachine.ElevatorState;
@@ -21,7 +22,8 @@ public class ShooterWorker implements Worker {
         /*
          * Drive the hopper manually.
          */
-        Robot.hopperMotor.set(Shooter.hopperPower);
+        if (!Pickup.sucking)
+            Robot.hopperMotor.set(Shooter.hopperPower);
         
         /*
          * Set at fender.
@@ -44,8 +46,8 @@ public class ShooterWorker implements Worker {
             );
             
             /*
-            * Shoot!
-            */
+             * Shoot!
+             */
             if (Shooter.shooting)
                 Robot.shooterMachine.crank(ShooterState.SHOOTING);
         }

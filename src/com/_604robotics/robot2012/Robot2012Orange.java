@@ -5,13 +5,11 @@ import com._604robotics.robot2012.control.modes.hybrid.BridgeControlMode;
 import com._604robotics.robot2012.control.modes.hybrid.KinectControlMode;
 import com._604robotics.robot2012.control.modes.hybrid.ShootControlMode;
 import com._604robotics.robot2012.control.modes.hybrid.WaitingControlMode;
-import com._604robotics.robot2012.control.modes.teleop.CompetitionControlMode;
-import com._604robotics.robot2012.control.modes.teleop.LearningControlMode;
+import com._604robotics.robot2012.control.modes.teleop.DemoControlMode;
 import com._604robotics.robot2012.control.workers.*;
 import com._604robotics.robot2012.dashboard.Dashboard;
+import com._604robotics.robot2012.dashboard.DemoDashboard;
 import com._604robotics.robot2012.dashboard.ElevatorDashboard;
-import com._604robotics.robot2012.dashboard.FiringDashboard;
-import com._604robotics.robot2012.dashboard.ShooterDashboard;
 import com.sun.squawk.microedition.io.FileConnection;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.SimpleRobot;
@@ -79,10 +77,11 @@ public class Robot2012Orange extends SimpleRobot {
         /*
          * Register dashboard sections.
          */
+        Dashboard.registerSection(DemoDashboard.getInstance());
         //Dashboard.registerSection(AutonomousDashboard.getInstance());
         //Dashboard.registerSection(ElevatorDashboard.getInstance());
-        Dashboard.registerSection(FiringDashboard.getInstance());
-        Dashboard.registerSection(ShooterDashboard.getInstance());
+        //Dashboard.registerSection(FiringDashboard.getInstance());
+        //Dashboard.registerSection(ShooterDashboard.getInstance());
         //Dashboard.registerSection(StateDashboard.getInstance());
         //Dashboard.registerSection(UserDashboard.getInstance());
 
@@ -99,8 +98,9 @@ public class Robot2012Orange extends SimpleRobot {
         /*
          * Initialize teleop mode.
          */
-        teleopMode.registerControlMode(new CompetitionControlMode(), true);
-        teleopMode.registerControlMode(new LearningControlMode(), false);
+        //teleopMode.registerControlMode(new CompetitionControlMode(), true);
+        teleopMode.registerControlMode(new DemoControlMode(), true);
+        //teleopMode.registerControlMode(new LearningControlMode(), true);
 
         teleopMode.renderSmartDashboard();
 

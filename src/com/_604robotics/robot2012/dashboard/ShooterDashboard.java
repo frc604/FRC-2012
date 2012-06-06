@@ -20,7 +20,7 @@ public class ShooterDashboard implements DashboardSection {
     private static final PIDDPEditor shooterEditor;
     private static final SendableTag tag;
     
-    public static boolean ignoreHeight = false;
+    public static boolean ignoreHeight = true;
     public static boolean useManualSetpoint = false;
     
     public static double tolerance = FiringConfiguration.SPEED_TOLERANCE;

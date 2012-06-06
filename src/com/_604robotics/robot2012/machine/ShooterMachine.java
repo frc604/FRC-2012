@@ -56,6 +56,7 @@ public class ShooterMachine implements StrangeMachine {
                             ? Shooter.manualSpeed
                             : Robot.firingProvider.getSpeed()
                 );
+                
                 Robot.speedProvider.apply();
                 
                 Shooter.setCharged(Robot.speedProvider.isOnTarget(ShooterDashboard.tolerance));
