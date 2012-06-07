@@ -73,7 +73,7 @@ public class Robot {
         lastRecalibrated.start();
         
 		driveController = new XboxController(PortConfiguration.Controllers.DRIVE);
-		manipulatorController = new JoystickController(PortConfiguration.Controllers.MANIPULATOR);
+		manipulatorController = new XboxController(PortConfiguration.Controllers.MANIPULATOR);
 		
 		leftKinect = new KinectStick(PortConfiguration.Kinect.LEFT);
 		rightKinect = new KinectStick(PortConfiguration.Kinect.RIGHT);

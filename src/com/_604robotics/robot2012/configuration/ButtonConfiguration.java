@@ -26,23 +26,24 @@ public interface ButtonConfiguration {
         public static final int CALIBRATE = Button.LB;
     }
     
-    /* public interface Manipulator {
+    public interface Manipulator {
         public interface Elevator {
-            public static final int UP = Button.Y; // 6
-            public static final int DOWN = Button.A; // 7
+            public static final int UP = Button.Y;
+            public static final int DOWN = Button.A;
         }
         
-        public static final int SHOOT = Button.RT; // 1
+        public static final int SHOOT = Button.RT;
         
-        public static final int PICKUP = Button.X; // 8
+        public static final int PICKUP = Button.X;
         
-        public static final int TOGGLE_ANGLE = Button.RB; // 9
+        public static final int TOGGLE_ANGLE = Button.RB;
+        public static final int DISABLE_VISION = Button.B;
         
-        public static final int AT_FENDER = Button.LB; // 4
-        public static final int AT_KEY = Button.LT; // 5
-    } */
+        public static final int AT_FENDER = Button.LB;
+        public static final int AT_KEY = Button.LT;
+    }
     
-    public interface Manipulator {
+    /* public interface Manipulator {
         public interface Elevator {
             public static final int UP = 6;
             public static final int DOWN = 7;
@@ -57,6 +58,33 @@ public interface ButtonConfiguration {
         
         public static final int AT_FENDER = 4;
         public static final int AT_KEY = 5;
+    } */
+    
+    public interface Demo {
+        public interface Student {
+            public static final int SHOOT = Button.Y;
+        }
+
+        public interface Mentor {
+            public interface Pickup {
+                public static final int SUCK_IN = Button.Y;
+                
+                public static final int GO_UP = Button.X;
+                public static final int GO_DOWN = Button.B;
+            }
+            
+            public interface Elevator {
+                public static final int UP = Button.LB;
+                public static final int DOWN = Button.RB;
+            }
+            
+            public interface Shooter {
+                public static final int TOGGLE_ANGLE = Button.Back;
+                
+                public static final int SUCK_IN = Button.RT;
+                public static final int SPIT_OUT = Button.LT;
+            }
+        }
     }
     
     public interface Kinect {
