@@ -28,14 +28,14 @@ public interface ActuatorConfiguration {
     }
     
     public interface ELEVATOR {
-        public static final int HIGH = 1094;// was 1520;
+        public static final int HIGH = 1520; // was 1094;
         public static final int MEDIUM = 663;
         public static final int LOW = 0;
         
         public static final int OKAY_TO_TURN = 1300;
         
         public interface TOLERANCE {
-            public static final int HIGH = 1080; // was 1420
+            public static final int HIGH = 1420; // was 1080;
             public static final int MEDIUM_UPPER = 680; // +8
             public static final int MEDIUM_LOWER = 631; // -32
             public static final int LOW = 25;
