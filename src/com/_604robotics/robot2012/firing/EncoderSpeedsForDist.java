@@ -7,11 +7,13 @@ import com._604robotics.robot2012.configuration.FiringConfiguration;
  * @author Kevin Parker <kevin.m.parker@gmail.com>
  */
 public class EncoderSpeedsForDist {
-    
+   
+    private static boolean useDemoHeight = false;
     private static final double switchDist = 72;
     
     private static final EncoderSpeedsForDist inMapping = new EncoderSpeedsForDist();
     private static final EncoderSpeedsForDist bounceMapping = new EncoderSpeedsForDist();
+    private static final EncoderSpeedsForDist demoBounceMapping = new EncoderSpeedsForDist();
     
     //y = 1.169E-07x4 + 9.779E-05x3 - 2.648E-02x2 + 3.325E+00x + 8.691E+01
     private double   _quart = 1.169E-07,
@@ -19,6 +21,14 @@ public class EncoderSpeedsForDist {
                      _quad  = - 2.648E-02,
                      _linear= 3.325E+00,
                      _const = 8.691E+01;
+    
+    public static void setUseDemoHeight() {
+        setUseDemoHeight(true);
+    }
+    
+    public static void setUseDemoHeight(boolean flag) {
+        useDemoHeight = flag;
+    }
     
     static {
         //y = 1.169E-07x4 + 1.114E-04x3 - 1.738E-02x2 + 2.047E+00x + 1.635E+02
@@ -35,6 +45,13 @@ public class EncoderSpeedsForDist {
         bounceMapping._quad  = -1.8E-02;
         bounceMapping._linear= 1.4E+00;
         bounceMapping._const = 2.17E+02;
+        
+        //
+        demoBounceMapping._quart = 0;
+        demoBounceMapping._cubic = 0;
+        demoBounceMapping._quad  = 0;
+        demoBounceMapping._linear= 0;
+        demoBounceMapping._const = 0;
     }
     
     
@@ -56,6 +73,8 @@ public class EncoderSpeedsForDist {
     
     
     public static double getSpeedForDist(double dist) {
+        if(useDemoHeight)
+            return getSpeedForDist(dist, demoBounceMapping);
         return 1.1 * getSpeedForDist(dist, dist < switchDist ? bounceMapping : inMapping);
     }
     
