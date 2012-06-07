@@ -55,14 +55,10 @@ public class RemoteCameraTCP implements CameraInterface {
         Target target = null;
 
         for (int i = 0; i < targets.length; i++) {
-            System.out.println("y [" + i + "]: " + targets[i].getY());
             if (target == null || targets[i].getY() < target.getY()) {
                 target = targets[i];
             }
         }
-        
-        if (target != null)
-            System.out.println("selected y: " + target.y);
         
         return target;
     }
