@@ -19,7 +19,7 @@ public interface FiringConfiguration {
     public static final double KEY_FIRING_POWER = -1D;
         // TODO: Configure this.
     
-    public static final double FENDER_FIRING_SPEED = 150D;
+    public static final double FENDER_FIRING_SPEED = 125D;
         // TODO: Configure this.
     public static final double KEY_FIRING_SPEED = 375D; // was 420D
         // TODO: Configure this.

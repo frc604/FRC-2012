@@ -29,8 +29,8 @@ public class DemoControlMode implements ControlMode {
         exTimer.reset();
         exTimer.start();
 
-        //Shooter.setManual(true);
-        Shooter.setManual(false);
+        Shooter.setManual(true);
+        //Shooter.setManual(false);
     }
 
     public boolean step() {

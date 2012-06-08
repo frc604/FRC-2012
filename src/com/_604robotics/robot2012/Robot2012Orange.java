@@ -9,7 +9,8 @@ import com._604robotics.robot2012.control.modes.teleop.DemoControlMode;
 import com._604robotics.robot2012.control.workers.*;
 import com._604robotics.robot2012.dashboard.Dashboard;
 import com._604robotics.robot2012.dashboard.DemoDashboard;
-import com._604robotics.robot2012.dashboard.ElevatorDashboard;
+import com._604robotics.robot2012.dashboard.FiringDashboard;
+import com._604robotics.robot2012.dashboard.ShooterDashboard;
 import com.sun.squawk.microedition.io.FileConnection;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.SimpleRobot;
@@ -80,8 +81,8 @@ public class Robot2012Orange extends SimpleRobot {
         Dashboard.registerSection(DemoDashboard.getInstance());
         //Dashboard.registerSection(AutonomousDashboard.getInstance());
         //Dashboard.registerSection(ElevatorDashboard.getInstance());
-        //Dashboard.registerSection(FiringDashboard.getInstance());
-        //Dashboard.registerSection(ShooterDashboard.getInstance());
+        Dashboard.registerSection(FiringDashboard.getInstance());
+        Dashboard.registerSection(ShooterDashboard.getInstance());
         //Dashboard.registerSection(StateDashboard.getInstance());
         //Dashboard.registerSection(UserDashboard.getInstance());
 

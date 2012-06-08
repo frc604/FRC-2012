@@ -30,30 +30,44 @@ public class CameraFiringProvider implements FiringProvider {
     }
     
     public double getSpeed () {
+        System.out.println("enabled: " + this.enabled);
+        System.out.println("manually set: " + this.manuallySet);
+        System.out.println("physics enabled: " + this.physicsEnabled);
+        
         if (!this.manuallySet)
             this.fallback.setAtFender(this.atFender);
+        System.out.println("flag [1]");
         
         if (!this.enabled) {
             this.usedTargets = false;
             return this.fallback.getSpeed();
         }
+        System.out.println("flag [2]");
         
         Target target = Robot.cameraInterface.getSingleTarget();
         
-        if (target == null || this.atFender) {
+        if (target == null) {// || this.atFender) {
             this.usedTargets = false;
             return this.fallback.getSpeed();
         } else {
+            System.out.println("flag [3]");
+            
             if (!this.manuallySet) {
                 this.atFender = target.z <= FiringConfiguration.FENDER_DISTANCE_THRESHOLD;
                 this.fallback.setAtFender(this.atFender);
             }
             
+            System.out.println("flag [4]");
+            
             if (this.physicsEnabled) {
+                System.out.println("using speed: " + EncoderSpeedsForDist.getSpeedForDist(target.z));
+                
                 this.usedTargets = true;
                 //return Physics.getSubparFiringVelocity(target.z, FiringConfiguration.TOP_HOOP_HEIGHT - FiringConfiguration.SHOOTER_HEIGHT, FiringConfiguration.SHOOTER_SLOPE);
                 return EncoderSpeedsForDist.getSpeedForDist(target.z);
             } else {
+                System.out.println("flag [5]");
+
                 this.usedTargets = false;
                 return this.fallback.getSpeed();
             }
@@ -68,7 +82,7 @@ public class CameraFiringProvider implements FiringProvider {
         this.atFender = atFender;
         this.fallback.setAtFender(atFender);
         
-        this.manuallySet = true;
+        //this.manuallySet = true;
     }
     
     public boolean usingTargets () {

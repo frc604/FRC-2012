@@ -1,5 +1,6 @@
 package com._604robotics.robot2012.dashboard;
 
+import com._604robotics.robot2012.control.models.Shooter;
 import edu.wpi.first.wpilibj.smartdashboard.SendableTag;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -11,8 +12,8 @@ public class DemoDashboard implements DashboardSection {
     private static final DemoDashboard instance;
     private static final SendableTag tag;
     
-    public static double driveSpeedMultiplier = 1.0D;
-    public static double manualShooterSpeed = 50D;
+    public static double driveSpeedMultiplier = 1D;
+    public static double manualShooterSpeed = 250D;
     
     public void enable () {
         SmartDashboard.putData(tag);
