@@ -46,12 +46,12 @@ public class EncoderSpeedsForDist {
         bounceMapping._linear= 1.4E+00;
         bounceMapping._const = 2.17E+02;
         
-        //
+        //y = 6.986E-04x3 - 1.876E-01x2 + 1.379E+01x - 5.628E+01
         demoBounceMapping._quart = 0;
-        demoBounceMapping._cubic = 0;
-        demoBounceMapping._quad  = 0;
-        demoBounceMapping._linear= 0;
-        demoBounceMapping._const = 0;
+        demoBounceMapping._cubic = 6.986E-04;
+        demoBounceMapping._quad  = -1.876E-01;
+        demoBounceMapping._linear= 1.379E+01;
+        demoBounceMapping._const = -5.628E+01;
     }
     
     
