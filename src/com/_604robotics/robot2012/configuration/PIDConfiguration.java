@@ -29,11 +29,11 @@ public interface PIDConfiguration {
             // TODO: Configure this.
         
         
-        public static final double P_GYRO = .04D;
+        public static final double P_GYRO = -.04D;
             // TODO: Configure this.
-        public static final double I_GYRO = .005D;
+        public static final double I_GYRO = -.005D;
             // TODO: Configure this.
-        public static final double D_GYRO = -.02D;
+        public static final double D_GYRO = .02D;
             // TODO: Configure this.
     }
 }

@@ -29,7 +29,7 @@ public class DriveWorker implements Worker {
 
             if (target != null) {
                 if (PIDConfiguration.AutoAim.USE_GYRO) {
-                   //AutoAimer.autoAimer.aim(target);
+                   AutoAimer.autoAimer.aim(target);
                 } else {
                     Robot.pidSourceDriveAngle.cache((target.getX()) / target.getZ());
                     Robot.pidOutputDrive.setForwardPower(Drive.leftPower);

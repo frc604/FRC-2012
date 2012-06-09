@@ -17,7 +17,7 @@ public class Shooter {
     public static boolean manual = true;
     public static double manualSpeed = 500D;
     
-    public static boolean vision = false;
+    public static boolean vision = true;
     
     public static boolean fullPower = false;
     

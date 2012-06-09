@@ -6,6 +6,7 @@ import com._604robotics.robot2012.configuration.ButtonConfiguration;
 import com._604robotics.robot2012.control.models.*;
 import com._604robotics.robot2012.control.modes.ControlMode;
 import com._604robotics.robot2012.dashboard.DemoDashboard;
+import com._604robotics.robot2012.firing.EncoderSpeedsForDist;
 import com._604robotics.robot2012.machine.ElevatorMachine.ElevatorState;
 import com._604robotics.utils.XboxController.Axis;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -29,7 +30,8 @@ public class DemoControlMode implements ControlMode {
         exTimer.reset();
         exTimer.start();
 
-        Shooter.setManual(true);
+        Shooter.setManual(false);
+        EncoderSpeedsForDist.setUseDemoHeight();
         //Shooter.setManual(false);
     }
 
@@ -38,6 +40,7 @@ public class DemoControlMode implements ControlMode {
          * Drive control.
          */
         Drive.drive(Robot.driveController.getAxis(Axis.LEFT_STICK_Y) * DemoDashboard.driveSpeedMultiplier, Robot.driveController.getAxis(Axis.RIGHT_STICK_Y) * DemoDashboard.driveSpeedMultiplier, true);
+        Drive.autoAim(Robot.driveController.getButton(ButtonConfiguration.Demo.Mentor.Drive.AUTO_AIM));
 
         /*
          * Elevator control.
@@ -106,6 +109,7 @@ public class DemoControlMode implements ControlMode {
         Robot.speedProvider.reset();
 
         Shooter.setManual(false);
+        EncoderSpeedsForDist.setUseDemoHeight(false);
     }
 
     public String getName() {

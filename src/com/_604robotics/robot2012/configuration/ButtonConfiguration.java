@@ -66,6 +66,10 @@ public interface ButtonConfiguration {
         }
 
         public interface Mentor {
+            public interface Drive {
+                public static final int AUTO_AIM = Button.A;
+            }
+            
             public interface Pickup {
                 public static final int SUCK_IN = Button.Y;
                 

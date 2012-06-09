@@ -23,6 +23,7 @@ public class AutoAimer {
     private Timer aimTimer = new Timer();
 
     public void aim(Target target) {
+        System.out.println("Aiming!!!");
 
         if (!wasAiming) {
             Robot.gyroHeading.reset();
@@ -40,7 +41,7 @@ public class AutoAimer {
 
         wasAiming = true;
         
-        if(aimTimer.get() > 1)
+        if(aimTimer.get() > 2)
             dontAim();
 
     }
