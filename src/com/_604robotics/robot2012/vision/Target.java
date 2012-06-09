@@ -159,7 +159,11 @@ public class Target {
 	 *         target
 	 */
 	public Point3d getHoopPosition() {
-		return new Point3d(x + Math.sin(angle) * RelHoopZ, y + RelHoopY, z + Math.cos(angle) * RelHoopZ);
+        double angl = angle;
+        if(angleUncertainty > 9000)
+            angl = 0;
+        
+		return new Point3d(x + Math.sin(angl) * RelHoopZ, y + RelHoopY, z + Math.cos(angl) * RelHoopZ);
 	}
 	
 	
