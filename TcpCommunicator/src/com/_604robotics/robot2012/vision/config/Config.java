@@ -24,7 +24,20 @@ public class Config {
 	/**
 	 * The default Config file
 	 */
-	private static final File	defaultConfigFile	= new File("vision.conf");
+	private static final File	defaultConfigFile;
+	
+	static {
+		File normalDefaultFile = new File("vision.conf");
+		//if FRC-2012/vision.conf exists, use that instead...
+		
+		File otherOne = new File("FRC-2012/vision.conf");
+		
+		if(otherOne.exists())
+			defaultConfigFile = otherOne;
+		else
+			defaultConfigFile = normalDefaultFile;
+	}
+	
 	
 	private final HashMap<String, DataValue> dataMap = new HashMap<String, DataValue>();
 	
