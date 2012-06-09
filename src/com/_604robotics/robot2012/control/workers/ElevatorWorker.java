@@ -31,7 +31,10 @@ public class ElevatorWorker implements Worker {
              */
             if (Robot.pickupMachine.test(PickupMachine.PickupState.OUT)) {
                 Robot.elevatorMotors.setDisabled(false);
-                Robot.elevatorMotors.set(-0.4);
+                if (Robot.compressorPump.getPressureSwitchValue())
+                    Robot.elevatorMotors.set(-0.6);
+                else
+                    Robot.elevatorMotors.set(0D);
             }
         } else {
             /*

@@ -28,7 +28,7 @@ public interface FiringConfiguration {
         // TODO: See what works best.
     public static final int CHARGE_TIME = 3000;
         // TODO: Configure this.
-    public static final double SPEED_TOLERANCE = 30D;
+    public static final double SPEED_TOLERANCE = 13D;
         // TODO: Configure this.
     
     public static final boolean TELEOP_AUTO_HOPPER = false;
