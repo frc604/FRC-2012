@@ -72,7 +72,11 @@ public class DemoControlMode implements ControlMode {
 
             if (Robot.elevatorMachine.test(ElevatorState.HIGH)) {
                 Shooter.shoot();
-                Shooter.driveHopper();
+                
+                if (Shooter.isCharged())
+                    Shooter.driveHopper();
+                else
+                    Shooter.driveHopper(hopperSpeed);
             } else {
                 Shooter.shoot(false);
                 Shooter.driveHopper(hopperSpeed);
