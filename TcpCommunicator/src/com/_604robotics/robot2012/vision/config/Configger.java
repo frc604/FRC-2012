@@ -106,6 +106,7 @@ public class Configger {
 		
 		final VisionProcessing vp = VisionProcessing.defaultProcessing;
 		
+		
 		Box ui = new Box(BoxLayout.Y_AXIS);
 		ui.add(tabbedPane);
 		ui.add(vp.display);
@@ -191,8 +192,12 @@ public class Configger {
 		
 		Thread t = new Thread(r);
 		t.start();
+
+		JScrollPane vertScroll = new JScrollPane(ui);
+		vertScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		vertScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 		
-		frame.add(ui);
+		frame.add(vertScroll);
 		frame.addWindowListener(new WindowListener() {
 			
 			public void windowOpened(WindowEvent e) { }
