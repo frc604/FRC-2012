@@ -6,6 +6,7 @@ package com._604robotics.robot2012.control.workers;
 
 import com._604robotics.robot2012.Robot;
 import com._604robotics.robot2012.control.models.Drive;
+import com._604robotics.robot2012.firing.EncoderSpeedsForDist;
 import com._604robotics.robot2012.vision.Target;
 import com.sun.squawk.util.MathUtils;
 import edu.wpi.first.wpilibj.Timer;
@@ -28,8 +29,15 @@ public class AutoAimer {
         if (!wasAiming) {
             Robot.gyroHeading.reset();
         
-
-            Robot.pidAutoAim.setSetpoint(Math.toDegrees(MathUtils.atan2(target.getX(), target.getZ())));
+            double x = target.getX();
+            double z = target.getZ();
+            
+            if(EncoderSpeedsForDist.getUseDemoHeight()) {
+                x = target.getHoopPosition().getX();
+                z = target.getHoopPosition().getZ();
+            }
+            
+            Robot.pidAutoAim.setSetpoint(Math.toDegrees(MathUtils.atan2(x, z)));
             Robot.pidAutoAim.enable();
 
             aimTimer.start();
