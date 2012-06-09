@@ -21,7 +21,7 @@ public class Target {
 	/**
 	 * The distance from the center of the target to the Z (depth) value of the hoop.
 	 */
-	public static final double	RelHoopZ	= +15;	// inches
+	public static final double	RelHoopZ	= -15;	// inches
 													
 
 	/**
