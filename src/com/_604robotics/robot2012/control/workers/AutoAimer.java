@@ -55,4 +55,8 @@ public class AutoAimer {
             wasAiming = false;
         }
     }
+    
+    public static boolean isOnTarget() {
+        return Math.abs(Robot.pidAutoAim.getSetpoint() - Robot.gyroHeading.getAngle()) < 3;
+    }
 }
