@@ -62,7 +62,7 @@ public interface ButtonConfiguration {
     
     public interface Demo {
         public interface Student {
-            public static final int SHOOT = Button.Y;
+            public static final int SHOOT = Button.A;
         }
 
         public interface Mentor {

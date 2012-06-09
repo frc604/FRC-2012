@@ -53,9 +53,9 @@ public class ShooterDashboard implements DashboardSection {
         
         // TODO: Seriously, clean this up.
         
-        Shooter.setManual(ShooterDashboard.useManualSetpoint);
-        if (ShooterDashboard.useManualSetpoint)
-            Shooter.setManualSpeed(SmarterDashboard.getDouble("Shooter Speed", 0D));
+        //Shooter.setManual(ShooterDashboard.useManualSetpoint);
+        //if (ShooterDashboard.useManualSetpoint)
+            //Shooter.setManualSpeed(SmarterDashboard.getDouble("Shooter Speed", 0D));
         
         SmartDashboard.putDouble("encoderShooter", Robot.encoderShooter.get());
         SmartDashboard.putDouble("Current Encoder Rate", Robot.encoderShooter.getRate());

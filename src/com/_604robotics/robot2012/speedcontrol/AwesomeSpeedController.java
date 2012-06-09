@@ -4,12 +4,15 @@ import com._604robotics.robot2012.configuration.FiringConfiguration;
 import com._604robotics.robot2012.control.models.Shooter;
 import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.PIDSource;
+import edu.wpi.first.wpilibj.Timer;
 
 /**
  *
  * @author Kevin Parker <kevin.m.parker@gmail.com>
  */
 public class AwesomeSpeedController implements SpeedProvider {
+    private final Timer targetTimer = new Timer();
+    
     public double maxSpeed = 1;
     public double fac = .9;
     
@@ -50,6 +53,8 @@ public class AwesomeSpeedController implements SpeedProvider {
     }
     
     public AwesomeSpeedController(double P, double I, double D, double DP, PIDSource source, PIDOutput output) {
+        this.targetTimer.start();
+        
         this.source = source;
         this.output = output;
         this.diffOutput = new AddableDifferentialOutput();
@@ -82,7 +87,9 @@ public class AwesomeSpeedController implements SpeedProvider {
 
     public boolean isOnTarget(double tolerance) {
         if (FiringConfiguration.USE_HOPPER_THRESHOLD) {
-            return Math.abs(this.getSetSpeed() - this.source.pidGet()) < tolerance;
+            if (Math.abs(this.getSetSpeed() - this.source.pidGet()) < tolerance)
+                targetTimer.reset();
+            return targetTimer.get() < 0.5;
         } else {
             final long now = System.currentTimeMillis();
             System.out.println(now - this.lastChanged);

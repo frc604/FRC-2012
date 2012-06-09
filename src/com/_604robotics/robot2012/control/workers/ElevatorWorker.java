@@ -25,13 +25,16 @@ public class ElevatorWorker implements Worker {
          */
         Robot.elevatorMotors.setDisabled(Elevator.disabled);
         
-        if (Elevator.recalibrating || (!Elevator.calibrated && Robot.compressorPump.getPressureSwitchValue())) {
+        if (Elevator.recalibrating || !Elevator.calibrated) {
             /*
              * If the pickup is out, force the elevator down for recalibration.
              */
             if (Robot.pickupMachine.test(PickupMachine.PickupState.OUT)) {
                 Robot.elevatorMotors.setDisabled(false);
-                Robot.elevatorMotors.set(-0.6);
+                if (Robot.compressorPump.getPressureSwitchValue())
+                    Robot.elevatorMotors.set(-0.6);
+                else
+                    Robot.elevatorMotors.set(0D);
             }
         } else {
             /*

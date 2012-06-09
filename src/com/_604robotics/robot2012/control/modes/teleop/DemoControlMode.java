@@ -26,11 +26,14 @@ public class DemoControlMode implements ControlMode {
         Robot.driveController.resetToggles();
 
         Robot.pidElevator.reset();
+        
+        Robot.manipulatorController.setDeadband(Axis.LEFT_STICK_Y, -0.1, 0.1);
+        Robot.manipulatorController.setDeadband(Axis.RIGHT_STICK_Y, -0.1, 0.1);
 
         exTimer.reset();
         exTimer.start();
 
-        Shooter.setManual(false);
+        Shooter.setManual(true);
         EncoderSpeedsForDist.setUseDemoHeight();
         //Shooter.setManual(false);
     }
@@ -55,7 +58,7 @@ public class DemoControlMode implements ControlMode {
         /*
          * Shooter control.
          */
-        Shooter.setManualSpeed(DemoDashboard.manualShooterSpeed);
+        //Shooter.setManualSpeed(DemoDashboard.manualShooterSpeed);
 
         double hopperSpeed = 0D;
 
@@ -87,6 +90,10 @@ public class DemoControlMode implements ControlMode {
         }
 
         Shooter.toggleHood(Robot.driveController.getButton(ButtonConfiguration.Demo.Mentor.Shooter.TOGGLE_ANGLE));
+        
+        Shooter.setManualSpeed(Shooter.manualSpeed + Robot.manipulatorController.getAxis(Axis.LEFT_STICK_Y) * -0.6);
+        Shooter.setManualSpeed(Shooter.manualSpeed + Robot.manipulatorController.getAxis(Axis.RIGHT_STICK_Y) * -0.1);
+        System.out.println(Shooter.manualSpeed);
 
         /*
          * Pickup control.

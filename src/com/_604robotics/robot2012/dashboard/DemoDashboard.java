@@ -13,7 +13,7 @@ public class DemoDashboard implements DashboardSection {
     private static final SendableTag tag;
     
     public static double driveSpeedMultiplier = 1D;
-    public static double manualShooterSpeed = 250D;
+    public static double manualShooterSpeed = 125D;
     
     public void enable () {
         SmartDashboard.putData(tag);
