@@ -229,7 +229,7 @@ public abstract class LinkedSlider extends Box implements ChangeListener {
 		this.min = min;
 		this.max = max;
 		this.mul = (max-min);
-		System.out.printf("min = %d, max = %d, val = %d\n", min, max, val);
+		System.out.printf("name = %s min = %d, max = %d, val = %d\n", name, min, max, val);
 		slider = new JSlider(min, max, val);
 		setupSlider();
 		
