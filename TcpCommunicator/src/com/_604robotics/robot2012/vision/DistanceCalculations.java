@@ -58,7 +58,7 @@ public class DistanceCalculations {
 		
 		double wRatio = actualW / expectedW;
 		
-		//System.out.println(wRatio);
+		System.out.println(wRatio);
 		
 		if (wRatio < 0) {
 			wRatio = 0;
@@ -69,7 +69,7 @@ public class DistanceCalculations {
 		}
 		Logger.log(wRatio);
 		
-		return Math.acos(wRatio) * (dyRatio > 1 ? -1 : 1);
+		return Math.acos(wRatio) * (dyRatio < 1 ? -1 : 1);
 	}
 	
 	/**
@@ -109,16 +109,20 @@ public class DistanceCalculations {
 			
 			if (quad.getMinX() <= cameraCorner_topLeft.x + nearSideTolerance) {
 				t.setXUncertainty(9001);
+				t.setAngleUncertainty(9001);
 			}
 			if (quad.getMaxX() >= cameraCorner_bottomRight.x - nearSideTolerance) {
 				t.setXUncertainty(9001);
+				t.setAngleUncertainty(9001);
 			}
 			
 			if (quad.getMinY() <= cameraCorner_bottomRight.y + nearSideTolerance) {
 				t.setYUncertainty(9001);
+				t.setAngleUncertainty(9001);
 			}
 			if (quad.getMaxY() >= cameraCorner_topLeft.y - nearSideTolerance) {
 				t.setYUncertainty(9001);
+				t.setAngleUncertainty(9001);
 			}
 			
 		}
