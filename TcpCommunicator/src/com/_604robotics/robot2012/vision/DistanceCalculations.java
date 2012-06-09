@@ -58,6 +58,8 @@ public class DistanceCalculations {
 		
 		double wRatio = actualW / expectedW;
 		
+		System.out.println(wRatio);
+		
 		if (wRatio < 0) {
 			wRatio = 0;
 		}
