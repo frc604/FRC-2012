@@ -30,6 +30,10 @@ public class EncoderSpeedsForDist {
         useDemoHeight = flag;
     }
     
+    public static boolean getUseDemoHeight() {
+        return useDemoHeight;
+    }
+    
     static {
         //y = 1.169E-07x4 + 1.114E-04x3 - 1.738E-02x2 + 2.047E+00x + 1.635E+02
         inMapping._quart = 1.169E-07;

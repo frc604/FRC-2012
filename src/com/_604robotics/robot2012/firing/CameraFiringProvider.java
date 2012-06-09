@@ -3,6 +3,7 @@ package com._604robotics.robot2012.firing;
 import com._604robotics.robot2012.Robot;
 import com._604robotics.robot2012.camera.CameraInterface;
 import com._604robotics.robot2012.configuration.FiringConfiguration;
+import com._604robotics.robot2012.control.workers.AutoAimer;
 import com._604robotics.robot2012.vision.Target;
 
 public class CameraFiringProvider implements FiringProvider {
@@ -30,19 +31,14 @@ public class CameraFiringProvider implements FiringProvider {
     }
     
     public double getSpeed () {
-        System.out.println("enabled: " + this.enabled);
-        System.out.println("manually set: " + this.manuallySet);
-        System.out.println("physics enabled: " + this.physicsEnabled);
         
         if (!this.manuallySet)
             this.fallback.setAtFender(this.atFender);
-        System.out.println("flag [1]");
         
         if (!this.enabled) {
             this.usedTargets = false;
             return this.fallback.getSpeed();
         }
-        System.out.println("flag [2]");
         
         Target target = Robot.cameraInterface.getSingleTarget();
         
@@ -50,23 +46,25 @@ public class CameraFiringProvider implements FiringProvider {
             this.usedTargets = false;
             return this.fallback.getSpeed();
         } else {
-            System.out.println("flag [3]");
             
             if (!this.manuallySet) {
                 this.atFender = target.z <= FiringConfiguration.FENDER_DISTANCE_THRESHOLD;
                 this.fallback.setAtFender(this.atFender);
             }
             
-            System.out.println("flag [4]");
             
             if (this.physicsEnabled) {
-                System.out.println("using speed: " + EncoderSpeedsForDist.getSpeedForDist(target.z));
+                double z = target.z;
+                if(EncoderSpeedsForDist.getUseDemoHeight()) {
+                    z = target.getHoopPosition().z;
+                    System.out.println("Z = " + z);
+                }
+                //System.out.println("using speed: " + EncoderSpeedsForDist.getSpeedForDist(z));
                 
                 this.usedTargets = true;
                 //return Physics.getSubparFiringVelocity(target.z, FiringConfiguration.TOP_HOOP_HEIGHT - FiringConfiguration.SHOOTER_HEIGHT, FiringConfiguration.SHOOTER_SLOPE);
-                return EncoderSpeedsForDist.getSpeedForDist(target.z);
+                return EncoderSpeedsForDist.getSpeedForDist(z);
             } else {
-                System.out.println("flag [5]");
 
                 this.usedTargets = false;
                 return this.fallback.getSpeed();
