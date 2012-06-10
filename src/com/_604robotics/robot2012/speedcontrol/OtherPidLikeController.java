@@ -281,14 +281,12 @@ public class OtherPidLikeController implements IUtility {
     
     public double compress(double value) {
         
-        double eToTheVal = MathUtils.exp(-Math.abs(value));
-        
-        double c = m_C;
+        double powVal = MathUtils.pow(-Math.abs(value), m_C);
         
         if(value > 0)
-            return c*(1-eToTheVal) + (1-c)*value;
+            return (1-powVal);
         else
-            return c*(eToTheVal-1) + (1-c)*value;
+            return (powVal-1);
     }
     
 
