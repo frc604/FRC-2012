@@ -62,7 +62,7 @@ public class ShooterMachine implements StrangeMachine {
                 Shooter.setCharged(Robot.speedProvider.isOnTarget(ShooterDashboard.tolerance));
                 
                 if (!ShooterDashboard.ignoreHeight || Robot.elevatorMachine.test(ElevatorState.HIGH))
-                    Robot.elevatorMotors.set(0.2);
+                    Robot.elevatorMotors.set(0.15);
                 else if (ShooterDashboard.ignoreHeight && !Robot.shooterMachine.test(ElevatorState.HIGH))
                     Robot.elevatorMotors.set(-0.15);
                 

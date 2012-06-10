@@ -3,6 +3,7 @@ package com._604robotics.robot2012.dashboard;
 import com._604robotics.robot2012.Robot;
 import com._604robotics.robot2012.camera.RemoteCameraTCP;
 import com._604robotics.robot2012.vision.Target;
+import edu.wpi.first.wpilibj.smartdashboard.PIDCEditor;
 import edu.wpi.first.wpilibj.smartdashboard.SendableTag;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -14,9 +15,11 @@ public class FiringDashboard implements DashboardSection {
     private static final FiringDashboard instance;
     private static final SendableTag tag;
     
+    private static final PIDCEditor editor;
+    
     public void enable () {
         SmartDashboard.putData(tag);
-        SmartDashboard.putData("pidAutoAim", Robot.pidAutoAim);
+        SmartDashboard.putData("pidAutoAim", editor);
     }
     
     public void render () {
@@ -28,6 +31,8 @@ public class FiringDashboard implements DashboardSection {
             SmartDashboard.putDouble("Target X", t.getX());
             SmartDashboard.putDouble("Target Y", t.getY());
             SmartDashboard.putDouble("Target Z", t.getZ());
+            
+            System.out.println("Z = " + t.getHoopPosition().z);
         } else {
             SmartDashboard.putDouble("Target X", 9001D);
             SmartDashboard.putDouble("Target Y", 9001D);
@@ -45,6 +50,8 @@ public class FiringDashboard implements DashboardSection {
            "Using Targets?",
            "ups"
         });
+        
+        editor = new PIDCEditor(Robot.pidAutoAim);
     }
     
     public static FiringDashboard getInstance () {

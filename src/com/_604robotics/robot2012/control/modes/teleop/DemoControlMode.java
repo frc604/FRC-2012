@@ -27,8 +27,8 @@ public class DemoControlMode implements ControlMode {
 
         Robot.pidElevator.reset();
         
-        Robot.manipulatorController.setDeadband(Axis.LEFT_STICK_Y, -0.1, 0.1);
-        Robot.manipulatorController.setDeadband(Axis.RIGHT_STICK_Y, -0.1, 0.1);
+        Robot.manipulatorController.setDeadband(Axis.LEFT_STICK_Y, -0.2, 0.2);
+        Robot.manipulatorController.setDeadband(Axis.RIGHT_STICK_Y, -0.2, 0.2);
 
         exTimer.reset();
         exTimer.start();
