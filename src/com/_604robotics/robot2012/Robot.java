@@ -12,12 +12,12 @@ import com._604robotics.robot2012.machine.ElevatorMachine;
 import com._604robotics.robot2012.machine.PickupMachine;
 import com._604robotics.robot2012.machine.ShooterMachine;
 import com._604robotics.robot2012.speedcontrol.AwesomeSpeedController;
+import com._604robotics.robot2012.speedcontrol.OtherPidLikeController;
 import com._604robotics.robot2012.speedcontrol.SpeedProvider;
 import com._604robotics.utils.*;
 import com._604robotics.utils.XboxController.Axis;
 import edu.wpi.first.wpilibj.RobotDrive.MotorType;
 import edu.wpi.first.wpilibj.*;
-import edu.wpi.first.wpilibj.smartdashboard.SendablePIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Robot {
@@ -55,7 +55,7 @@ public class Robot {
 	
 	public static final UpDownPIDController pidElevator;
     
-    public static final SendablePIDController pidAutoAim;
+    public static final OtherPidLikeController pidAutoAim;
     public static final CachingPIDSource pidSourceDriveAngle;
     public static final TurningDrivePIDOutput pidOutputDrive;
 	
@@ -150,17 +150,19 @@ public class Robot {
         pidOutputDrive = new TurningDrivePIDOutput(driveTrain);
         
         if(PIDConfiguration.AutoAim.USE_GYRO) {
-            pidAutoAim = new SendablePIDController(
+            pidAutoAim = new OtherPidLikeController(
                     PIDConfiguration.AutoAim.P_GYRO,
                     PIDConfiguration.AutoAim.I_GYRO,
                     PIDConfiguration.AutoAim.D_GYRO,
+                    PIDConfiguration.AutoAim.C_GRYO,
                     gyroHeading,
                     pidOutputDrive);
         } else {
-            pidAutoAim = new SendablePIDController(
+            pidAutoAim = new OtherPidLikeController(
                     PIDConfiguration.AutoAim.P_NO_GYRO,
                     PIDConfiguration.AutoAim.I_NO_GYRO,
                     PIDConfiguration.AutoAim.D_NO_GYRO,
+                    PIDConfiguration.AutoAim.C_NO_GRYO,
                     pidSourceDriveAngle,
                     pidOutputDrive);
         }
