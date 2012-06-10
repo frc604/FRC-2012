@@ -30,14 +30,13 @@ public interface PIDConfiguration {
         public static final double C_NO_GRYO = .7;
             // TODO: Configure this.
         
-        
-        public static final double P_GYRO = -.08D;
+        public static final double P_GYRO = -.04D;
             // TODO: Configure this.
-        public static final double I_GYRO = -.04D;
+        public static final double I_GYRO = 0D;
             // TODO: Configure this.
-        public static final double D_GYRO = -.05D;
+        public static final double D_GYRO = 0D;
             // TODO: Configure this.
-        public static final double C_GRYO = 2.7;
+        public static final double C_GRYO = 2.25;
             // TODO: Configure this.
     }
 }
