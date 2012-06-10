@@ -27,6 +27,8 @@ public interface PIDConfiguration {
             // TODO: Configure this.
         public static final double D_NO_GYRO = 0D;
             // TODO: Configure this.
+        public static final double C_NO_GRYO = .7;
+            // TODO: Configure this.
         
         
         public static final double P_GYRO = -.08D;
@@ -36,5 +38,6 @@ public interface PIDConfiguration {
         public static final double D_GYRO = -.05D;
             // TODO: Configure this.
         public static final double C_GRYO = .7;
+            // TODO: Configure this.
     }
 }

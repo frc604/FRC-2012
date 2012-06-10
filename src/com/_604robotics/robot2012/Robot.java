@@ -87,7 +87,7 @@ public class Robot {
 		driveTrain.setSafetyEnabled(false);
 		
 		driveTrain.setInvertedMotor(MotorType.kFrontLeft, false);
-		driveTrain.setInveSendablePIDrtedMotor(MotorType.kFrontRight, false);
+		driveTrain.setInvertedMotor(MotorType.kFrontRight, false);
 		driveTrain.setInvertedMotor(MotorType.kRearLeft, false);
 		driveTrain.setInvertedMotor(MotorType.kRearRight, false);
         
@@ -154,7 +154,7 @@ public class Robot {
                     PIDConfiguration.AutoAim.P_GYRO,
                     PIDConfiguration.AutoAim.I_GYRO,
                     PIDConfiguration.AutoAim.D_GYRO,
-                    PIDConfiguration.AutoAim.C_GYRO,
+                    PIDConfiguration.AutoAim.C_GRYO,
                     gyroHeading,
                     pidOutputDrive);
         } else {
@@ -162,7 +162,7 @@ public class Robot {
                     PIDConfiguration.AutoAim.P_NO_GYRO,
                     PIDConfiguration.AutoAim.I_NO_GYRO,
                     PIDConfiguration.AutoAim.D_NO_GYRO,
-                    PIDConfiguration.AutoAim.C_NO_GYRO,
+                    PIDConfiguration.AutoAim.C_NO_GRYO,
                     pidSourceDriveAngle,
                     pidOutputDrive);
         }
