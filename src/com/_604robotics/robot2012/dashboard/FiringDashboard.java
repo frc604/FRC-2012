@@ -15,11 +15,11 @@ public class FiringDashboard implements DashboardSection {
     private static final FiringDashboard instance;
     private static final SendableTag tag;
     
-    private static final PIDCEditor editor;
+    //private static final PIDCEditor editor;
     
     public void enable () {
         SmartDashboard.putData(tag);
-        SmartDashboard.putData("pidAutoAim", editor);
+        //SmartDashboard.putData("pidAutoAim", editor);
     }
     
     public void render () {
@@ -51,7 +51,7 @@ public class FiringDashboard implements DashboardSection {
            "ups"
         });
         
-        editor = new PIDCEditor(Robot.pidAutoAim);
+        //editor = new PIDCEditor(Robot.pidAutoAim);
     }
     
     public static FiringDashboard getInstance () {
