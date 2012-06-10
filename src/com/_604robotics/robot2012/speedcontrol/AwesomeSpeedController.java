@@ -14,7 +14,8 @@ public class AwesomeSpeedController implements SpeedProvider {
     private final Timer targetTimer = new Timer();
     
     public double maxSpeed = 1;
-    public double fac = .9;
+    public double fac = .93;
+    public double pidSpikeOffset = 15;
     
     private double currentValue = 0;
     
@@ -33,6 +34,7 @@ public class AwesomeSpeedController implements SpeedProvider {
         private double add = 0;
         
         public void pidWrite (double output) {
+            //double processMul = .5 + getSetSpeed()/1000;
             this.process += output;
             
             if(this.process > maxSpeed)
@@ -107,7 +109,7 @@ public class AwesomeSpeedController implements SpeedProvider {
         
         final double setpoint = this.getSetSpeed();
         
-        if (Math.abs(this.source.pidGet()) < fac * setpoint) {
+        if (Math.abs(this.source.pidGet()) < fac * (setpoint-pidSpikeOffset)) {
             this.output.pidWrite(-maxSpeed);
         } else {
             diffOutput.add = -TurretSpeedGuestimator.guestimatePow(setpoint);

@@ -14,6 +14,7 @@ public class EncoderSpeedsForDist {
     private static final EncoderSpeedsForDist inMapping = new EncoderSpeedsForDist();
     private static final EncoderSpeedsForDist bounceMapping = new EncoderSpeedsForDist();
     private static final EncoderSpeedsForDist demoBounceMapping = new EncoderSpeedsForDist();
+    private static final EncoderSpeedsForDist demoInMapping = new EncoderSpeedsForDist();
     
     //y = 1.169E-07x4 + 9.779E-05x3 - 2.648E-02x2 + 3.325E+00x + 8.691E+01
     private double   _quart = 1.169E-07,
@@ -56,6 +57,14 @@ public class EncoderSpeedsForDist {
         demoBounceMapping._quad  = -1.876E-01;
         demoBounceMapping._linear= 1.379E+01;
         demoBounceMapping._const = -5.628E+01;
+        
+        //y = 2.164E-03x3 - 3.306E-01x2 + 1.856E+01x - 1.649E+02
+        demoInMapping._quart = 0;
+        demoInMapping._cubic = 2.164E-03;
+        demoInMapping._quad  = - 3.306E-01;
+        demoInMapping._linear= 1.856E+01;
+        demoInMapping._const = - 1.649E+02;
+
     }
     
     
@@ -78,7 +87,7 @@ public class EncoderSpeedsForDist {
     
     public static double getSpeedForDist(double dist) {
         if(useDemoHeight)
-            return getSpeedForDist(dist, demoBounceMapping);
+            return getSpeedForDist(dist, demoInMapping);
         return 1.1 * getSpeedForDist(dist, dist < switchDist ? bounceMapping : inMapping);
     }
     

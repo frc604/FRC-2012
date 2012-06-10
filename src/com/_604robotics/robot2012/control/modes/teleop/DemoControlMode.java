@@ -33,7 +33,7 @@ public class DemoControlMode implements ControlMode {
         exTimer.reset();
         exTimer.start();
 
-        Shooter.setManual(true);
+        Shooter.setManual(false);
         EncoderSpeedsForDist.setUseDemoHeight();
         //Shooter.setManual(false);
     }
