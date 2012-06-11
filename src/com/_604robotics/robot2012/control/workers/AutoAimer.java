@@ -37,7 +37,7 @@ public class AutoAimer {
                 z = target.getHoopPosition().getZ();
             }
             
-            Robot.pidAutoAim.setSetpoint(Math.toDegrees(MathUtils.atan2(x, z)));
+            Robot.pidAutoAim.setSetpoint(.7 * Math.toDegrees(MathUtils.atan2(x, z)));
             Robot.pidAutoAim.enable();
 
             aimTimer.start();
@@ -49,7 +49,7 @@ public class AutoAimer {
 
         wasAiming = true;
         
-        if(aimTimer.get() > 2)
+        if(aimTimer.get() > 1.2)
             dontAim();
 
     }
@@ -65,6 +65,6 @@ public class AutoAimer {
     }
     
     public static boolean isOnTarget() {
-        return Math.abs(Robot.pidAutoAim.getSetpoint() - Robot.gyroHeading.getAngle()) < 3;
+        return Math.abs(Robot.pidAutoAim.getSetpoint() - Robot.gyroHeading.getAngle()) < 5;
     }
 }

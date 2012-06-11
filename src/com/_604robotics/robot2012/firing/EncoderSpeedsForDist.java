@@ -51,19 +51,19 @@ public class EncoderSpeedsForDist {
         bounceMapping._linear= 1.4E+00;
         bounceMapping._const = 2.17E+02;
         
-        //y = 6.986E-04x3 - 1.876E-01x2 + 1.379E+01x - 5.628E+01
+        //y = 2.260E+00x + 1.348E+02
         demoBounceMapping._quart = 0;
-        demoBounceMapping._cubic = 6.986E-04;
-        demoBounceMapping._quad  = -1.876E-01;
-        demoBounceMapping._linear= 1.379E+01;
-        demoBounceMapping._const = -5.628E+01;
+        demoBounceMapping._cubic = 0;
+        demoBounceMapping._quad  = 0;
+        demoBounceMapping._linear= 2.260E+00;
+        demoBounceMapping._const = 1.348E+02;
         
-        //y = 2.164E-03x3 - 3.306E-01x2 + 1.856E+01x - 1.649E+02
+        //y = -5.434E-04x3 + 6.005E-02x2 + 3.471E-01x + 1.510E+02
         demoInMapping._quart = 0;
-        demoInMapping._cubic = 2.164E-03;
-        demoInMapping._quad  = - 3.306E-01;
-        demoInMapping._linear= 1.856E+01;
-        demoInMapping._const = - 1.649E+02;
+        demoInMapping._cubic = -5.434E-04;
+        demoInMapping._quad  = 6.005E-02;
+        demoInMapping._linear= 3.471E-01;
+        demoInMapping._const = 1.510E+02;
 
     }
     
@@ -87,7 +87,7 @@ public class EncoderSpeedsForDist {
     
     public static double getSpeedForDist(double dist) {
         if(useDemoHeight)
-            return getSpeedForDist(dist, demoInMapping);
+            return 1 * getSpeedForDist(dist, demoBounceMapping);
         return 1.1 * getSpeedForDist(dist, dist < switchDist ? bounceMapping : inMapping);
     }
     

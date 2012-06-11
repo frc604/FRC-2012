@@ -15,7 +15,7 @@ public class Shooter {
     public static long lastCharged = 0;
     
     public static boolean manual = true;
-    public static double manualSpeed = 150D;
+    public static double manualSpeed = 125D;
     
     public static boolean vision = true;
     

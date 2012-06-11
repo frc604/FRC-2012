@@ -32,6 +32,7 @@ public class FiringDashboard implements DashboardSection {
             SmartDashboard.putDouble("Target Y", t.getY());
             SmartDashboard.putDouble("Target Z", t.getZ());
             
+            /*
             System.out.println("Z = " + t.getHoopPosition().z);
             
             System.out.println("P: " + Robot.pidAutoAim.getP());
@@ -41,6 +42,8 @@ public class FiringDashboard implements DashboardSection {
             System.out.println("Setpoint: " + Robot.pidAutoAim.getSetpoint());
             System.out.println("Output: " + Robot.pidAutoAim.get());
             System.out.println("-----");
+            *
+            */
         } else {
             SmartDashboard.putDouble("Target X", 9001D);
             SmartDashboard.putDouble("Target Y", 9001D);

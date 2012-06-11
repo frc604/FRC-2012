@@ -35,7 +35,6 @@ public class DemoControlMode implements ControlMode {
 
         Shooter.setManual(false);
         EncoderSpeedsForDist.setUseDemoHeight();
-        //Shooter.setManual(false);
     }
 
     public boolean step() {
@@ -58,7 +57,8 @@ public class DemoControlMode implements ControlMode {
         /*
          * Shooter control.
          */
-        //Shooter.setManualSpeed(DemoDashboard.manualShooterSpeed);
+        Shooter.setManualSpeed(DemoDashboard.manualShooterSpeed);
+        Shooter.setManual(Robot.driveController.getButton(ButtonConfiguration.Demo.Mentor.Shooter.DISABLE_VISION));
 
         double hopperSpeed = 0D;
 
@@ -91,9 +91,9 @@ public class DemoControlMode implements ControlMode {
 
         Shooter.toggleHood(Robot.driveController.getButton(ButtonConfiguration.Demo.Mentor.Shooter.TOGGLE_ANGLE));
         
-        Shooter.setManualSpeed(Shooter.manualSpeed + Robot.manipulatorController.getAxis(Axis.LEFT_STICK_Y) * -0.6);
-        Shooter.setManualSpeed(Shooter.manualSpeed + Robot.manipulatorController.getAxis(Axis.RIGHT_STICK_Y) * -0.1);
-        System.out.println(Shooter.manualSpeed);
+        //Shooter.setManualSpeed(Shooter.manualSpeed + Robot.manipulatorController.getAxis(Axis.LEFT_STICK_Y) * -0.6);
+        //Shooter.setManualSpeed(Shooter.manualSpeed + Robot.manipulatorController.getAxis(Axis.RIGHT_STICK_Y) * -0.1);
+        //System.out.println(Shooter.manualSpeed);
 
         /*
          * Pickup control.

@@ -87,6 +87,8 @@ public interface ButtonConfiguration {
                 
                 public static final int SUCK_IN = Button.RT;
                 public static final int SPIT_OUT = Button.LT;
+                
+                public static final int DISABLE_VISION = Button.LeftStick;
             }
         }
     }

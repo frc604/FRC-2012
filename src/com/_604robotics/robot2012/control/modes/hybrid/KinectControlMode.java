@@ -8,6 +8,7 @@ import com._604robotics.robot2012.control.models.Pickup;
 import com._604robotics.robot2012.control.models.Shooter;
 import com._604robotics.robot2012.control.modes.ControlMode;
 import com._604robotics.robot2012.control.workers.AutoAimer;
+import com._604robotics.robot2012.machine.ElevatorMachine.ElevatorState;
 
 /**
  *
@@ -20,6 +21,7 @@ public class KinectControlMode implements ControlMode {
     
 	public void init() {
 		System.out.println("KINECT ON");
+        Shooter.setManual(false);
 	}
     
 	public boolean step() {
@@ -31,19 +33,23 @@ public class KinectControlMode implements ControlMode {
 		else
 			Drive.drive(0D);
 		
-        if(Robot.leftKinect.getRawButton(ButtonConfiguration.Kinect.SHOOT)) {
+        if(Robot.leftKinect.getRawButton(ButtonConfiguration.Kinect.SHOOT) && Robot.elevatorMachine.test(ElevatorState.HIGH)) {
             if(!hadAimed || !AutoAimer.isOnTarget()) {
                 Drive.autoAim(true);
                 hadAimed = true;
                 Shooter.shoot(false);
+                Shooter.driveHopper(false);
             } else {
-                Shooter.shoot(true);
+                Shooter.shoot();
+                Shooter.driveHopper(Shooter.isCharged());
             }
         } else {
             Shooter.shoot(false);
+            Shooter.driveHopper(false);
             
             hadAimed = false;
         }
+        
         Elevator.go(Robot.leftKinect.getRawButton(ButtonConfiguration.Kinect.SHOOT));
         
         Pickup.flip(Robot.leftKinect.getRawButton(ButtonConfiguration.Kinect.PICKUP_IN));

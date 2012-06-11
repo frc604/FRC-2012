@@ -14,7 +14,13 @@ public class WaitingControlMode implements ControlMode {
     }
 
     public boolean step() {
-        return !Robot.leftKinect.getRawButton(ButtonConfiguration.Kinect.ABORT) || !Robot.leftKinect.getRawButton(ButtonConfiguration.Kinect.ENABLE);
+        System.out.println("Waiting!");
+        try {
+            Thread.sleep(20);
+        } catch (InterruptedException ex) {
+            ex.printStackTrace();
+        }
+        return !Robot.leftKinect.getRawButton(ButtonConfiguration.Kinect.ABORT) && !Robot.leftKinect.getRawButton(ButtonConfiguration.Kinect.ENABLE);
     }
 
     public void disable() {

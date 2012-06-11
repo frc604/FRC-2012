@@ -22,6 +22,8 @@ public class DemoDashboard implements DashboardSection {
     public void render () {
         driveSpeedMultiplier = Dashboard.renderDouble("Demo: Drive Speed Multiplier", driveSpeedMultiplier);
         manualShooterSpeed = Dashboard.renderDouble("Demo: Manual Shooter Speed", manualShooterSpeed);
+        
+        SmartDashboard.putString("USING MANUAL SPEED?", (Shooter.manual) ? "YUP" : "NOPE");
     }
     
     private DemoDashboard () {
