@@ -11,7 +11,7 @@ import com._604robotics.robot2012.firing.ManualFiringProvider;
 import com._604robotics.robot2012.machine.ElevatorMachine;
 import com._604robotics.robot2012.machine.PickupMachine;
 import com._604robotics.robot2012.machine.ShooterMachine;
-import com._604robotics.robot2012.speedcontrol.AwesomeSpeedController;
+import com._604robotics.robot2012.speedcontrol.BangBangSpeedController;
 import com._604robotics.robot2012.speedcontrol.OtherPidLikeController;
 import com._604robotics.robot2012.speedcontrol.SpeedProvider;
 import com._604robotics.utils.*;
@@ -185,8 +185,8 @@ public class Robot {
 		//speedProvider = new StupidSpeedProvider(shooterMotors);
 		//speedProvider = new NaiveSpeedProvider(shooterMotors, encoderShooter);
 		//speedProvider = new ProcessSpeedProvider(-0.0001, 0D, -0.0008, encoderShooter, shooterMotors);
-		speedProvider = new AwesomeSpeedController(PIDConfiguration.Shooter.P, PIDConfiguration.Shooter.I, PIDConfiguration.Shooter.D, PIDConfiguration.Shooter.DP, encoderShooter, shooterMotors);
-		//speedProvider = new BangBangSpeedController(shooterMotors, encoderShooter);
+		//speedProvider = new AwesomeSpeedController(PIDConfiguration.Shooter.P, PIDConfiguration.Shooter.I, PIDConfiguration.Shooter.D, PIDConfiguration.Shooter.DP, encoderShooter, shooterMotors);
+		speedProvider = new BangBangSpeedController(shooterMotors, encoderShooter);
         
 		/* Sets up the Machines. */
 		

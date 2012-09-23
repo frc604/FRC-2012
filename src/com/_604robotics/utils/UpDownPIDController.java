@@ -75,6 +75,8 @@ public class UpDownPIDController extends PIDController {
             super.setPID(this.upGains.P, this.upGains.I, this.upGains.D);
         else
             super.setPID(this.downGains.P, this.downGains.I, this.downGains.D);
+        
+        System.out.println("P: " + super.getP() + ", I: " + super.getI() + ", D: " + super.getD());
     }
     
     /**

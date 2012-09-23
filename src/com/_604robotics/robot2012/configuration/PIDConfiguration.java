@@ -4,8 +4,8 @@ import com._604robotics.utils.UpDownPIDController.Gains;
 
 public interface PIDConfiguration {
     public interface Elevator {
-        public static final Gains UP = new Gains(0.0085, 0D, 0.018);
-        public static final Gains DOWN = new Gains(0.0029, 0.000003, 0.007);
+        public static final Gains UP = new Gains(0.002, 0.000003, 0.007);
+        public static final Gains DOWN = new Gains(0.002, 0.000003, 0.007);
     }
     
     public interface Shooter {

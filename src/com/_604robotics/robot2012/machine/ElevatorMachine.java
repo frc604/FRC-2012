@@ -75,18 +75,42 @@ public class ElevatorMachine implements StrangeMachine {
         
         switch (state) {
             case ElevatorState.HIGH:
+                if (!Robot.pidElevator.isEnable())
+                    Robot.pidElevator.enable();
+
                 Robot.pidElevator.setSetpoint(ActuatorConfiguration.ELEVATOR.HIGH);
                 break;
             case ElevatorState.MEDIUM:
+                if (!Robot.pidElevator.isEnable())
+                    Robot.pidElevator.enable();
+
                 Robot.pidElevator.setSetpoint(ActuatorConfiguration.ELEVATOR.MEDIUM);
                 break;
             case ElevatorState.LOW:
-                Robot.pidElevator.setSetpoint(ActuatorConfiguration.ELEVATOR.LOW);
+                if (Robot.encoderElevator.get() < 64) {
+                    if (Robot.pidElevator.isEnable())
+                        Robot.pidElevator.disable();
+                    
+                    Robot.elevatorMotors.set(0D);
+                } else if (Robot.encoderElevator.get() < 128) {
+                    if (Robot.pidElevator.isEnable())
+                        Robot.pidElevator.disable();
+                    
+                    Robot.elevatorMotors.set(-0.2);
+                } else {
+                    if (!Robot.pidElevator.isEnable())
+                        Robot.pidElevator.enable();
+
+                    Robot.pidElevator.setSetpoint(ActuatorConfiguration.ELEVATOR.LOW);
+                }
                 break;
             default:
                 Robot.pidElevator.disable();
                 return false;
         }
+        
+        
+        System.out.println("U-P: " + Robot.pidElevator.getUpGains().P + ", U-I" + Robot.pidElevator.getUpGains().I + ", U-D: " + Robot.pidElevator.getUpGains().D + "\nD-P: " + Robot.pidElevator.getDownGains().P + ", D-I" + Robot.pidElevator.getDownGains().I + ", D-D: " + Robot.pidElevator.getDownGains().D);
         
         boolean ret = this.test(state);
         

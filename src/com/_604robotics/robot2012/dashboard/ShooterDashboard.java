@@ -21,7 +21,7 @@ public class ShooterDashboard implements DashboardSection {
     private static final SendableTag tag;
     
     public static boolean ignoreHeight = true;
-    public static boolean useManualSetpoint = false;
+    public static boolean useManualSetpoint = true;
     
     public static double tolerance = FiringConfiguration.SPEED_TOLERANCE;
     
@@ -41,15 +41,15 @@ public class ShooterDashboard implements DashboardSection {
 		}
         
         if (Robot.speedProvider instanceof BangBangSpeedController) {
-            ((BangBangSpeedController) Robot.speedProvider).lowPower = Dashboard.renderDouble("Shooter lowPower", ((BangBangSpeedController) Robot.speedProvider).lowPower);
-            ((BangBangSpeedController) Robot.speedProvider).spinupSpeed = Dashboard.renderDouble("Shooter spinupSpeed", ((BangBangSpeedController) Robot.speedProvider).spinupSpeed);
+            //((BangBangSpeedController) Robot.speedProvider).lowPower = Dashboard.renderDouble("Shooter lowPower", ((BangBangSpeedController) Robot.speedProvider).lowPower);
+            //((BangBangSpeedController) Robot.speedProvider).spinupSpeed = Dashboard.renderDouble("Shooter spinupSpeed", ((BangBangSpeedController) Robot.speedProvider).spinupSpeed);
         }
         
 		Robot.encoderShooter.setFac(Dashboard.renderDouble("Shooter Encoder fac", Robot.encoderShooter.getFac()));
-        ShooterDashboard.tolerance = Dashboard.renderDouble("Shooter tolerance", ShooterDashboard.tolerance);
+        ShooterDashboard.tolerance = SmartDashboard.getDouble("Shooter tolerance", ShooterDashboard.tolerance);
 
         ShooterDashboard.ignoreHeight = Dashboard.renderBoolean("Shoot Regardless of Height", ShooterDashboard.ignoreHeight);
-        ShooterDashboard.useManualSetpoint = Dashboard.renderBoolean("Use Manual Shooter Setpoint", ShooterDashboard.useManualSetpoint);
+        ShooterDashboard.useManualSetpoint = SmartDashboard.getBoolean("Use Manual Shooter Setpoint", ShooterDashboard.useManualSetpoint);
         
         // TODO: Seriously, clean this up.
         

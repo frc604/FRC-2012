@@ -31,7 +31,7 @@ public class UpDownPIDEditor implements SmartDashboardData {
     public NetworkTable getTable() {
         table.addListenerToAll(new NetworkListener() {
             public void valueChanged(String key, Object value) {
-                if (key.equals("u-p")  || key.equals("u-i") || key.equals("u-d")) {
+                if (key.equals("u-p") || key.equals("u-i") || key.equals("u-d")) {
                     controller.setUpGains(new Gains(table.getDouble("u-p", 0.0), table.getDouble("u-i", 0.0), table.getDouble("u-d", 0.0)));
                 } else if (key.equals("d-p")  || key.equals("d-i") || key.equals("d-d")) {
                     controller.setDownGains(new Gains(table.getDouble("d-p", 0.0), table.getDouble("d-i", 0.0), table.getDouble("d-d", 0.0)));

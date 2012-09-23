@@ -191,4 +191,12 @@ public class DualVictor implements PIDOutput {
     public void setDisabled (boolean disabled) {
         this.disabled = disabled;
     }
+    
+    public Victor getLeftVictor () {
+        return this.leftVictor;
+    }
+    
+    public Victor getRightVictor () {
+        return this.rightVictor;
+    }
 }

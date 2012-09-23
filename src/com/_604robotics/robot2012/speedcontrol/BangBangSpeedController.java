@@ -11,9 +11,6 @@ public class BangBangSpeedController implements SpeedProvider {
     
     private boolean loaded = false;
     
-    public double spinupSpeed = 0D;
-    public double lowPower = 0.5D;
-    
     public BangBangSpeedController (DualVictor motor, Encoder encoder) {
         this.motor = motor;
         this.encoder = encoder;
@@ -24,10 +21,8 @@ public class BangBangSpeedController implements SpeedProvider {
         
         if (measuredRPM >= this.targetSpeed)
             return 0D;
-        else if (measuredRPM >= this.spinupSpeed)
-            return 1D;
         else
-            return this.lowPower;
+            return 1D;
     }
 
     public void setSetSpeed (double setSpeed) {

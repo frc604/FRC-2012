@@ -33,7 +33,7 @@ public class DemoControlMode implements ControlMode {
         exTimer.reset();
         exTimer.start();
 
-        Shooter.setManual(false);
+        Shooter.setManual(true);
         EncoderSpeedsForDist.setUseDemoHeight();
     }
 
@@ -58,14 +58,14 @@ public class DemoControlMode implements ControlMode {
          * Shooter control.
          */
         Shooter.setManualSpeed(DemoDashboard.manualShooterSpeed);
-        Shooter.setManual(Robot.driveController.getButton(ButtonConfiguration.Demo.Mentor.Shooter.DISABLE_VISION));
+        //Shooter.setManual(Robot.driveController.getButton(ButtonConfiguration.Demo.Mentor.Shooter.DISABLE_VISION));
 
         double hopperSpeed = 0D;
 
-        if (Robot.driveController.getButton(ButtonConfiguration.Demo.Mentor.Shooter.SUCK_IN)) {
+        if (Robot.driveController.getButton(ButtonConfiguration.Demo.Mentor.Shooter.HOPPER_UP)) {
             hopperSpeed = ActuatorConfiguration.HOPPER_POWER;
         }
-        if (Robot.driveController.getButton(ButtonConfiguration.Demo.Mentor.Shooter.SPIT_OUT)) {
+        if (Robot.driveController.getButton(ButtonConfiguration.Demo.Mentor.Shooter.HOPPER_DOWN)) {
             hopperSpeed = ActuatorConfiguration.HOPPER_POWER_REVERSE;
         }
 
@@ -119,7 +119,7 @@ public class DemoControlMode implements ControlMode {
         Robot.pidElevator.disable();
         Robot.speedProvider.reset();
 
-        Shooter.setManual(false);
+        Shooter.setManual(true);
         EncoderSpeedsForDist.setUseDemoHeight(false);
     }
 

@@ -72,7 +72,7 @@ public interface ButtonConfiguration {
             
             public interface Pickup {
                 public static final int SUCK_IN = Button.Y;
-                
+
                 public static final int GO_UP = Button.X;
                 public static final int GO_DOWN = Button.B;
             }
@@ -85,8 +85,8 @@ public interface ButtonConfiguration {
             public interface Shooter {
                 public static final int TOGGLE_ANGLE = Button.Back;
                 
-                public static final int SUCK_IN = Button.RT;
-                public static final int SPIT_OUT = Button.LT;
+                public static final int HOPPER_UP = Button.RT;
+                public static final int HOPPER_DOWN = Button.LT;
                 
                 public static final int DISABLE_VISION = Button.LeftStick;
             }
