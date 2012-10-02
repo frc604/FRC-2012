@@ -159,7 +159,15 @@ public class VisionProcessing {
 	public static void main(String[] args) throws InterruptedException, IOException {
 		VisionProcessing vp = defaultProcessing;
 		vp.startWindow();
-		vp.loopAndProcessPics();
+		while(true) {
+			try {
+				vp.loopAndProcessPics();
+			} catch(Exception ex) {
+				Logger.ex(ex);
+			}
+			Logger.err("Something bad happened to the video feed. Restarting it now.");
+			Thread.sleep(250);
+		}
 		//vp.loopAndProcessPreSavedPics();
 		
 	}
