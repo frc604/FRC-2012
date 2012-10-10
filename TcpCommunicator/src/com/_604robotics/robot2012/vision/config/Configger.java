@@ -279,15 +279,19 @@ public class Configger {
 		
 		System.out.println(conf.getDouble("targetWidth"));
 		
-		targetWidth = new LinkedSlider.DoubleLinkedSlider("Target Width", conf.getDouble("targetWidth"), 24);
-		targetHeight = new LinkedSlider.DoubleLinkedSlider("Target Height", conf.getDouble("targetHeight"), 18);
-		camAngle = new LinkedSlider.DoubleLinkedSlider("Camera Angle", conf.getDouble("camAngle"), 45);
-		kx = new LinkedSlider.DoubleLinkedSlider("kx", conf.getDouble("kx"), 1000);
-		ky = new LinkedSlider.DoubleLinkedSlider("ky", conf.getDouble("ky"), 1000);
+		targetWidth = new LinkedSlider.DoubleLinkedSlider("Target Width", conf.getDouble("targetWidth"), 0, 24);
+		targetHeight = new LinkedSlider.DoubleLinkedSlider("Target Height", conf.getDouble("targetHeight"), 0, 18);
+		camAngle = new LinkedSlider.DoubleLinkedSlider("Camera Angle", conf.getDouble("camAngle"), -30, 5);
+		camAngleLR = new LinkedSlider.DoubleLinkedSlider("CamAngleLR", conf.getDouble("camAngleLR"), -10, 10);
+		camOffsetLR = new LinkedSlider.DoubleLinkedSlider("CamOffsetLR", conf.getDouble("camOffsetLR"), -8, 8);
+		kx = new LinkedSlider.DoubleLinkedSlider("kx", conf.getDouble("kx"), 0, 1000);
+		ky = new LinkedSlider.DoubleLinkedSlider("ky", conf.getDouble("ky"), 0, 1000);
 		
 		targetInfoTab.add(targetWidth);
 		targetInfoTab.add(targetHeight);
 		targetInfoTab.add(camAngle);
+		targetInfoTab.add(camAngleLR);
+		targetInfoTab.add(camOffsetLR);
 		targetInfoTab.add(kx);
 		targetInfoTab.add(ky);
 		
@@ -295,6 +299,8 @@ public class Configger {
 		targetWidth.slider.addChangeListener(refresher);
 		targetHeight.slider.addChangeListener(refresher);
 		camAngle.slider.addChangeListener(refresher);
+		camAngleLR.slider.addChangeListener(refresher);
+		camOffsetLR.slider.addChangeListener(refresher);
 		kx.slider.addChangeListener(refresher);
 		ky.slider.addChangeListener(refresher);
 	}
@@ -336,7 +342,7 @@ public class Configger {
 	 * Slider to tune the variable with the same name in {@link Config}
 	 */
 	LinkedSlider.IntLinkedSlider rTarget, gTarget, bTarget, sensSlider, minBlobSize, tileSize;
-	LinkedSlider.DoubleLinkedSlider targetWidth, targetHeight, camAngle, kx, ky;
+	LinkedSlider.DoubleLinkedSlider targetWidth, targetHeight, camAngle, camAngleLR, camOffsetLR, kx, ky;
 	
 	/**
 	 * Check boxes to toggle variables with the same name in {@link Config}
@@ -397,14 +403,11 @@ public class Configger {
 			conf.setValue("debug_Print", printDebug.isSelected());
 
 
-			targetWidth.slider.addChangeListener(refresher);
-			targetHeight.slider.addChangeListener(refresher);
-			camAngle.slider.addChangeListener(refresher);
-			kx.slider.addChangeListener(refresher);
-			ky.slider.addChangeListener(refresher);
 			conf.setValue("targetWidth", targetWidth.getValue());
 			conf.setValue("targetHeight", targetHeight.getValue());
 			conf.setValue("camAngle", camAngle.getValue());
+			conf.setValue("camAngleLR", camAngleLR.getValue());
+			conf.setValue("camOffsetLR", camOffsetLR.getValue());
 			conf.setValue("kx", kx.getValue());
 			conf.setValue("ky", ky.getValue());
 			
@@ -444,6 +447,16 @@ public class Configger {
 		saveImgs.setSelected(conf.getBoolean("debug_SaveImagesToFiles"));
 		showDebugCam.setSelected(conf.getBoolean("debug_ShowDisplay"));
 		printDebug.setSelected(conf.getBoolean("debug_Print"));
+		
+
+		targetWidth.setValue(conf.getDouble("targetWidth"));
+		targetHeight.setValue(conf.getDouble("targetHeight"));
+		camAngle.setValue(conf.getDouble("camAngle"));
+		camAngleLR.setValue(conf.getDouble("camAngleLR"));
+		camOffsetLR.setValue(conf.getDouble("camOffsetLR"));
+		kx.setValue(conf.getDouble("kx"));
+		ky.setValue(conf.getDouble("ky"));
+		
 		
 		VisionProcessing.defaultProcessing.conf = conf;
 		

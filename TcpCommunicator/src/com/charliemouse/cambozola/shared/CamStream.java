@@ -121,8 +121,8 @@ public class CamStream extends Thread {
 	}
 	
 	
-	public synchronized BufferedImage getCurrent() {
-		return m_imain;
+	public BufferedImage getCurrent() {
+		return m_imain; //used to be synchronized
 	}
 	
 	
@@ -378,7 +378,8 @@ public class CamStream extends Thread {
 		// m_imain = m_tk.createImage(img);
 		try {
 			// /long l1 = System.nanoTime();
-			m_imain = ImageIO.read(imgStream);
+			BufferedImage nImage = ImageIO.read(imgStream);
+			m_imain = nImage;
 			// /System.out.println("Parse - "+(System.nanoTime() - l1)/1000000.0);
 		} catch (IOException ex) {
 		}

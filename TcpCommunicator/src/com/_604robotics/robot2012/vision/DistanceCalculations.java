@@ -58,7 +58,7 @@ public class DistanceCalculations {
 		
 		double wRatio = actualW / expectedW;
 		
-		System.out.println(wRatio);
+		//System.out.println(wRatio);
 		
 		if (wRatio < 0) {
 			wRatio = 0;
@@ -150,10 +150,20 @@ public class DistanceCalculations {
 		double avgy = q.getAvgY();
 		
 
-		double x = avgx * z;
+		double x = avgx * z + VisionProcessing.defaultProcessing.conf.getDouble("camOffsetLR");
 		double y = avgy * z;
 		
-		return new Point3d(x, y, z);
+
+		double rotLR = Math.toRadians(VisionProcessing.defaultProcessing.conf.getDouble("camAngleLR"));
+
+		double cos = Math.cos(rotLR);
+		double sin = Math.sin(rotLR);
+		
+		double nx = x*cos - z*sin;
+		double nz = x*sin + z*cos;
+		
+		
+		return new Point3d(nx, y, nz);
 	}
 	
 	/**
@@ -166,7 +176,7 @@ public class DistanceCalculations {
 		double x = (p.x - cameraPixelWidth / 2) / VisionProcessing.defaultProcessing.conf.getDouble("kx"),
 		y = (cameraPixelHeight / 2 - p.y) / VisionProcessing.defaultProcessing.conf.getDouble("ky");
 		
-		double rotUpDown = Math.toRadians(-VisionProcessing.defaultProcessing.conf.getDouble("camAngle"));
+		double rotUpDown = Math.toRadians(VisionProcessing.defaultProcessing.conf.getDouble("camAngle"));
 		
 		double cos = Math.cos(rotUpDown);
 		double sin = Math.sin(rotUpDown);
@@ -174,6 +184,7 @@ public class DistanceCalculations {
 		double nX = x / (cos - y * sin);
 		double nY = (y * cos + sin) / (cos - y * sin);
 		
+
 		return new Point2d(nX, nY);
 	}
 }

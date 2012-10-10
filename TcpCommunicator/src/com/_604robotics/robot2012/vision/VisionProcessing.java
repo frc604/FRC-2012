@@ -164,6 +164,8 @@ public class VisionProcessing {
 				vp.loopAndProcessPics();
 			} catch(Exception ex) {
 				Logger.ex(ex);
+				//ex.printStackTrace();
+				vp.display.setGrayscale(true);
 			}
 			Logger.err("Something bad happened to the video feed. Restarting it now.");
 			Thread.sleep(250);
@@ -252,21 +254,36 @@ public class VisionProcessing {
 		
 		BufferedImage lastImg = null;
 		BufferedImage img = null;
+
+		long timeOfLastFrame = System.currentTimeMillis();
 		
 		// loop through frames as they are received
 		while (true) {
 			
 			// while a new image has not been received, wait
 			while ((img = stream.getCurrent()) == lastImg) {
+				///System.out.println("Waiting");
 				if (!stream.isAlive()) {
-					stream = new CamStream(url, "", null, Integer.MAX_VALUE, 100, null, false);
+					this.display.setGrayscale(true);
+					stream = new CamStream(url, "", null, Integer.MAX_VALUE, 10, null, false);
 					stream.start();
 				}
+				
+				long dt = System.currentTimeMillis() - timeOfLastFrame;
+				System.out.println(dt);
+				if(dt > 500) {
+					System.out.println("Lagging: ms between frames = " + (dt));
+					this.display.setGrayscale(true);
+				}
+				
 				try {
 					Thread.sleep(1);
 				} catch (InterruptedException ex) {
 				}
 			}
+			this.display.setGrayscale(false);
+			
+			timeOfLastFrame = System.currentTimeMillis();
 			
 			lastImg = img;
 			
@@ -283,6 +300,8 @@ public class VisionProcessing {
 				imgSavr.currentFrame = currentFrame;
 				imgSavr.img = img;
 			}
+			
+			///System.out.println("Proc time = " + (System.nanoTime() - timeOfLastFrame) / 1000000.0);
 		}
 	}
 	

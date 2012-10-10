@@ -406,7 +406,17 @@ public class Config {
 		/**
 		 * How far the camera is pointing down, in degrees
 		 */
-		addKeyValuePair("camAngle", 28.5);
+		addKeyValuePair("camAngle", -18.0);
+
+		/**
+		 * How far the camera is pointing left and right, in degrees
+		 */
+		addKeyValuePair("camAngleLR", -3.5);
+
+		/**
+		 * Horizontal offset of the camera, in inches
+		 */
+		addKeyValuePair("camOffsetLR", -3.5);
 
 		
 		/**

@@ -32,6 +32,11 @@ public class VisionDisp extends JPanel {
 	boolean								hasPainted			= false;
 	
 	/**
+	 * Set to true when the vision is lagging
+	 */
+	private boolean						grayscale = false;
+	
+	/**
 	 * The background image, as received from the camera
 	 */
 	public BufferedImage				image;
@@ -105,6 +110,11 @@ public class VisionDisp extends JPanel {
 		
 		// draw the image
 		g.drawImage(b, 0, 0, null);
+		if(grayscale) {
+			g.setColor(new Color(.5f, .5f, .5f, .5f));
+			g.fillRect(0, 0, b.getWidth(), b.getHeight());
+			System.out.println("gray");
+		}
 
 		
 		// draw the green-and-red tiled "isTarget" mask
@@ -158,5 +168,10 @@ public class VisionDisp extends JPanel {
 		// done painting
 		hasPainted = true;
 		
+	}
+
+	public void setGrayscale(boolean val) {
+		grayscale = val;
+		repaint();
 	}
 }

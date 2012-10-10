@@ -86,7 +86,7 @@ public abstract class LinkedSlider extends Box implements ChangeListener {
 		 * @param max	The maximum value
 		 */
 		public ExponentialLinkedSlider(String name, double initial, double max) {
-			super(name, Math.log(initial*(exponent-1)+1)/max/Math.log(exponent), 1);
+			super(name, Math.log(initial*(exponent-1)+1)/max/Math.log(exponent), 0, 1);
 			valMul = max;
 			
 			Logger.log(""+getValue());
@@ -181,7 +181,9 @@ public abstract class LinkedSlider extends Box implements ChangeListener {
 		/**
 		 * The underlying resolution of the slider
 		 */
-		private static final int MAX = 1<<8;
+		private static final int MAX = 65536;
+		
+		private final double dmin;
 		
 		/**
 		 * A constructor for a DoubleLinkedSlider
@@ -190,9 +192,10 @@ public abstract class LinkedSlider extends Box implements ChangeListener {
 		 * @param initialValue	The initial value
 		 * @param max	The maximum value that this slider can be at
 		 */
-		public DoubleLinkedSlider(String name, double initialValue, double max) {
-			super(name, 0, MAX, (int) Math.round(initialValue/max*MAX));
-			this.mul = max;
+		public DoubleLinkedSlider(String name, double initialValue, double min, double max) {
+			super(name, 0, MAX, (int) Math.round((initialValue-min)/(max - min)*MAX));
+			this.mul = (max - min);
+			this.dmin = min;
 			
 			updateValLabel();
 		}
@@ -203,14 +206,14 @@ public abstract class LinkedSlider extends Box implements ChangeListener {
 		public double getValue() {
 			double rawVal = (slider.getValue()*1.0)/max;
 			
-			return mul*rawVal + min;
+			return mul*rawVal + dmin;
 		}
 
 		/* (non-Javadoc)
 		 * @see com._604robotics.robot2012.vision.config.LinkedSlider#setValue(double)
 		 */
 		public void setValue(double val) {
-			slider.setValue((int) ((val-min)/mul));
+			slider.setValue((int) Math.round((val-dmin)/mul*MAX));
 		}
 	}
 	
