@@ -48,6 +48,11 @@ public class VisionProcessing {
 	public Config conf = Config.readDefaultConfig();
 	
 	/**
+	 * The previous list of targets
+	 */
+	public Target[] targets;
+	
+	/**
 	 * This function determines the distances from a side to the points on the target, in a direction perpendicular to
 	 * the side in question.
 	 * 
@@ -159,8 +164,10 @@ public class VisionProcessing {
 	public static void main(String[] args) throws InterruptedException, IOException {
 		VisionProcessing vp = defaultProcessing;
 		vp.startWindow();
+		///vp.loopAndProcessPreSavedPics();
 		while(true) {
 			try {
+				vp.display.repaint();
 				vp.loopAndProcessPics();
 			} catch(Exception ex) {
 				Logger.ex(ex);
@@ -170,7 +177,6 @@ public class VisionProcessing {
 			Logger.err("Something bad happened to the video feed. Restarting it now.");
 			Thread.sleep(250);
 		}
-		//vp.loopAndProcessPreSavedPics();
 		
 	}
 	
@@ -260,6 +266,8 @@ public class VisionProcessing {
 		// loop through frames as they are received
 		while (true) {
 			
+			this.display.setDisconnected(!this.comm.isConnected());
+			
 			// while a new image has not been received, wait
 			while ((img = stream.getCurrent()) == lastImg) {
 				///System.out.println("Waiting");
@@ -270,10 +278,11 @@ public class VisionProcessing {
 				}
 				
 				long dt = System.currentTimeMillis() - timeOfLastFrame;
-				System.out.println(dt);
+				///System.out.println(dt);
 				if(dt > 500) {
-					System.out.println("Lagging: ms between frames = " + (dt));
+					///System.out.println("Lagging: ms between frames = " + (dt));
 					this.display.setGrayscale(true);
+					this.display.setAimValue(Double.NaN);
 				}
 				
 				try {
@@ -282,6 +291,12 @@ public class VisionProcessing {
 				}
 			}
 			this.display.setGrayscale(false);
+			
+			if(targets != null && targets.length > 0) {
+				this.display.setAimValue(targets[0].x);
+			} else {
+				this.display.setAimValue(Double.NaN);
+			}
 			
 			timeOfLastFrame = System.currentTimeMillis();
 			
@@ -330,11 +345,12 @@ public class VisionProcessing {
 	
 	/**
 	 * This function is just a simple debug function for testing with pre-saved images. Currently, it just reads over a
-	 * loop of 50 pictures saved as target/[number].jpeg
+	 * loop of some pictures saved as target/[number].jpeg
 	 */
 	public void loopAndProcessPreSavedPics() throws IOException {
 		
 		File[] list = new File("target/").listFiles();
+		
 		for (int i = 0; true; i++) {
 			
 			if (i >= list.length) {
@@ -343,6 +359,17 @@ public class VisionProcessing {
 			
 			try {
 				processImage(ImageIO.read(list[i]));
+
+				if(targets != null && targets.length > 0) {
+					this.display.setAimValue(targets[0].x);
+					if(Math.abs(targets[0].x) < 4) {
+						Thread.sleep(1000);
+					}
+				} else {
+					this.display.setAimValue(Double.NaN);
+				}
+				
+				this.display.setDisconnected(true);
 				
 				Thread.sleep(100);
 			} catch (Exception ex) {}
@@ -451,8 +478,8 @@ public class VisionProcessing {
 				targets[i] = new DistanceCalculations().getApproximationOfTarget(q);
 				if(conf.getBoolean("debug_Print"))
 					Logger.log(targets[i]);
-				if(conf.getBoolean("debug_Print"))
-					Logger.log(q);
+				//if(conf.getBoolean("debug_Print"))
+				//	Logger.log(q);
 				
 				targetQuads[i] = q;
 				
@@ -486,6 +513,7 @@ public class VisionProcessing {
 		if(conf.getBoolean("debug_Print"))
 			Logger.log(Arrays.toString(targets));
 		
+		this.targets = targets;
 		if (conf.getBoolean("communicateToRobot")) {
 			comm.writePoints(targets);
 		}

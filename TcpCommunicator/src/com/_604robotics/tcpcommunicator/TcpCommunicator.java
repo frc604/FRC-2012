@@ -2,11 +2,16 @@ package com._604robotics.tcpcommunicator;
 
 import com._604robotics.robot2012.vision.*;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.PipedInputStream;
 import java.net.Socket;
+import java.util.Scanner;
 
 import logging.Logger;
 
@@ -114,6 +119,15 @@ public class TcpCommunicator implements Runnable {
 	}
 	
 	/**
+	 * Checks if this class is currently communicating to the robot
+	 * 
+	 * @return Whether or not this class is currently communicating to the robot
+	 */
+	public boolean isConnected () {
+		return this.conn != null && this.conn.isConnected();
+	}
+	
+	/**
 	 * Enables the TcpCommunicator, launching the thread.
 	 */
 	public void up () {
@@ -215,30 +229,12 @@ public class TcpCommunicator implements Runnable {
 				this.writeDouble(points[i].yUncertainty);
 				this.writeDouble(points[i].zUncertainty);
 				this.writeDouble(points[i].angleUncertainty);
-				
-				final OutputStream flushable = bufferedOut;
-				
-				Thread flusherThread = new Thread(new Runnable() {
-					public void run() {
-						try {
-							flushable.flush();
-						} catch (IOException ex) {
-							//Logger.ex(ex);
-							try {
-								flushable.close();
-							} catch (IOException ex1) {
-								//Logger.ex(ex1);
-							}
-						}
-					}
-				});
-				
-				flusherThread.start();
 			}
-			
+
 			this.bufferedOut.write((byte) 1);
-		} catch (Exception ex) {
+			this.bufferedOut.flush();
 			
+		} catch (Exception ex) {
 		}
 	}
 	
@@ -261,6 +257,26 @@ public class TcpCommunicator implements Runnable {
 			while (this.conn == null) {
 				try {
 					this.conn = new Socket(this.ip, this.port);
+					conn.setReceiveBufferSize(8192);
+					conn.setTrafficClass(0x14); // low delay, reliability
+					
+					final Socket s = conn;
+					new Thread(new Runnable() {
+						public void run() {
+							try {
+								Scanner sc = new Scanner(s.getInputStream());
+								//BufferedReader bin = new BufferedReader(new InputStreamReader(s.getInputStream()), 8192);
+								//InputStream in = s.getInputStream();
+								while(s.isConnected()) {
+									//System.out.println(bin.readLine());
+									System.out.println(sc.nextLine());
+									//System.out.print((char)in.read());
+								}
+							} catch (IOException ex) {
+								ex.printStackTrace();
+							}
+						}
+					}).start();
 					
 					try {
 						this.rawOut = this.conn.getOutputStream();

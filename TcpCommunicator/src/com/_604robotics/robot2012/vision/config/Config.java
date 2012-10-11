@@ -428,6 +428,30 @@ public class Config {
 		 * How many vertical pixels away from center a line is that goes out at the same rate it goes up
 		 */
 		addKeyValuePair("ky", 530.0);								// was 736, then 605; then 695-705
+
+		/**
+		 * How big is "green" on the "aimed indicator" in inches?
+		 */
+		addKeyValuePair("aimedIndicator_greenSize", 3.0);
+		
+		/**
+		 * How big is "orange" on the "aimed indicator" in inches?
+		 * If you don't want orange displayed, set it to 0.
+		 */
+		addKeyValuePair("aimedIndicator_orangeSize", 5.0);
+
+		/**
+		 * How big is an inch on the "aimed indicator" in pixels?
+		 */
+		addKeyValuePair("aimedIndicator_inchWidth", 40);
+		
+		/**
+		 * How much less should the "aimed indicator" bar move when it's outside the green range?
+		 * 
+		 * default (.5) means 
+		 */
+		addKeyValuePair("aimedIndicator_outsideScalingFactor", .5);
+	
 	}
 
 
