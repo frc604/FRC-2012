@@ -164,20 +164,45 @@ public class VisionProcessing {
 	public static void main(String[] args) throws InterruptedException, IOException {
 		VisionProcessing vp = defaultProcessing;
 		vp.startWindow();
-		///vp.loopAndProcessPreSavedPics();
+		
+		vp.loopPicsAndRetryIfFailed(true);
+			//change argument here to false if you want to read in the saved images in target/*
+		
+	}
+	
+	/**
+	 * This loops and repeatedly processes images. If "connectToCamera" is true, the camera's images are used.
+	 * 
+	 * @param connectToCamera	should this method connect to the camera or use pre-saved images?
+	 * @throws IOException	if who-knows-what goes wrong.
+	 */
+	public void loopPicsAndRetryIfFailed(boolean connectToCamera) throws IOException {
+		if(!connectToCamera)
+			loopAndProcessPreSavedPics();
+		
 		while(true) {
 			try {
-				vp.display.repaint();
-				vp.loopAndProcessPics();
+				display.repaint();
+				loopAndProcessPics();
+			} catch(CameraConnectionSeemsToHaveLaggedOutException ex) { 
+				//I like giving stuff really long names...
+				//ignore this exception because it's just here to reconnect
+				//only barely bother reporting it... Don't even waste time with a stack trace
+
+				display.setGrayscale(true);
+				Logger.log("The connection appears to have lagged out. Restarting it now.");
 			} catch(Exception ex) {
 				Logger.ex(ex);
-				//ex.printStackTrace();
-				vp.display.setGrayscale(true);
+				display.setGrayscale(true);
+				
+				try {
+					Thread.sleep(250);
+				} catch (InterruptedException ex2) {}
+				
+				Logger.err("Something bad happened to the video feed. Restarting it now.");
 			}
-			Logger.err("Something bad happened to the video feed. Restarting it now.");
-			Thread.sleep(250);
+			
 		}
-		
 	}
 	
 	/**
@@ -247,8 +272,9 @@ public class VisionProcessing {
 	 * 
 	 * 
 	 * @throws MalformedURLException
+	 * @throws CameraConnectionSeemsToHaveLaggedOutException	If you need an explanation, look at the class name.
 	 */
-	public void loopAndProcessPics() throws MalformedURLException {
+	public void loopAndProcessPics() throws MalformedURLException, CameraConnectionSeemsToHaveLaggedOutException {
 		
 		// Set the username and password used to access the camera
 		Authenticator.setDefault(new com.mobvcasting.mjpegparser.HTTPAuthenticator("FRC", "FRC"));
@@ -283,6 +309,14 @@ public class VisionProcessing {
 					///System.out.println("Lagging: ms between frames = " + (dt));
 					this.display.setGrayscale(true);
 					this.display.setAimValue(Double.NaN);
+				}
+				
+				double doubleDT = dt*1000.0;
+				
+				if(doubleDT > this.conf.getDouble("connectionLagAutoRestartTimeout")) {
+					// now the connection hasn't received frames for so long that we're just going to restart it.
+					
+					throw new CameraConnectionSeemsToHaveLaggedOutException("Connection seems to have lagged out. Restart me plz?");
 				}
 				
 				try {

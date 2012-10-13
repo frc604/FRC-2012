@@ -22,9 +22,14 @@ import javax.swing.Icon;
 public class Config {
 	
 	/**
+	 * The default default config file; the default value of the defaultConfigFile
+	 */
+	private static final File defaultDefaultConfigFile;
+	
+	/**
 	 * The default Config file
 	 */
-	private static final File	defaultConfigFile;
+	private File	defaultConfigFile;
 	
 	static {
 		File normalDefaultFile = new File("vision.conf");
@@ -33,9 +38,9 @@ public class Config {
 		File otherOne = new File("FRC-2012/vision.conf");
 		
 		if(otherOne.exists())
-			defaultConfigFile = otherOne;
+			defaultDefaultConfigFile = otherOne;
 		else
-			defaultConfigFile = normalDefaultFile;
+			defaultDefaultConfigFile = normalDefaultFile;
 	}
 	
 	
@@ -109,7 +114,7 @@ public class Config {
 	 * @return the Config, as read from vision.conf
 	 */
 	public static Config readDefaultConfig() {
-		return readConfig(defaultConfigFile);
+		return readConfig(defaultDefaultConfigFile);
 	}
 	
 	/**
@@ -129,13 +134,35 @@ public class Config {
 	 */
 	public static Config readConfig(File file) /*throws FileNotFoundException*/ {
 		Config conf = new Config();
+		System.out.println("Reading config "+file.getName());
 		
 		try {//TODO - this will ignore exceptions
 			Scanner scanner = new Scanner(file);
 			
+			boolean isFirstLine = true;
 			
 			while (scanner.hasNext()) {
 				String str = scanner.nextLine();
+				
+				
+				if(isFirstLine && str.startsWith("#!")) {
+					String nextFileStr = str.substring(2);
+					
+					File nextFile = new File(file.getParentFile(), nextFileStr);
+					conf.defaultConfigFile = nextFile;
+					
+					
+					if(nextFile.equals(file))
+						continue;
+					
+					scanner.close();
+					return readConfig(nextFile);
+				}
+				
+				if(str.startsWith("#"))	// #comment
+					continue;
+				
+				
 				
 				String[] strs = str.split(" = ");
 				
@@ -154,7 +181,11 @@ public class Config {
 					System.err.println("Had error with key '"+key+ "' for value: "+value);
 					ex.printStackTrace();
 				}
+				
+				isFirstLine = false;
 			}
+			
+			scanner.close();
 		} catch(Exception ex) {
 			ex.printStackTrace();
 		}
@@ -444,13 +475,18 @@ public class Config {
 		 * How big is an inch on the "aimed indicator" in pixels?
 		 */
 		addKeyValuePair("aimedIndicator_inchWidth", 40);
-		
+
 		/**
 		 * How much less should the "aimed indicator" bar move when it's outside the green range?
 		 * 
 		 * default (.5) means 
 		 */
 		addKeyValuePair("aimedIndicator_outsideScalingFactor", .5);
+		
+		/**
+		 * If no frames are received in this amount of time, the connection is abandoned and reset.
+		 */
+		addKeyValuePair("connectionLagAutoRestartTimeout", 2.0);
 	
 	}
 
@@ -476,9 +512,11 @@ public class Config {
 		if (dataMap == null) {
 			if (other.dataMap != null)
 				return false;
-		} else if (!dataMap.equals(other.dataMap))
-			return false;
-		return true;
+		} else if (dataMap.equals(other.dataMap)) {
+			System.out.println("true");
+			return true;
+		}
+		return false;
 	}
 
 	public Object get(String key) {

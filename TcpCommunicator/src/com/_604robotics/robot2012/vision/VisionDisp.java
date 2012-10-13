@@ -188,7 +188,7 @@ public class VisionDisp extends JPanel {
 		drawAimedIndicator(g);
 		
 		if(VisionProcessing.defaultProcessing.conf.getBoolean("debug_Print"))
-		Logger.log("Render time = "+(System.nanoTime() - timeStartRender)/1.0e6);
+			Logger.log("Render time = "+(System.nanoTime() - timeStartRender)/1.0e6);
 		
 		// done painting
 		hasPainted = true;

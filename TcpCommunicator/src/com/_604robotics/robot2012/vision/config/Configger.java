@@ -172,10 +172,7 @@ public class Configger {
 		Runnable r = new Runnable() {
 			public void run() {
 				try {
-					if(usePreSaved)
-						vp.loopAndProcessPreSavedPics();
-					else
-						vp.loopAndProcessPics();
+					vp.loopPicsAndRetryIfFailed(!usePreSaved);
 				} catch (Exception ex) {
 					Logger.ex(ex);
 				}
@@ -205,7 +202,7 @@ public class Configger {
 			public void windowClosing(WindowEvent e) {
 				System.out.println("Closing");
 				int ret = JOptionPane.NO_OPTION;
-				if(VisionProcessing.defaultProcessing.conf.equals(Config.readDefaultConfig()))
+				///if(!VisionProcessing.defaultProcessing.conf.equals(Config.readDefaultConfig()))
 					ret = JOptionPane.showConfirmDialog(null, "Save changes?", "Save?", JOptionPane.YES_NO_CANCEL_OPTION);
 				
 				

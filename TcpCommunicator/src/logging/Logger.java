@@ -14,15 +14,24 @@ public class Logger {
 		new File("logs").mkdir();
 		logger.setLevel(Level.ALL);
 		try {
-			logger.addHandler(new FileHandler("logs/vision_log_"+System.currentTimeMillis()+".log"));
+			if(VisionProcessing.defaultProcessing.conf.getBoolean("debug_Print"))
+				logger.addHandler(new FileHandler("logs/vision_log_"+System.currentTimeMillis()+".log"));
 		} catch (Exception ex) {
 			ex.printStackTrace();
-			System.err.println("This is very bad.");
-			
+			System.err.println("The log couldn't log to a file.");
 			try {
 				Thread.sleep(1000);
-			} catch (InterruptedException ex1) {
-			}
+			} catch (InterruptedException ex1) {}
+			System.err.println("This is very bad.");
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException ex1) {}
+			System.err.println("http://simple.wikipedia.org/wiki/Exception_handling");
+			try {
+				Thread.sleep(3000);
+			} catch (InterruptedException ex1) {}
+			
+			
 		}
 	}
 	
