@@ -11,5 +11,7 @@ public class ElevatorPickupSystem extends Coordinator {
         this.fill(new DataWire(modules.getModule("Elevator").getAction("Low"), "pickupDown", new TriggerAnd(new TriggerAccess[] {
             modules.getModule("Pickup").getTrigger("Travelling").not(), modules.getModule("Pickup").getAction("Deploy").active()
         })));
+        this.fill(new DataWire(modules.getModule("Elevator").getAction("Low"), "compressing",
+            modules.getModule("Regulator").getTrigger("Compressing")));
     }
 }

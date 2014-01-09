@@ -38,12 +38,17 @@ public class Elevator extends Module {
             
             add("Low", new Action(new FieldMap() {{
                 define("pickupDown", false);
+                define("compressing", true);
             }}) {
                 public void run (ActionData data) {
-                    if (data.is("pickupDown"))
-                        elevate(0D, 50D); // FIXME - Made-up values
-                     else
+                    if (data.is("pickupDown")) {
+                        if (data.is("compressing"))
+                            motor.set(0D);
+                        else
+                            elevate(0D, 50D); // FIXME - Made-up values
+                    } else {
                         elevate(60D, 100D); // FIXME - Made-up values
+                    }
                 }
 
                 public void end (ActionData data) {
