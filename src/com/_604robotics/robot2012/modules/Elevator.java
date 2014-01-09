@@ -56,14 +56,22 @@ public class Elevator extends Module {
                 define("compressing", true);
             }}) {
                 public void run (ActionData data) {
-                    if (!data.is("pickupDown"))
-                        elevate(60D, 100D); // Go to the Medium position
-                    else if (data.is("compressing"))
-                        motor.set(0D); // Wait for the compressor (safety)
-                    else if (calibrated)
-                        elevate(0D, 50D); // Go to the Low position
-                    else
-                        motor.set(-0.5); // Move down to calibrate
+                    if (calibrated) {
+                        if (!data.is("pickupDown"))
+                            elevate(60D, 100D); // Go to the Medium position
+                        else
+                            elevate(0D, 50D); // Go to the Low position
+                    } else {
+                        if (data.is("pickupDown") && !data.is("compressing"))
+                            motor.set(-0.5); // Move down to calibrate
+                        else
+                            motor.set(0D); // Wait for compressor before calibrating
+                        
+                        if (!limitSwitch.get()) { // Calibrate
+                            encoder.reset();
+                            calibrated = true;
+                        }
+                    }
                 }
 
                 public void end (ActionData data) {
