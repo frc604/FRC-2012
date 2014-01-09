@@ -8,7 +8,7 @@ import com._604robotics.robotnik.module.Module;
 import edu.wpi.first.wpilibj.RobotDrive;
 
 public class Drive extends Module {
-    private final RobotDrive drive = new RobotDrive(1, 2);
+    private final RobotDrive drive = new RobotDrive(1, 9);
     
     public Drive () {
         this.set(new ElasticController() {{

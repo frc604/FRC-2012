@@ -5,9 +5,10 @@ import com._604robotics.robotnik.action.ActionData;
 import com._604robotics.robotnik.action.controllers.ElasticController;
 import com._604robotics.robotnik.module.Module;
 import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.Relay;
 
 public class Regulator extends Module {
-    private final Compressor compressor = new Compressor(1, 1);
+    private final Compressor compressor = new Compressor(1, 6);
     
     public Regulator () {
         this.set(new ElasticController() {{

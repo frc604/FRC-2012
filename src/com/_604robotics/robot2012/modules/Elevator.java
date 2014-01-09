@@ -7,12 +7,16 @@ import com._604robotics.robotnik.action.field.FieldMap;
 import com._604robotics.robotnik.data.Data;
 import com._604robotics.robotnik.data.DataMap;
 import com._604robotics.robotnik.module.Module;
+import com._604robotics.robotnik.prefabs.devices.MultiOutput;
 import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.wpilibj.PIDOutput;
 import edu.wpi.first.wpilibj.Victor;
 
 public class Elevator extends Module {
-    private final Victor motor = new Victor(3);
-    private final Encoder encoder = new Encoder(1, 2);
+    private final MultiOutput motor = new MultiOutput(new PIDOutput[] {
+        new Victor(7), new Victor(8)
+    });
+    private final Encoder encoder = new Encoder(10, 9);
     
     public Elevator () {
         encoder.start();
@@ -28,7 +32,7 @@ public class Elevator extends Module {
         this.set(new StateController() {{
             addDefault("Idle", new Action() {
                 public void run (ActionData data) {
-                    motor.stopMotor();
+                    motor.set(0D);
                 }
             });
             
@@ -43,7 +47,7 @@ public class Elevator extends Module {
                 }
 
                 public void end (ActionData data) {
-                    motor.stopMotor();
+                    motor.set(0D);
                 }
             });
             
@@ -55,7 +59,7 @@ public class Elevator extends Module {
                 }
 
                 public void end (ActionData data) {
-                    motor.stopMotor();
+                    motor.set(0D);
                 }
             });
         }});
@@ -69,6 +73,6 @@ public class Elevator extends Module {
         else if (current > maximum)
             motor.set(-0.5); // FIXME - Made-up value
         else
-            motor.stopMotor();
+            motor.set(0D);
     }
 }

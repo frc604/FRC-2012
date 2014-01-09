@@ -6,7 +6,7 @@ import com._604robotics.robotnik.module.Module;
 import edu.wpi.first.wpilibj.Victor;
 
 public class Hopper extends Module {
-    private final Victor motor = new Victor(5);
+    private final Victor motor = new Victor(6);
     
     public Hopper () {
         this.set(new ElasticController() {{
@@ -18,7 +18,7 @@ public class Hopper extends Module {
             
             add("Up", new Action () {
                 public void run () {
-                    motor.set(0.5);
+                    motor.set(0.8);
                 }
             });
             
