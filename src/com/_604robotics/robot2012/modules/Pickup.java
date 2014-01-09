@@ -11,7 +11,7 @@ import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj.Timer;
 
 public class Pickup extends Module {
-    private final DoubleSolenoid solenoid = new DoubleSolenoid(4, 3);
+    private final DoubleSolenoid solenoid = new DoubleSolenoid(3, 4);
     private final Timer timer = new Timer();
     
     public Pickup () {

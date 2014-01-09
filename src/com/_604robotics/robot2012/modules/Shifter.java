@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 
 public class Shifter extends Module {
-    private final DoubleSolenoid solenoid = new DoubleSolenoid(8, 7);
+    private final DoubleSolenoid solenoid = new DoubleSolenoid(1, 2);
     
     public Shifter () {
         this.set(new StateController () {{
