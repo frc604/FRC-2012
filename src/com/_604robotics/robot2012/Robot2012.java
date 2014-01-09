@@ -9,6 +9,7 @@ import com._604robotics.robot2012.modules.Regulator;
 import com._604robotics.robot2012.modules.Shifter;
 import com._604robotics.robot2012.modules.Shooter;
 import com._604robotics.robot2012.systems.ElevatorPickupSystem;
+import com._604robotics.robot2012.systems.FeederHopperSystem;
 import com._604robotics.robotnik.Robot;
 import com._604robotics.robotnik.coordinator.CoordinatorList;
 import com._604robotics.robotnik.coordinator.ModeMap;
@@ -28,6 +29,7 @@ public class Robot2012 extends Robot {
         
         this.set(new CoordinatorList() {{
             add(new ElevatorPickupSystem());
+            add(new FeederHopperSystem());
         }});
         
         this.set(new ModeMap() {{

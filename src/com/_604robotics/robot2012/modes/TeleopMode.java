@@ -44,8 +44,22 @@ public class TeleopMode extends Coordinator {
             
             /* Pickup */
             {
-                this.bind(new Binding(modules.getModule("Pickup").getAction("Stow"), leftDriveStick.buttons.Button3));
-                this.bind(new Binding(modules.getModule("Pickup").getAction("Deploy"), rightDriveStick.buttons.Button3));
+                final TriggerToggle toggle = new TriggerToggle(new TriggerOr(new TriggerAccess[] {
+                    leftDriveStick.buttons.Button4, rightDriveStick.buttons.Button4,
+                    leftDriveStick.buttons.Button5, rightDriveStick.buttons.Button5
+                }), false);
+                this.bind(new Binding(modules.getModule("Pickup").getAction("Stow"), toggle.off));
+                this.bind(new Binding(modules.getModule("Pickup").getAction("Deploy"), toggle.on));
+            }
+            
+            /* Feeder */
+            {
+                this.bind(new Binding(modules.getModule("Feeder").getAction("Suck"), new TriggerOr(new TriggerAccess[] {
+                    leftDriveStick.buttons.Button3, rightDriveStick.buttons.Button3
+                })));
+                this.bind(new Binding(modules.getModule("Feeder").getAction("Spit"), new TriggerOr(new TriggerAccess[] {
+                    leftDriveStick.buttons.Button2, rightDriveStick.buttons.Button2
+                })));
             }
         }
         
