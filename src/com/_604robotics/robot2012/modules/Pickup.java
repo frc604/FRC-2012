@@ -18,7 +18,7 @@ public class Pickup extends Module {
         timer.start();
         
         this.set(new TriggerMap() {{
-            add("Pickup Travelling", new Trigger() {
+            add("Travelling", new Trigger() {
                 public boolean run () {
                     return timer.get() < 2;
                 }
