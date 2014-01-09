@@ -3,6 +3,7 @@ package com._604robotics.robot2012;
 import com._604robotics.robot2012.modes.TeleopMode;
 import com._604robotics.robot2012.modules.Drive;
 import com._604robotics.robot2012.modules.Elevator;
+import com._604robotics.robot2012.modules.Hopper;
 import com._604robotics.robot2012.modules.Pickup;
 import com._604robotics.robot2012.modules.Regulator;
 import com._604robotics.robot2012.modules.Shifter;
@@ -20,6 +21,7 @@ public class Robot2012 extends Robot {
             add("Elevator", new Elevator());
             add("Shooter", new Shooter());
             add("Pickup", new Pickup());
+            add("Hopper", new Hopper());
         }});
         
         this.set(new ModeMap() {{

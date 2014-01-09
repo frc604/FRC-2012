@@ -61,6 +61,14 @@ public class TeleopMode extends Coordinator {
             {
                 this.fill(new DataWire(modules.getModule("Shooter").getAction("Shoot"), "power", manipulator.axisY));
             }
+            
+            /* Hopper */
+            {
+                this.bind(new Binding(modules.getModule("Hopper").getAction("Up"), manipulator.buttons.Button1));
+                this.bind(new Binding(modules.getModule("Hopper").getAction("Down"), new TriggerOr(new TriggerAccess[] {
+                    manipulator.buttons.Button4, manipulator.buttons.Button5
+                })));
+            }
         }
     }
 }
