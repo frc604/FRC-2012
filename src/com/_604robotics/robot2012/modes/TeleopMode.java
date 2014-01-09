@@ -19,6 +19,7 @@ public class TeleopMode extends Coordinator {
         rightDriveStick.axisY.setFactor(-1);
         manipulator.axisY.setFactor(-1);
         
+        leftDriveStick.axisX.setDeadband(0.2);
         leftDriveStick.axisY.setDeadband(0.2);
         rightDriveStick.axisY.setDeadband(0.2);
         manipulator.axisY.setDeadband(0.2);
@@ -29,8 +30,13 @@ public class TeleopMode extends Coordinator {
         {
             /* Driving */
             {
+                this.bind(new Binding(modules.getModule("Drive").getAction("Tank Drive"), modules.getModule("Dashboard").getTrigger("Tank Drive")));
                 this.fill(new DataWire(modules.getModule("Drive").getAction("Tank Drive"), "left", leftDriveStick.axisY));
                 this.fill(new DataWire(modules.getModule("Drive").getAction("Tank Drive"), "right", rightDriveStick.axisY));
+                
+                this.bind(new Binding(modules.getModule("Drive").getAction("Arcade Drive"), modules.getModule("Dashboard").getTrigger("Arcade Drive")));
+                this.fill(new DataWire(modules.getModule("Drive").getAction("Arcade Drive"), "left", leftDriveStick.axisX));
+                this.fill(new DataWire(modules.getModule("Drive").getAction("Arcade Drive"), "right", rightDriveStick.axisY));
             }
             
             /* Shifting */

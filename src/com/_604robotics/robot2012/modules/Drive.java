@@ -24,6 +24,19 @@ public class Drive extends Module {
                     drive.stopMotor();
                 }
             });
+            
+            add("Arcade Drive", new Action(new FieldMap() {{
+                define("move", 0D);
+                define("rotate", 0D);
+            }}) {
+                public void run (ActionData data) {
+                    drive.arcadeDrive(data.get("move"), data.get("rotate"));
+                }
+
+                public void end (ActionData data) {
+                    drive.stopMotor();
+                }
+            });
         }});
     }
 }
